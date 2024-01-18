@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://github.com/Porhay/into-the-shelter/blob/master/apps/shelter-client/public/logo.png/logo-white.png" width="200" alt="Shelter Logo" /></a>
+  <a target="blank"><img src="https://github.com/Porhay/into-the-shelter/blob/master/apps/shelter-client/public/logo-white.png" width="200" alt="Shelter Logo" /></a>
 </p>
 
 
