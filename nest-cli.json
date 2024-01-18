@@ -1,31 +1,31 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/gateway/src",
+  "sourceRoot": "apps/shelter-gateway/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/gateway/tsconfig.app.json"
+    "tsConfigPath": "apps/shelter-gateway/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/gateway",
+  "root": "apps/shelter-gateway",
   "projects": {
-    "accounts": {
+    "shelter-gateway": {
       "type": "application",
-      "root": "apps/accounts",
+      "root": "apps/shelter-gateway",
       "entryFile": "main",
-      "sourceRoot": "apps/accounts/src",
+      "sourceRoot": "apps/shelter-gateway/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/accounts/tsconfig.app.json"
+        "tsConfigPath": "apps/shelter-gateway/tsconfig.app.json"
       }
     },
-    "gateway": {
+    "shelter-accounts": {
       "type": "application",
-      "root": "apps/gateway",
+      "root": "apps/shelter-accounts",
       "entryFile": "main",
-      "sourceRoot": "apps/gateway/src",
+      "sourceRoot": "apps/shelter-accounts/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/gateway/tsconfig.app.json"
+        "tsConfigPath": "apps/shelter-accounts/tsconfig.app.json"
       }
     }
   }
