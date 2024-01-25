@@ -17,4 +17,4 @@ $ npm run start
 ```
 
 ## License
-Nest is [MIT licensed](LICENSE).
+Into the Shelter is [MIT licensed](LICENSE).

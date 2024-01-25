@@ -8,8 +8,6 @@ export class User extends Document {
 
   @Prop()
   email: string;
-
-  // Add more fields as needed
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

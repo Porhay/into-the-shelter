@@ -8,6 +8,7 @@ async function bootstrap() {
   const logger = new Logger('tycoonv-gateway:main');
   const config = app.get(ConfigService);
   
+  app.setGlobalPrefix('api');
   await app.listen(config.get('ACCOUNTS_PORT'), () => {
     logger.log(`Server is started on PORT: ${config.get('ACCOUNTS_PORT')}`)
   });
