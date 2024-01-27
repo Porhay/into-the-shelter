@@ -1,3 +1,9 @@
+UPD:
+- research done successfully
+- nothing here matters now
+- just do 2d stuff
+- then iterate
+
 STEP 0: RESEARCH PIPELINE
 Results:
     
