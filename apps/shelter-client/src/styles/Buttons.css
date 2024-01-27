@@ -1,0 +1,27 @@
+/*defaults*/
+.default-text {
+    margin-left: 1px;
+    margin-right: 1px;
+    cursor: pointer;
+    color: black;
+}
+.default-text:hover {
+    color: #333232;
+}
+
+
+/*TextButton*/
+.text-button {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    color: #F9F9F9;
+    background-color: #25a60c;
+    padding: 5px 14px 5px 10px;
+    border-radius: 6px;
+    font-weight: normal;
+    font-size: 16px;
+}
+.text-button:hover {
+    background-color: #22940c;
+    color: #F9F9F9;
+}
