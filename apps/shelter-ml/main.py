@@ -7,7 +7,7 @@ import utils.background as background
 
 app = FastAPI()
 
-@app.post("/flip-image/")
+@app.post("/update-background/")
 async def flip_image(file: UploadFile = File(...)):
     try:
         # Read the uploaded image file
