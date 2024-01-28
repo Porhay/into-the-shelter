@@ -18,12 +18,12 @@ async def flip_image(file: UploadFile = File(...)):
         processed_img = background.process(img)
         processed_img = Image.fromarray(processed_img)
 
-        # Save the flipped image to a byte stream
+        # Save the backgrounded image to a byte stream
         output = BytesIO()
         processed_img.save(output, format="JPEG")
         output.seek(0)
         
-        # Return the flipped image as a response
+        # Return the backgrounded image as a response
         return StreamingResponse(output, media_type="image/jpeg")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
