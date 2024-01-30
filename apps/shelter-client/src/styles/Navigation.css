@@ -1,0 +1,42 @@
+/* variables */
+:root {
+    --bg:  #242526;
+    --text-color: #dadce1;
+    --border: 1px solid #474a4d;
+    --border-radius: 8px;
+}
+
+/* logo and text */
+.logo-a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color);
+}
+.logo-a:hover {
+    color: white;
+}
+
+.ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.navigation-profile-image {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 60px;
+    width: 30px;
+    height: 30px;
+    margin: 0 20px 0 0;
+    cursor: pointer;
+}
+
+
