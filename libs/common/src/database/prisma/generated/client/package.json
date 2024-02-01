@@ -1,0 +1,61 @@
+{
+  "name": "prisma-client-aec6270952a145ef82b04c5d0fb22ddd4a6aa89942d9c8e9571eaa20e18a9c5a",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "browser": "index-browser.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "require": {
+        "types": "./default.d.ts",
+        "node": "./default.js",
+        "edge-light": "./wasm.js",
+        "workerd": "./wasm.js",
+        "worker": "./wasm.js",
+        "browser": "./index-browser.js"
+      },
+      "import": {
+        "types": "./default.d.ts",
+        "node": "./default.js",
+        "edge-light": "./wasm.js",
+        "workerd": "./wasm.js",
+        "worker": "./wasm.js",
+        "browser": "./index-browser.js"
+      },
+      "default": "./default.js"
+    },
+    "./edge": {
+      "types": "./edge.d.ts",
+      "require": "./edge.js",
+      "import": "./edge.js",
+      "default": "./edge.js"
+    },
+    "./extension": {
+      "types": "./extension.d.ts",
+      "require": "./extension.js",
+      "import": "./extension.js",
+      "default": "./extension.js"
+    },
+    "./index-browser": {
+      "types": "./default.d.ts",
+      "require": "./index-browser.js",
+      "import": "./index-browser.js",
+      "default": "./index-browser.js"
+    },
+    "./index": {
+      "types": "./default.d.ts",
+      "require": "./default.js",
+      "import": "./default.js",
+      "default": "./default.js"
+    },
+    "./wasm": {
+      "types": "./wasm.d.ts",
+      "require": "./wasm.js",
+      "import": "./wasm.js",
+      "default": "./wasm.js"
+    },
+    "./*": "./*"
+  },
+  "version": "5.9.0",
+  "sideEffects": false
+}
