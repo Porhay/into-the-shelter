@@ -6,6 +6,7 @@ import { StatusModule } from './status/status.module';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
       }),
       envFilePath: './.env',
     }),
+    PassportModule.register({ session: true })
   ],
   controllers: [AuthController],
   providers: [],

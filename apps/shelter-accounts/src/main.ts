@@ -2,11 +2,27 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AccountsModule } from './accounts.module';
 import { NestFactory } from '@nestjs/core';
+import * as session from 'express-session';
+import * as passport from 'passport'
 
 async function bootstrap() {
   const app = await NestFactory.create(AccountsModule);
   const logger = new Logger('tycoonv-gateway:main');
   const config = app.get(ConfigService);
+
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: 60000 // 1min
+      }
+    }),
+  );
+
+  app.use(passport.initialize())
+  app.use(passport.session())
   
   app.setGlobalPrefix('api');
   await app.listen(config.get('ACCOUNTS_PORT'), () => {

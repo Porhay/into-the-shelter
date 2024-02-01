@@ -5,7 +5,7 @@ import { PrismaService } from './prisma/prisma.service';
 export class DatabaseService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(user: {username: string, email: string, password: string}) {
+  async createUser(user: {email: string, displayName: string}) {
     return this.prisma.user.create({
       data: user,
     });
@@ -27,7 +27,7 @@ export class DatabaseService {
     });
   }
 
-  async getUser(userId: number) {
+  async getUserById(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -37,5 +37,17 @@ export class DatabaseService {
     }
 
     return user;
+  }
+
+  async getUserByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      new Error(`User with email ${email} not found`);
+    }
+
+    return user || null;
   }
 }

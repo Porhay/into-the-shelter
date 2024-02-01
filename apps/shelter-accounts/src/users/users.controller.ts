@@ -6,7 +6,7 @@ export class UsersController {
   constructor(private readonly databaseService: DatabaseService,) {}
 
   @Post()
-  async createUser(@Body() user: {username: string, email: string, password: string}) {
+  async createUser(@Body() user: {displayName: string, email: string}) {
     return this.databaseService.createUser(user);
   }
 
@@ -17,6 +17,6 @@ export class UsersController {
 
   @Get(':userId')
   async getByUserId(@Param('userId') userId: string) {
-    return this.databaseService.getUser(Number(userId));
+    return this.databaseService.getUserById(Number(userId));
   }
 }
