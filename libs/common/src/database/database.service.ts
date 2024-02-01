@@ -1,27 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './models/user.model';
-
+import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class DatabaseService {
-    constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    fn(): string {
-        return 'DatabaseService'
+  async createUser(user: {username: string, email: string, password: string}) {
+    return this.prisma.user.create({
+      data: user,
+    });
+  }
+
+  async deleteUser(userId: number) {
+    // Check if the user exists
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
     }
 
-    
-
-  async createUser(user: User): Promise<UserDocument> {
-    const createdUser = new this.userModel(user);
-    return createdUser.save();
+    // Delete the user
+    return this.prisma.user.delete({
+      where: { id: userId },
+    });
   }
 
-  async getUsers(): Promise<UserDocument[]> {
-    return this.userModel.find().exec();
+  async getUser(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    return user;
   }
 }
-
-

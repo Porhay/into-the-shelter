@@ -1,3 +1,12 @@
+# DATABASE
+db:
+	mkdir -p persistent/imported-data
+	mkdir -p persistent/image-data
+
+	docker-compose -f docker-compose.yml down;
+	docker-compose -f docker-compose.yml up -d postgresql;
+	until nc -z -v -w30 localhost 5432; do echo "Waiting for postgresql...";  sleep 5; done
+	@echo "Database started..."
 
 # SERVER SIDE
 accounts:

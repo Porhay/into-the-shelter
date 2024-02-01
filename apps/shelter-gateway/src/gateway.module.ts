@@ -12,7 +12,6 @@ import { DatabaseModule } from '@app/common'
       isGlobal: true,
       validationSchema: Joi.object({
         GATEWAY_PORT: Joi.number().required(),
-        MONGODB_URI: Joi.string().required(),
       }),
       envFilePath: './.env',
     }),
