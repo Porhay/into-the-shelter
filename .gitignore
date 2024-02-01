@@ -1,7 +1,7 @@
 
 # Prisma
 libs/common/src/database/prisma/migrations
-libs/common/src/database/prisma/generted
+libs/common/src/database/prisma/generated
 
 # Database
 persistent/
