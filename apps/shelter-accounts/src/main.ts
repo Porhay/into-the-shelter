@@ -16,8 +16,14 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 60000 // 1min
-      }
+        // maxAge: 60000 * 60 * 24 // 1d
+        maxAge: 30000
+      },
+      store: new (require('connect-pg-simple')(session))({ // TODO: update lib
+        conObject: {
+          connectionString: 'postgres://root:root@localhost:5432/root',
+        },
+      }),
     }),
   );
 
