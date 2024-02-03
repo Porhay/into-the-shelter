@@ -1,3 +1,10 @@
+# OS differences
+ifdef OS # Windows
+	VENV_ACTIVATE := ".env/Scripts/activate"
+else
+	VENV_ACTIVATE := source .env/bin/activate
+endif
+
 # DATABASE
 db:
 	mkdir -p persistent/imported-data
@@ -18,6 +25,19 @@ accounts:
 	npm run start:dev shelter-accounts
 	@echo "shelter-accounts is running...";
 
+gateway:
+	npm run start:dev shelter-gateway
+	@echo "shelter-gateway is running...";
+
+# Python API with dependencies installed
+ml:
+	cd apps/shelter-ml && \
+    python -m venv .env && \
+    $(VENV_ACTIVATE) && \
+    python -m pip install -q --upgrade pip && \
+    pip install -q -r requirements.txt && \
+    uvicorn main:app --port 8008 --reload
+	@echo "shelter-ml is running..."
 
 # CLIENT SIDE
 cs:
@@ -55,3 +75,6 @@ kill:
 	npx kill-port 8000
 	npx kill-port 8001
 	npx kill-port 3000
+	npx kill-port 3001
+	npx kill-port 8000
+	npx kill-port 8008
