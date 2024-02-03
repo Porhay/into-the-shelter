@@ -10,7 +10,7 @@ app = FastAPI()
 
 
 
-@app.post("/update_background/")
+@app.post("/update-background/")
 async def update_background(file: UploadFile = File(...)):
     try:
         # Read the uploaded image file
