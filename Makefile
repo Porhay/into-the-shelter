@@ -10,10 +10,6 @@ db:
 
 
 # SERVER SIDE
-gateway:
-	npm run start:dev shelter-gateway
-	@echo "shelter-gateway is running...";
-
 accounts:
 	npm run start:dev shelter-accounts
 	@echo "shelter-accounts is running...";
@@ -25,10 +21,10 @@ gateway:
 # Python API with dependencies installed
 ml:
 	cd apps/shelter-ml && \
-    python -m venv .env && \
+    python3 -m venv .env && \
     source .env/bin/activate && \
-    python -m pip install -q --upgrade pip && \
-    pip install -q -r requirements.txt && \
+    python3 -m pip install -q --upgrade pip && \
+    pip3 install -q -r requirements.txt && \
     uvicorn main:app --port 8008 --reload
 	@echo "shelter-ml is running..."
 
