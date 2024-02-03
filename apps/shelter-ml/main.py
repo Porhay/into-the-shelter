@@ -1,14 +1,17 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
-from PIL import Image
+
 from io import BytesIO
-# import os; os.chdir('apps/shelter-ml')
+from PIL import Image
+
 import utils.background as background
 
 app = FastAPI()
 
-@app.post("/update-background/")
-async def flip_image(file: UploadFile = File(...)):
+
+
+@app.post("/background/")
+async def background(file: UploadFile = File(...)):
     try:
         # Read the uploaded image file
         contents = await file.read()
