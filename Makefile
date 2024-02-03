@@ -1,10 +1,3 @@
-# OS differences
-ifdef OS # Windows
-	VENV_ACTIVATE := ".env/Scripts/activate"
-else
-	VENV_ACTIVATE := source .env/bin/activate
-endif
-
 # DATABASE
 db:
 	mkdir -p persistent/imported-data
@@ -28,7 +21,7 @@ gateway:
 ml:
 	cd apps/shelter-ml && \
     python -m venv .env && \
-    $(VENV_ACTIVATE) && \
+    source .env/bin/activate && \
     python -m pip install -q --upgrade pip && \
     pip install -q -r requirements.txt && \
     uvicorn main:app --port 8008 --reload
