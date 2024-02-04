@@ -8,6 +8,4 @@ const TextButton = (props: any) => {
     )
 }
 
-
-
 export {TextButton}

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import '../styles/Navigation.css';
 
@@ -7,7 +7,6 @@ const Navigation = () => {
     const [state, setState] = useState({
         isAuth: true,
     })
-    
 
     const Navbar = (props: any) => (
         <nav>
@@ -18,7 +17,7 @@ const Navigation = () => {
     )
 
     const ProfileImage = () => (
-        <img src={avatarDefault} className="navigation-profile-image" alt="profile image"/>
+        <img src={avatarDefault} className="navigation-profile-image" alt="profile image" />
     )
 
     return (
@@ -29,7 +28,7 @@ const Navigation = () => {
             {state.isAuth ?
                 <div>
                     <li className="nav-item">
-                        <ProfileImage/>
+                        <ProfileImage />
                     </li>
                 </div>
                 :
