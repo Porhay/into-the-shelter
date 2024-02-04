@@ -1,0 +1,22 @@
+.webcam-container {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 4px;
+    border-radius: 4px;
+    background-color: rgb(0, 0, 0);
+    color: #fff;
+}
+
+.webcam-btn {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    bottom: 0;
+    margin: 0 0 0 4px;
+}
+
+.webcam {
+    position: relative;
+}

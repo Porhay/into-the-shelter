@@ -1,18 +1,22 @@
 import React, { useState } from "react"
 import Webcam from '../libs/Webcam'
-import { TextButton } from '../libs/Buttons'
+import { TextButton, IconButton } from '../libs/Buttons'
+import '../styles/Room.scss'
+
 
 const RoomPage = () => {
     const [state, setState] = useState({
-        isCameraOn: false
+        isCameraOn: true
     })
 
     return (
-        <div>
-            <header className="App-header">
-                <TextButton onClick={() => setState({ ...state, isCameraOn: !state.isCameraOn })} text="USE CAMERA" />
+        <div className="webcam-container">
+            <div className="webcam-btn">
+                <IconButton onClick={() => setState({ ...state, isCameraOn: !state.isCameraOn })} />
+            </div>
+            <div className="webcam">
                 {state.isCameraOn ? <Webcam /> : null}
-            </header>
+            </div>
         </div>
     )
 }

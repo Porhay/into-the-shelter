@@ -1,4 +1,4 @@
-/*defaults*/
+// defaults
 .default-text {
     margin-left: 1px;
     margin-right: 1px;
@@ -11,7 +11,7 @@
 }
 
 
-/*TextButton*/
+// TextButton
 .text-button {
     border: 1px solid rgba(0, 0, 0, 0.3);
     cursor: pointer;
@@ -25,5 +25,17 @@
     &:hover {
         background-color: #22940c;
         color: #F9F9F9;
+    }
+}
+
+// IconButton
+.icon-button {
+    img {
+        width: 30px;
+        opacity: 0.8;
+    }
+
+    img:hover {
+        opacity: 1;
     }
 }
