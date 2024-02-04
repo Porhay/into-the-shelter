@@ -4,9 +4,10 @@
     margin-right: 1px;
     cursor: pointer;
     color: black;
-}
-.default-text:hover {
-    color: #333232;
+
+    &:hover {
+        color: #333232;
+    }
 }
 
 
@@ -20,8 +21,9 @@
     border-radius: 6px;
     font-weight: normal;
     font-size: 16px;
-}
-.text-button:hover {
-    background-color: #22940c;
-    color: #F9F9F9;
+
+    &:hover {
+        background-color: #22940c;
+        color: #F9F9F9;
+    }
 }

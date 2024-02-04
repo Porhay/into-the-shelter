@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
-import '../styles/Navigation.css';
+import '../styles/Navigation.scss';
 
 
 const Navigation = () => {

@@ -1,4 +1,4 @@
-import '../styles/Buttons.css';
+import '../styles/Buttons.scss';
 
 const TextButton = (props: any) => {
     return (
