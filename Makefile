@@ -54,8 +54,12 @@ all_mac:
 	@echo "[2] Starting shelter-accounts"
 	@osascript -e 'tell app "Terminal" to do script "cd $(CURDIR) && make accounts"'
 
+    # shelter-ml
+	@echo "[3] Starting shelter-ml"
+	@osascript -e 'tell app "Terminal" to do script "cd $(CURDIR) && make ml"'
+
     # shelter-client
-	@echo "[3] Starting shelter-client"
+	@echo "[4] Starting shelter-client"
 	@osascript -e 'tell app "Terminal" to do script "cd $(CURDIR) && make cs"'
 
 
