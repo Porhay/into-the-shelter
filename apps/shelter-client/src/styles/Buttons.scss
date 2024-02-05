@@ -21,6 +21,7 @@
     border-radius: 6px;
     font-weight: normal;
     font-size: 16px;
+    cursor: pointer;
 
     &:hover {
         background-color: #22940c;
@@ -33,9 +34,30 @@
     img {
         width: 30px;
         opacity: 0.8;
+        cursor: pointer;
     }
 
     img:hover {
+        opacity: 1;
+    }
+}
+
+.icon-text-button {
+    cursor: pointer;
+    color: black;
+    background-color: #F9F9F9;
+    padding: 1px 8px 3px 6px;
+    border-radius: 6px;
+    font-weight: normal;
+    font-size: 17px;
+    width: max-content;
+
+    img {
+        width: 30px;
+        opacity: 0.8;
+    }
+
+    &:hover {
         opacity: 1;
     }
 }

@@ -5,9 +5,6 @@
 .link-camera-wrapper {
     display: flex;
     flex-direction: column;
-    position: fixed;
-    bottom: 0;
-    left: 0;
 }
 
 .invite-link-container {
@@ -45,4 +42,18 @@
     img {
         height: 100%;
     }
+}
+
+.char-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    margin-left: 3px;
+}
+
+.camera-list-wrapper {
+    position: fixed;
+    display: flex;
+    bottom: 0;
+    left: 0;
 }
