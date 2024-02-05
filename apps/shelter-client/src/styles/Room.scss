@@ -20,3 +20,15 @@
 .webcam {
     position: relative;
 }
+
+.webcam-avatar {
+    width: 260px;
+    height: 200px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+
+    img {
+        height: 100%;
+    }
+}

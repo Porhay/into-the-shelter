@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ROUTES } from "../constants";
-import AllRoomsPage from "../pages/AllRooms";
+import AllRoomsPage from "../pages/SearchRoom";
 import AuthPage from "../pages/Auth";
 import RoomPage from "../pages/Room";
 
