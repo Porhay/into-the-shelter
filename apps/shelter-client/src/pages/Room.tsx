@@ -10,7 +10,8 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 const RoomPage = () => {
     const [state, setState] = useState({
         isCameraOn: false,
-        inviteLink: 'http://invite-link.com'
+        inviteLink: 'http://invite-link.com',
+        webcamList: [1, 2, 3, 4, 5, 6, 7, 8]
     })
 
     // Avatar. Should be updated while playing...
@@ -36,8 +37,23 @@ const RoomPage = () => {
         )
     }
 
+    const WebcamList = () => {
+        return (
+            <div className="webcam-list">
+                {state.webcamList.map(blockID => {
+                    return (
+                        <div className="block">
+                            block {blockID}
+                        </div>
+                    )
+                })}
+            </div>
+        )
+    }
+
     return (
         <div className="room-page-container">
+            <WebcamList />
             <div className="camera-list-wrapper">
                 <div className="link-camera-wrapper">
                     <div className="invite-link-container">
