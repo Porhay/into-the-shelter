@@ -7,10 +7,10 @@ import Router from './components/Router';
 function App() {
   return (
     <div className='App'>
-<BrowserRouter>
-      <Navigation />
-      <Router />
-    </BrowserRouter>
+      <BrowserRouter>
+        <Navigation />
+        <Router />
+      </BrowserRouter>
     </div>
     
   );

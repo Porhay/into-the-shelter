@@ -1,5 +1,5 @@
 export const ROUTES = {
-    ALL_ROOMS: '/',
+    SEARCH_ROOM: '/',
     LOGIN: '/login',
     ROOM: '/rooms/:roomId',
     SETTINGS: '/settings',

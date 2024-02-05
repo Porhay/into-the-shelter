@@ -1,14 +1,13 @@
-import React, { useContext } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { ROUTES } from "../constants";
-import AllRoomsPage from "../pages/SearchRoom";
+import SearchRoomPage from "../pages/SearchRoom";
 import AuthPage from "../pages/Auth";
 import RoomPage from "../pages/Room";
 
 export const authRoutes = [
     {
-        path: ROUTES.ALL_ROOMS,
-        Component: AllRoomsPage
+        path: ROUTES.SEARCH_ROOM,
+        Component: SearchRoomPage
     },
     {
         path: ROUTES.ROOM,
