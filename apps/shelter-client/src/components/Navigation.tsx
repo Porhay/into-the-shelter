@@ -2,11 +2,13 @@ import { useState } from 'react';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import '../styles/Navigation.scss';
 import intoTheShelter from '../assets/images/Into the shelter.png'
+import { Timeline } from '../libs/Timeline';
 
 
 const Navigation = () => {
     const [state, setState] = useState({
         isAuth: true,
+        stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4'],
     })
 
     const Navbar = (props: any) => (
@@ -26,6 +28,7 @@ const Navigation = () => {
             <a href="/" className="logo-a" onClick={() => console.log('Main page')}>
                 <img src={intoTheShelter} />
             </a>
+            <Timeline stages={state.stages} />
             {state.isAuth ?
                 <div>
                     <li className="nav-item">

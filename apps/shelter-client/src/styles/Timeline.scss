@@ -1,0 +1,23 @@
+.timeline {
+    display: flex;
+    align-items: center;
+    flex: 8;
+    padding: 0 20px;
+}
+  
+.timeline-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+}
+  
+.timeline-line {
+    flex: 1;
+    height: 2px;
+    background-color: #ffffff;
+    margin: 0 5px; /* Adjust the space between dots and lines */
+    z-index: 0;
+}

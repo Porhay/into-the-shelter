@@ -63,13 +63,14 @@
     display: flex;
     flex-wrap: nowrap; /* Prevent wrapping to the next line */
     justify-content: space-between; /* Distribute space between the elements */
-    padding-left: 10px;
+    // padding-left: 10px;
 
     .block {
-        width: calc(12.5% - 10px); /* Adjust the width as needed (100% / 8 - margin) */
-        margin-right: 10px; /* Adjust the margin as needed */
+        width: 20%; /* Adjust the width as needed (100% / 8 - margin) */
+        // margin-right: 10px; /* Adjust the margin as needed */
         box-sizing: border-box; /* Include padding and border in the width calculation */
         background-color: #ddd; /* Optional: Set background color */
-        padding: 10px; /* Optional: Add padding */
+        padding: 10px 0; /* Optional: Add padding */
+        border-right: black solid 1px;
     }
 }

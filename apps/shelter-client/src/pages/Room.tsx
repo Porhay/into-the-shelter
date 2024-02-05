@@ -1,17 +1,17 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import Webcam from '../libs/Webcam'
 import { Button } from '../libs/Buttons'
 import '../styles/Room.scss'
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 
 
-
-
 const RoomPage = () => {
     const [state, setState] = useState({
         isCameraOn: false,
         inviteLink: 'http://invite-link.com',
-        webcamList: [1, 2, 3, 4, 5, 6, 7, 8]
+        webcamList: [1, 2, 3, 4, 5, 6, 7],
+        charList: ['genderIcon', 'healthIcon', 'hobbyIcon', 'jobIcon',
+            'phobiaIcon', 'backpackIcon', 'additionalInfoIcon']
     })
 
     // Avatar. Should be updated while playing...
@@ -27,16 +27,16 @@ const RoomPage = () => {
     const CharList = () => {
         return (
             <div className="char-list-container">
-                <Button icon="genderIcon" onClick={() => console.log('halo')} />
-                <Button icon="healthIcon" onClick={() => console.log('halo')} />
-                <Button icon="hobbyIcon" onClick={() => console.log('halo')} />
-                <Button icon="jobIcon" onClick={() => console.log('halo')} />
-                <Button icon="phobiaIcon" onClick={() => console.log('halo')} />
-                <Button icon="backpackIcon" onClick={() => console.log('halo')} />
+                {state.charList.map(char => {
+                    return (
+                        <Button icon={char} onClick={() => console.log(char)} />
+                    )
+                })}
             </div>
         )
     }
 
+    // Players webcam list with characteristics
     const WebcamList = () => {
         return (
             <div className="webcam-list">
@@ -70,9 +70,9 @@ const RoomPage = () => {
                 </div>
                 <CharList />
             </div>
-            
+
         </div>
-        
+
     )
 }
 

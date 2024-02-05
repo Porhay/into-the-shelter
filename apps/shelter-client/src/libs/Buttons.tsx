@@ -6,6 +6,7 @@ import hobbyIcon from '../assets/icons/ingame/white/hobby-icon.png';
 import jobIcon from '../assets/icons/ingame/white/job-icon.png';
 import phobiaIcon from '../assets/icons/ingame/white/phobia-icon.png';
 import backpackIcon from '../assets/icons/ingame/white/backpack-icon.png';
+import additionalInfoIcon from '../assets/icons/ingame/white/additional-info-icon.png';
 
 
 const Icon = (props: any) => {
@@ -17,6 +18,7 @@ const Icon = (props: any) => {
         case 'jobIcon': return <img src={jobIcon} />
         case 'phobiaIcon': return <img src={phobiaIcon} />
         case 'backpackIcon': return <img src={backpackIcon} />
+        case 'additionalInfoIcon': return <img src={additionalInfoIcon} />
         default: return <img src={healthIcon} />
     }
 }
