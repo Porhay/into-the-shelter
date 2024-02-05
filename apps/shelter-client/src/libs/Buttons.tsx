@@ -32,7 +32,7 @@ export const Button = (props: any) => {
         case props.icon && !props.text:
             stylesheet = "icon-button"
             break;
-        case props.icon && props.text:
+        case !!props.icon && !!props.text:
             stylesheet = "icon-text-button"
             break;
     }
@@ -40,7 +40,7 @@ export const Button = (props: any) => {
     return (
         <a className={stylesheet} onClick={props.onClick}>
             {props.icon ? <Icon icon={props.icon} /> : null}
-            {props.text ? <span style={{marginLeft: 2}}>{props.text}</span> : null}
+            {props.text ? <span>{props.text}</span> : null}
         </a>
     )
 }

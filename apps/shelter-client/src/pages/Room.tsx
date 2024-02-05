@@ -10,8 +10,15 @@ const RoomPage = () => {
         isCameraOn: false,
         inviteLink: 'http://invite-link.com',
         webcamList: [1, 2, 3, 4, 5, 6, 7],
-        charList: ['genderIcon', 'healthIcon', 'hobbyIcon', 'jobIcon',
-            'phobiaIcon', 'backpackIcon', 'additionalInfoIcon']
+        charList: [
+            {icon: 'genderIcon', text: 'Чоловік'},
+            {icon: 'healthIcon', text: 'Абсолютно здоровий'},
+            {icon: 'hobbyIcon', text: 'Комп. ігри'},
+            {icon: 'jobIcon', text: 'Таксист'},
+            {icon: 'phobiaIcon', text: 'Арахнофобія'},
+            {icon: 'backpackIcon', text: 'Печиво'},
+            {icon: 'additionalInfoIcon', text: 'Вміє пекти печиво'},
+        ]
     })
 
     // Avatar. Should be updated while playing...
@@ -29,7 +36,7 @@ const RoomPage = () => {
             <div className="char-list-container">
                 {state.charList.map(char => {
                     return (
-                        <Button icon={char} onClick={() => console.log(char)} />
+                        <Button icon={char.icon} text={char.text} onClick={() => console.log(char)} />
                     )
                 })}
             </div>

@@ -23,6 +23,10 @@
     font-size: 16px;
     cursor: pointer;
 
+    span {
+        margin-left: 2px;
+    }
+
     &:hover {
         background-color: #22940c;
         color: #F9F9F9;
@@ -45,17 +49,17 @@
 
 .icon-text-button {
     cursor: pointer;
-    color: black;
-    background-color: #F9F9F9;
-    padding: 1px 8px 3px 6px;
-    border-radius: 6px;
-    font-weight: normal;
-    font-size: 17px;
-    width: max-content;
+    display: flex;
+    color: white;
+    padding-bottom: 2px;
+    align-items: center;
 
     img {
         width: 30px;
-        opacity: 0.8;
+    }
+
+    span {
+        margin-left: 4px;
     }
 
     &:hover {
