@@ -47,4 +47,17 @@
     cursor: pointer;
 }
 
+.notification-img {
+    width: 30px;
+    height: 30px;
+    margin: 0 30px 0 0;
+    cursor: pointer;
+    opacity: 0.9;
+    filter: invert(98%) sepia(23%) saturate(207%) hue-rotate(120deg) brightness(195%) contrast(90%);
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
 

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import avatarDefault from '../assets/images/profile-image-default.jpg';
-import '../styles/Navigation.scss';
-import intoTheShelter from '../assets/images/Into the shelter.png'
 import { Timeline } from '../libs/Timeline';
+import avatarDefault from '../assets/images/profile-image-default.jpg';
+import notificationsIcon from '../assets/icons/notifications-icon.png';
+import intoTheShelter from '../assets/images/Into the shelter.png'
+import '../styles/Navigation.scss';
 
 
 const Navigation = () => {
@@ -29,6 +30,7 @@ const Navigation = () => {
                 <img src={intoTheShelter} />
             </a>
             <Timeline stages={state.stages} />
+            <img src={notificationsIcon} className="notification-img" />
             {state.isAuth ?
                 <div>
                     <li className="nav-item">
