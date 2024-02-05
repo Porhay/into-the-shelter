@@ -12,12 +12,20 @@
     align-items: center;
     text-decoration: none;
     color: var(--text-color);
-}
-.logo-a:hover {
-    color: white;
+    opacity: 0.9;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    img {
+        width: 180px;
+    }
 }
 
+
 .ul {
+    padding: 0 0 0 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

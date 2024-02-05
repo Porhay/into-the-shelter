@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import '../styles/Navigation.scss';
+import intoTheShelter from '../assets/images/Into the shelter.png'
 
 
 const Navigation = () => {
@@ -23,7 +24,7 @@ const Navigation = () => {
     return (
         <Navbar>
             <a href="/" className="logo-a" onClick={() => console.log('Main page')}>
-                Into the Shelter
+                <img src={intoTheShelter} />
             </a>
             {state.isAuth ?
                 <div>
