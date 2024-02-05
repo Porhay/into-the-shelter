@@ -1,11 +1,25 @@
-.webcam-container {
+.room-page-container {
+
+}
+
+.link-camera-wrapper {
     display: flex;
+    flex-direction: column;
     position: fixed;
     bottom: 0;
     left: 0;
-    padding: 4px;
+}
+
+.invite-link-container {
+    background-color: #fff;
+    border: rgb(0, 0, 0) solid 4px;
     border-radius: 4px;
-    background-color: rgb(0, 0, 0);
+    margin-bottom: 3px;
+}
+
+.webcam-container {
+    border: rgb(0, 0, 0) solid 4px;
+    border-radius: 4px;
     color: #fff;
 }
 
