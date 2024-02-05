@@ -9,7 +9,7 @@ import '../styles/Navigation.scss';
 const Navigation = () => {
     const [state, setState] = useState({
         isAuth: true,
-        stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4'],
+        stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
     })
 
     const Navbar = (props: any) => (

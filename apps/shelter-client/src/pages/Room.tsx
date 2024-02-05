@@ -8,16 +8,17 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 const RoomPage = () => {
     const [state, setState] = useState({
         isCameraOn: false,
+        isDetailsOpened: false,
         inviteLink: 'http://invite-link.com',
         webcamList: [1, 2, 3, 4, 5, 6, 7],
         charList: [
-            {icon: 'genderIcon', text: 'Чоловік'},
-            {icon: 'healthIcon', text: 'Абсолютно здоровий'},
-            {icon: 'hobbyIcon', text: 'Комп. ігри'},
-            {icon: 'jobIcon', text: 'Таксист'},
-            {icon: 'phobiaIcon', text: 'Арахнофобія'},
-            {icon: 'backpackIcon', text: 'Печиво'},
-            {icon: 'additionalInfoIcon', text: 'Вміє пекти печиво'},
+            { icon: 'genderIcon', text: 'Чоловік' },
+            { icon: 'healthIcon', text: 'Абсолютно здоровий' },
+            { icon: 'hobbyIcon', text: 'Комп. ігри' },
+            { icon: 'jobIcon', text: 'Таксист' },
+            { icon: 'phobiaIcon', text: 'Арахнофобія' },
+            { icon: 'backpackIcon', text: 'Печиво' },
+            { icon: 'additionalInfoIcon', text: 'Вміє пекти печиво' },
         ]
     })
 
@@ -47,10 +48,24 @@ const RoomPage = () => {
     const WebcamList = () => {
         return (
             <div className="webcam-list">
-                {state.webcamList.map(blockID => {
+                {state.webcamList.map(blockId => {
                     return (
-                        <div className="block">
-                            block {blockID}
+                        <div className="block-container">
+                            <div className="camera-block" onClick={() => {
+                                setState({ ...state, isDetailsOpened: !state.isDetailsOpened })
+                            }}>
+                                {blockId}
+                            </div>
+                            {state.isDetailsOpened ?
+                                <div className="chars-block-down">
+                                    <div className="char-list-container">
+                                        {state.charList.map(char => {
+                                            return (
+                                                <Button icon={char.icon} text={char.text} onClick={() => console.log(char)} />
+                                            )
+                                        })}
+                                    </div>
+                                </div> : null}
                         </div>
                     )
                 })}
