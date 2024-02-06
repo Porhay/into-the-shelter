@@ -1,3 +1,5 @@
+$sunset-color: invert(100%) sepia(50%) saturate(2458%) hue-rotate(310deg) brightness(92%) contrast(117%);
+
 .room-page-container {
 
 }
@@ -133,10 +135,10 @@
     img {
         height: 20px;
         padding: 2px;
-        filter: invert(30%) sepia(200%) saturate(300%) hue-rotate(200deg) brightness(100%) contrast(100%);
+        filter: $sunset-color;
     }
 
-    &:hover {
-        filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
+    img:hover {
+        filter: invert(0%);
     }
 }

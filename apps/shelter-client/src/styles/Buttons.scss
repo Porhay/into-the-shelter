@@ -39,11 +39,12 @@
         width: 30px;
         opacity: 0.8;
         cursor: pointer;
+        filter: invert(100%);
     }
 
     img:hover {
         opacity: 1;
-        filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
+        filter: invert(100%);
     }
 }
 
@@ -55,7 +56,8 @@
     align-items: center;
 
     img {
-        width: 30px;
+        width: 24px;
+        filter: invert(100%);
     }
 
     span {

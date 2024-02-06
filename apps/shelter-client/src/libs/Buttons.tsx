@@ -1,12 +1,12 @@
 import '../styles/Buttons.scss';
 import videocamIcon from '../assets/icons/videocam-icon.png'
-import genderIcon from '../assets/icons/ingame/white/gender-icon.png';
-import healthIcon from '../assets/icons/ingame/white/health-icon.png';
-import hobbyIcon from '../assets/icons/ingame/white/hobby-icon.png';
-import jobIcon from '../assets/icons/ingame/white/job-icon.png';
-import phobiaIcon from '../assets/icons/ingame/white/phobia-icon.png';
-import backpackIcon from '../assets/icons/ingame/white/backpack-icon.png';
-import additionalInfoIcon from '../assets/icons/ingame/white/additional-info-icon.png';
+import genderIcon from '../assets/icons/ingame/gender-icon.png';
+import healthIcon from '../assets/icons/ingame/health-icon.png';
+import hobbyIcon from '../assets/icons/ingame/hobby-icon.png';
+import jobIcon from '../assets/icons/ingame/job-icon.png';
+import phobiaIcon from '../assets/icons/ingame/phobia-icon.png';
+import backpackIcon from '../assets/icons/ingame/backpack-icon.png';
+import additionalInfoIcon from '../assets/icons/ingame/additional-info-icon.png';
 
 
 const Icon = (props: any) => {
