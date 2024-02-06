@@ -1,0 +1,151 @@
+$sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightness(98%) contrast(93%);
+
+.link-camera-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.invite-link-container {
+    background-color: #fff;
+    border: rgb(0, 0, 0) solid 4px;
+    border-radius: 4px;
+    margin-bottom: 3px;
+    cursor: pointer;
+}
+
+.webcam-container {
+    border: rgb(0, 0, 0) solid 4px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.webcam-btn {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    bottom: 0;
+    margin: 0 0 0 4px;
+}
+
+.webcam {
+    position: relative;
+}
+
+.webcam-avatar {
+    width: 260px;
+    height: 200px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+
+    img {
+        height: 100%;
+    }
+}
+
+.char-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    margin-left: 3px;
+}
+
+.camera-list-wrapper {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+
+.webcam-list {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping to the next line */
+    justify-content: space-between; /* Distribute space between the elements */
+    // padding-left: 10px;
+
+    .block-container {
+        width: 20%; /* Adjust the width as needed (100% / 8 - margin) */
+        // margin-right: 10px; /* Adjust the margin as needed */
+        box-sizing: border-box; /* Include padding and border in the width calculation */
+        
+        padding: 2px 0; /* Optional: Add padding */
+        z-index: 10;
+        position: relative;
+        
+
+        .camera-block {
+            position: relative;
+            color: white;
+            text-align: center;
+            background-color: #fff;
+            border: black solid 1px;
+            // width: 180px;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+
+            img {
+                height: 100%;
+                
+            }
+        }
+
+        .chars-row-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .chars-row{
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2px;
+            cursor: pointer;
+            
+        }
+    }
+}
+
+
+.chars-block-down {
+    animation: growDown 300ms ease-in-out forwards;
+    transform-origin: top center;
+    position: absolute;
+    background-color:rgba(0, 0, 0, 0.6);
+}
+@keyframes growDown {
+    0% {
+        transform: scaleY(0)
+    }
+    80% {
+        transform: scaleY(1.09)
+    }
+    100% {
+        transform: scaleY(1)
+    }
+}
+
+.bottom-icon {
+    img {
+        height: 20px;
+        padding: 2px;
+        filter: $sunset-color;
+    }
+
+    img:hover {
+        filter: invert(0%);
+    }
+}
+
+.action-tip-container {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 400;
+    top: 50%;
+    left: 45%;
+    color: #fff;
+    align-items: center;
+}

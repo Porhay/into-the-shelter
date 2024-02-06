@@ -44,7 +44,7 @@ cs:
 
 
 # GENERAL
-all_mac:
+all:
     # start postgres and shelter-gateway
 	@echo "[0] Starting postgresql db"
 	@echo "[1] Starting shelter-gateway"
