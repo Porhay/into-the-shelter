@@ -10,16 +10,17 @@ import additionalInfoIcon from '../assets/icons/ingame/additional-info-icon.png'
 
 
 const Icon = (props: any) => {
+    const alt = 'icon'
     switch (props.icon) {
-        case 'videocamIcon': return <img className={props.style} src={videocamIcon} />
-        case 'genderIcon': return <img src={genderIcon} />
-        case 'healthIcon': return <img src={healthIcon} />
-        case 'hobbyIcon': return <img src={hobbyIcon} />
-        case 'jobIcon': return <img src={jobIcon} />
-        case 'phobiaIcon': return <img src={phobiaIcon} />
-        case 'backpackIcon': return <img src={backpackIcon} />
-        case 'additionalInfoIcon': return <img src={additionalInfoIcon} />
-        default: return <img src={healthIcon} />
+        case 'videocamIcon': return <img className={props.style} src={videocamIcon} alt={alt} />
+        case 'genderIcon': return <img src={genderIcon} alt={alt} />
+        case 'healthIcon': return <img src={healthIcon} alt={alt} />
+        case 'hobbyIcon': return <img src={hobbyIcon} alt={alt} />
+        case 'jobIcon': return <img src={jobIcon} alt={alt} />
+        case 'phobiaIcon': return <img src={phobiaIcon} alt={alt} />
+        case 'backpackIcon': return <img src={backpackIcon} alt={alt} />
+        case 'additionalInfoIcon': return <img src={additionalInfoIcon} alt={alt} />
+        default: return <img src={healthIcon} alt={alt} />
     }
 }
 
@@ -41,7 +42,7 @@ export const Button = (props: any) => {
     }    
 
     return (
-        <a className={stylesheet} onClick={props.onClick}>
+        <a className={stylesheet} onClick={props.onClick} href="javascript:;">
             {props.icon ? <Icon icon={props.icon} /> : null}
             {props.text ? <span>{props.text}</span> : null}
         </a>

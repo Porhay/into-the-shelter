@@ -6,6 +6,7 @@ $camera-color:invert(48%) sepia(13%) saturate(3207%) hue-rotate(180deg) brightne
     margin-right: 1px;
     cursor: pointer;
     color: black;
+    text-decoration: none;
 
     &:hover {
         color: #333232;
@@ -24,6 +25,7 @@ $camera-color:invert(48%) sepia(13%) saturate(3207%) hue-rotate(180deg) brightne
     font-weight: normal;
     font-size: 16px;
     cursor: pointer;
+    text-decoration: none;
 
     span {
         margin-left: 2px;
@@ -37,6 +39,8 @@ $camera-color:invert(48%) sepia(13%) saturate(3207%) hue-rotate(180deg) brightne
 
 // IconButton
 .icon-button {
+    text-decoration: none;
+
     img {
         width: 30px;
         opacity: 0.8;
@@ -56,6 +60,7 @@ $camera-color:invert(48%) sepia(13%) saturate(3207%) hue-rotate(180deg) brightne
     color: white;
     padding-bottom: 2px;
     align-items: center;
+    text-decoration: none;
 
     img {
         width: 24px;

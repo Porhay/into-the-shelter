@@ -1,14 +1,16 @@
-import React, { useState } from "react"
-import Webcam from '../libs/Webcam'
-import { Button } from '../libs/Buttons'
 import '../styles/Room.scss'
+import { useState } from "react"
 import avatarDefault from '../assets/images/profile-image-default.jpg';
+import { Button } from '../libs/Buttons'
+import Webcam from '../libs/Webcam'
+import Chat from '../libs/Chat'
 
 
 const RoomPage = () => {
     const [state, setState] = useState({
         isCameraOn: false,
         isDetailsOpened: false,
+        actionTip: 'YOUR TURN',
         inviteLinkTextBox: 'http://invite-link.com',
         inviteLink: 'http://invite-link.com',
         webcamList: [1, 2, 3, 4, 5, 6, 7],
@@ -27,7 +29,7 @@ const RoomPage = () => {
     const Avatar = () => {
         return (
             <div className="webcam-avatar">
-                <img src={avatarDefault} />
+                <img src={avatarDefault} alt='webcam avatar'/>
             </div>
         )
     }
@@ -53,7 +55,7 @@ const RoomPage = () => {
                     return (
                         <div className="block-container">
                             <div className="camera-block">
-                                <img src={avatarDefault} />
+                                <img src={avatarDefault} alt='camera block' />
                             </div>
                             <div className="chars-row-container">
                                 <div className="chars-row" onClick={() => {
@@ -76,6 +78,14 @@ const RoomPage = () => {
                         </div>
                     )
                 })}
+            </div>
+        )
+    }
+
+    const ActionTipContainer = () => {
+        return (
+            <div className="action-tip-container">
+                {state.actionTip}
             </div>
         )
     }
@@ -103,7 +113,8 @@ const RoomPage = () => {
                 </div>
                 <CharList />
             </div>
-
+            <ActionTipContainer />
+            <Chat />
         </div>
 
     )

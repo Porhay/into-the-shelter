@@ -1,8 +1,4 @@
-$sunset-color: invert(100%) sepia(50%) saturate(2458%) hue-rotate(310deg) brightness(92%) contrast(117%);
-
-.room-page-container {
-
-}
+$sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightness(98%) contrast(93%);
 
 .link-camera-wrapper {
     display: flex;
@@ -55,8 +51,8 @@ $sunset-color: invert(100%) sepia(50%) saturate(2458%) hue-rotate(310deg) bright
 }
 
 .camera-list-wrapper {
-    position: fixed;
     display: flex;
+    position: fixed;
     bottom: 0;
     left: 0;
 }
@@ -142,4 +138,14 @@ $sunset-color: invert(100%) sepia(50%) saturate(2458%) hue-rotate(310deg) bright
     img:hover {
         filter: invert(0%);
     }
+}
+
+.action-tip-container {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 400;
+    top: 50%;
+    left: 45%;
+    color: #fff;
+    align-items: center;
 }
