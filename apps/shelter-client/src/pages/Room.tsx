@@ -9,6 +9,7 @@ const RoomPage = () => {
     const [state, setState] = useState({
         isCameraOn: false,
         isDetailsOpened: false,
+        inviteLinkTextBox: 'http://invite-link.com',
         inviteLink: 'http://invite-link.com',
         webcamList: [1, 2, 3, 4, 5, 6, 7],
         charList: [
@@ -57,12 +58,11 @@ const RoomPage = () => {
                             <div className="chars-row-container">
                                 <div className="chars-row" onClick={() => {
                                     setState({ ...state, isDetailsOpened: !state.isDetailsOpened })
-                                    
-                                    }} >
+                                }}>
                                     {state.charList.map(char => <Button icon={char.icon} bottomList={true} />)}
                                 </div>
                             </div>
-                            
+
                             {state.isDetailsOpened ?
                                 <div className="chars-block-down">
                                     <div className="char-list-container">
@@ -85,8 +85,12 @@ const RoomPage = () => {
             <WebcamList />
             <div className="camera-list-wrapper">
                 <div className="link-camera-wrapper">
-                    <div className="invite-link-container">
-                        {state.inviteLink}
+                    <div className="invite-link-container" onClick={() => {
+                        navigator.clipboard.writeText(state.inviteLink)
+                        setState({ ...state, inviteLinkTextBox: 'Copied!' })
+                        setTimeout(() => setState({ ...state, inviteLinkTextBox: state.inviteLink }), 1000)                    
+                    }}>
+                        {state.inviteLinkTextBox}
                     </div>
                     <div className="webcam-container">
                         <div className="webcam-btn">
