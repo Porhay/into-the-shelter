@@ -69,15 +69,43 @@
         width: 20%; /* Adjust the width as needed (100% / 8 - margin) */
         // margin-right: 10px; /* Adjust the margin as needed */
         box-sizing: border-box; /* Include padding and border in the width calculation */
-        // background-color: #ddd; /* Optional: Set background color */
-        padding: 10px 0; /* Optional: Add padding */
-        border-right: black solid 1px;
+        
+        padding: 2px 0; /* Optional: Add padding */
+        z-index: 10;
+        position: relative;
+        
 
         .camera-block {
-            
+            position: relative;
+            color: white;
+            text-align: center;
+            background-color: #fff;
+            border: black solid 1px;
+            // width: 180px;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+
+            img {
+                height: 100%;
+                
+            }
         }
-        .chars-block {
-            display: none;
+
+        .chars-row-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .chars-row{
+            position: absolute;
+            bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2px;
+            cursor: pointer;
+            
         }
     }
 }
@@ -86,10 +114,9 @@
 .chars-block-down {
     animation: growDown 300ms ease-in-out forwards;
     transform-origin: top center;
+    position: absolute;
+    background-color:rgba(0, 0, 0, 0.6);
 }
-    
-
-
 @keyframes growDown {
     0% {
         transform: scaleY(0)
@@ -99,5 +126,17 @@
     }
     100% {
         transform: scaleY(1)
+    }
+}
+
+.bottom-icon {
+    img {
+        height: 20px;
+        padding: 2px;
+        filter: invert(30%) sepia(200%) saturate(300%) hue-rotate(200deg) brightness(100%) contrast(100%);
+    }
+
+    &:hover {
+        filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
     }
 }

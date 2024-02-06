@@ -11,7 +11,7 @@ import additionalInfoIcon from '../assets/icons/ingame/white/additional-info-ico
 
 const Icon = (props: any) => {
     switch (props.icon) {
-        case 'videocamIcon': return <img src={videocamIcon} />
+        case 'videocamIcon': return <img className={props.style} src={videocamIcon} />
         case 'genderIcon': return <img src={genderIcon} />
         case 'healthIcon': return <img src={healthIcon} />
         case 'hobbyIcon': return <img src={hobbyIcon} />
@@ -26,6 +26,9 @@ const Icon = (props: any) => {
 export const Button = (props: any) => {
     let stylesheet = "text-button"
     switch (true) {
+        case props.bottomList:
+            stylesheet = "bottom-icon"
+            break;
         case !props.icon && props.text:
             stylesheet = "text-button"
             break;
@@ -35,7 +38,7 @@ export const Button = (props: any) => {
         case !!props.icon && !!props.text:
             stylesheet = "icon-text-button"
             break;
-    }
+    }    
 
     return (
         <a className={stylesheet} onClick={props.onClick}>

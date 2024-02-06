@@ -51,11 +51,18 @@ const RoomPage = () => {
                 {state.webcamList.map(blockId => {
                     return (
                         <div className="block-container">
-                            <div className="camera-block" onClick={() => {
-                                setState({ ...state, isDetailsOpened: !state.isDetailsOpened })
-                            }}>
-                                {blockId}
+                            <div className="camera-block">
+                                <img src={avatarDefault} />
                             </div>
+                            <div className="chars-row-container">
+                                <div className="chars-row" onClick={() => {
+                                    setState({ ...state, isDetailsOpened: !state.isDetailsOpened })
+                                    
+                                    }} >
+                                    {state.charList.map(char => <Button icon={char.icon} bottomList={true} />)}
+                                </div>
+                            </div>
+                            
                             {state.isDetailsOpened ?
                                 <div className="chars-block-down">
                                     <div className="char-list-container">
