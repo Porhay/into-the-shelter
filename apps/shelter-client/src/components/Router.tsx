@@ -1,16 +1,16 @@
 import { Routes, Route } from 'react-router-dom'
 import { ROUTES } from "../constants";
-import SearchRoomPage from "../pages/SearchRoom";
+import MainPage from "../pages/Main";
 import AuthPage from "../pages/Auth";
 import RoomPage from "../pages/Room";
 
 export const authRoutes = [
     {
-        path: ROUTES.SEARCH_ROOM,
-        Component: SearchRoomPage
+        path: ROUTES.MAIN,
+        Component: MainPage
     },
     {
-        path: ROUTES.ROOM,
+        path: ROUTES.ROOMS + '/:roomId',
         Component: RoomPage
     },
     {
@@ -21,7 +21,7 @@ export const authRoutes = [
 
 export const publicRoutes = [
     {
-        path: ROUTES.LOGIN,
+        path: ROUTES.AUTH,
         Component: AuthPage
     },
 ]
