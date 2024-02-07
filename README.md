@@ -1,5 +1,5 @@
 <p align="center">
-  <a target="blank"><img src="https://github.com/Porhay/into-the-shelter/blob/master/apps/shelter-client/public/logo-white.png" width="200" alt="Shelter Logo" /></a>
+  <a target="blank"><img src="https://github.com/Porhay/into-the-shelter/blob/master/apps/shelter-client/public/logo192.png" width="200" alt="Shelter Logo" /></a>
 </p>
 
 
@@ -10,10 +10,9 @@
 </p>
 
 
-## Installation & running the app
+## Running the app as dev:
 ```bash
-$ npm install
-$ npm run start
+$ make all
 ```
 
 ## License
