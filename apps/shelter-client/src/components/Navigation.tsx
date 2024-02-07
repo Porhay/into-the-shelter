@@ -10,6 +10,7 @@ const Navigation = () => {
     const [state, setState] = useState({
         isAuth: true,
         stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
+        isVisible: !!window.location.pathname.split('/').includes('rooms')
     })
 
     const Navbar = (props: any) => (
@@ -29,7 +30,7 @@ const Navigation = () => {
             <a href="/" className="logo-a" onClick={() => console.log('Main page')}>
                 <img src={intoTheShelter} />
             </a>
-            <Timeline stages={state.stages} />
+            <Timeline stages={state.stages} visible={state.isVisible} />
             <img src={notificationsIcon} className="notification-img" />
             {state.isAuth ?
                 <div>
