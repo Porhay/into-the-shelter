@@ -3,6 +3,7 @@ export const ROUTES = {
     AUTH: '/auth',
     ROOMS: '/rooms',
     SETTINGS: '/settings',
+    PROFILE: '/profile'
 }
 
 

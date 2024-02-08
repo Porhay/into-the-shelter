@@ -86,6 +86,7 @@ $border-radius: 8px;
     }
 
     .login-down {
+        z-index: 10; // dropdown should be at the top
         right: 0;
         color: #fff;
         animation: growDown 300ms ease-in-out forwards;

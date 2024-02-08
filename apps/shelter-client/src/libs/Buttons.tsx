@@ -4,6 +4,9 @@ import enterIcon from '../assets/icons/enter-icon.png';
 import googleIcon from '../assets/icons/google-icon.png';
 import googleColorIcon from '../assets/icons/google-color-icon.png';
 import discordIcon from '../assets/icons/discord-icon.png';
+import profileIcon from '../assets/icons/profile-icon.png';
+import settingsIcon from '../assets/icons/settings-icon.png';
+import exitIcon from '../assets/icons/exit-icon.png';
 import genderIcon from '../assets/icons/ingame/gender-icon.png';
 import healthIcon from '../assets/icons/ingame/health-icon.png';
 import hobbyIcon from '../assets/icons/ingame/hobby-icon.png';
@@ -28,6 +31,9 @@ const Icon = (props: any) => {
         case 'googleIcon': return <img src={googleIcon} alt={alt} />
         case 'googleColorIcon': return <img src={googleColorIcon} alt={alt} />
         case 'discordIcon': return <img src={discordIcon} alt={alt} />
+        case 'profileIcon': return <img src={profileIcon} alt={alt} />
+        case 'settingsIcon': return <img src={settingsIcon} alt={alt} />
+        case 'exitIcon': return <img src={exitIcon} alt={alt} />
         default: return <img src={healthIcon} alt={alt} />
     }
 }

@@ -3,6 +3,8 @@ import { ROUTES } from "../constants";
 import MainPage from "../pages/Main";
 import AuthPage from "../pages/Auth";
 import RoomPage from "../pages/Room";
+import SettingsPage from "../pages/Settings";
+import ProfilePage from "../pages/Profile";
 
 export const authRoutes = [
     {
@@ -15,7 +17,11 @@ export const authRoutes = [
     },
     {
         path: ROUTES.SETTINGS,
-        Component: AuthPage
+        Component: SettingsPage
+    },
+    {
+        path: ROUTES.PROFILE,
+        Component: ProfilePage
     },
 ]
 

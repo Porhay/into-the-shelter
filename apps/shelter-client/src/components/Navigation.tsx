@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Timeline } from '../libs/Timeline';
 import { Button } from '../libs/Buttons';
+import { ROUTES } from '../constants';
+import { deshCount } from '../helpers'
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import notificationsIcon from '../assets/icons/notifications-icon.png';
 import intoTheShelter from '../assets/images/Into the shelter.png'
 import '../styles/Navigation.scss';
+
 
 
 interface IState {
@@ -12,14 +16,19 @@ interface IState {
     stages: string[];
     isVisible: boolean;
     isLoginOpened: boolean;
+    isAccountOpened: boolean;
+    isNotificationsOpened: boolean;
 }
 
 const Navigation = () => {
+    const navigate = useNavigate()
     const [state, setState] = useState({
-        isAuth: false,
+        isAuth: true,
         stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
         isVisible: !!window.location.pathname.split('/').includes('rooms'),
-        isLoginOpened: false
+        isLoginOpened: false,
+        isAccountOpened: false,
+        isNotificationsOpened: false
     })
 
     const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => {
@@ -27,9 +36,47 @@ const Navigation = () => {
     }
 
     const authList = [
-        { type: 'Google', icon: "googleColorIcon" },
+        { type: 'Google', icon: "googleColorIcon", action: () => logIn() },
         { type: 'Discord', icon: "discordIcon" }
     ]
+
+    const navigationList = [
+        { type: 'Your profile', icon: "profileIcon", action: () => navigate(ROUTES.PROFILE) },
+        { type: 'Settings', icon: "settingsIcon", action: () => navigate(ROUTES.SETTINGS) },
+        { type: 'Log out', icon: "exitIcon", action: () => logOut() },
+    ]
+
+    const logIn = () => {
+        updateState('isAuth', !state.isAuth)
+        navigate(ROUTES.MAIN)
+    }
+
+    const logOut = () => {
+        updateState('isAuth', !state.isAuth)
+        navigate(ROUTES.AUTH)
+    }
+
+    const Dropdown = (props: any) => {
+        return (
+            <div className='login-container'>
+                {props.children}
+                {props.isOpened ?
+                    <div className="login-down">
+                        <pre>
+                            {props.text}{`\n`}
+                            {deshCount(props.text)}
+                        </pre>
+                        {props.list.map((item: { icon: any; type: any; action: any; }) => {
+                            return (
+                                <div className='button-wraper'>
+                                    <Button icon={item.icon} text={item.type} onClick={item.action} />
+                                </div>
+                            )
+                        })}
+                    </div> : null}
+            </div>
+        )
+    }
 
     return (
         <div className='navigation-container'>
@@ -41,29 +88,25 @@ const Navigation = () => {
                     <>
                         <Timeline stages={state.stages} visible={state.isVisible} />
                         <ul>
-                            <li><img src={notificationsIcon} className="notification-img" /></li>
-                            <li><img src={avatarDefault} className="navigation-profile-image" alt="profile image" /></li>
+                            <li>
+                                <Dropdown list={[]} text="You don't have new notifications" isOpened={state.isNotificationsOpened}>
+                                    <img src={notificationsIcon} className="notification-img"
+                                        onClick={(() => updateState('isNotificationsOpened', !state.isNotificationsOpened))} />
+                                </Dropdown>
+                            </li>
+                            <li>
+                                <Dropdown list={navigationList} text="Hello, troobadure!" isOpened={state.isAccountOpened}>
+                                    <img src={avatarDefault} className="navigation-profile-image" alt="profile image"
+                                        onClick={(() => updateState('isAccountOpened', !state.isAccountOpened))} />
+                                </Dropdown>
+                            </li>
                         </ul>
                     </>
                     :
-                    <div className='login-container'>
+                    <Dropdown list={authList} text="Way to log in:" isOpened={state.isLoginOpened}>
                         <Button custom={true} stylesheet="login-btn" icon='enterIcon' text='Login'
                             onClick={(() => updateState('isLoginOpened', !state.isLoginOpened))} />
-                        {state.isLoginOpened ?
-                            <div className="login-down">
-                                <pre>
-                                    Way to log in:{`\n`}
-                                    -------------
-                                </pre>
-                                {authList.map(item => {
-                                    return (
-                                        <div className='button-wraper'>
-                                            <Button icon={item.icon} text={item.type} onClick={() => console.log(item.type)} />
-                                        </div>
-                                    )
-                                })}
-                            </div> : null}
-                    </div>
+                    </Dropdown>
                 }
             </nav>
         </div>
