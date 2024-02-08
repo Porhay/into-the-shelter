@@ -1,41 +1,37 @@
-/* variables */
-:root {
-    --bg:  #242526;
-    --text-color: #dadce1;
-    --border: 1px solid #474a4d;
-    --border-radius: 8px;
-}
+$border: 1px solid #474a4d;
+$border-radius: 8px;
 
-/* logo and text */
-.logo-a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: var(--text-color);
-    opacity: 0.9;
+.navigation-container {
+    nav {
+        display: flex;
+        justify-content: space-between;
+        margin: 8px 20px;
+        align-items: center;
 
-    &:hover {
-        opacity: 1;
+        .logo {
+            opacity: 0.9;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            img {
+                width: 180px;
+            }
+        }
+
+        ul {
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            li {
+                display: flex;
+            }
+        }
     }
 
-    img {
-        width: 180px;
-    }
-}
-
-
-.ul {
-    padding: 0 0 0 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
 }
 
 .navigation-profile-image {
@@ -43,7 +39,6 @@
     border-radius: 60px;
     width: 30px;
     height: 30px;
-    margin: 0 20px 0 0;
     cursor: pointer;
 }
 
@@ -60,4 +55,68 @@
     }
 }
 
+.login-container {
+    position: relative;
+    cursor: pointer;
 
+    .login-btn {
+        cursor: pointer;
+        display: flex;
+        color: white;
+        padding-bottom: 6px;
+        text-decoration: none;
+
+        img {
+            width: 20px;
+            filter: invert(100%);
+        }
+
+        span {
+            margin-left: 4px;
+        }
+
+        &:hover {
+            opacity: 1;
+            color: #000;
+
+            img {
+                filter: invert(0);
+            }
+        }
+    }
+
+    .login-down {
+        z-index: 10; // dropdown should be at the top
+        right: 0;
+        color: #fff;
+        animation: growDown 300ms ease-in-out forwards;
+        transform-origin: top right;
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+
+        pre {
+            margin: 0 0 4px 0 ;
+        }
+        .button-wraper {
+            margin-bottom: 2px;
+            padding: 0 5px 0 2px;
+            background-color: #242324;
+            
+        }
+    }
+}
+
+@keyframes growDown {
+    0% {
+        transform: scaleY(0)
+    }
+
+    80% {
+        transform: scaleY(1.09)
+    }
+
+    100% {
+        transform: scaleY(1)
+    }
+}

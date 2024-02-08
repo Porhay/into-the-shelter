@@ -1,8 +1,9 @@
 export const ROUTES = {
-    SEARCH_ROOM: '/',
-    LOGIN: '/login',
-    ROOM: '/rooms/:roomId',
+    MAIN: '/',
+    AUTH: '/auth',
+    ROOMS: '/rooms',
     SETTINGS: '/settings',
+    PROFILE: '/profile'
 }
 
 

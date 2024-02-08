@@ -61,7 +61,7 @@ const RoomPage = () => {
                                 <div className="chars-row" onClick={() => {
                                     setState({ ...state, isDetailsOpened: !state.isDetailsOpened })
                                 }}>
-                                    {state.charList.map(char => <Button icon={char.icon} bottomList={true} />)}
+                                    {state.charList.map(char => <Button icon={char.icon} custom={true} stylesheet="bottom-icon" />)}
                                 </div>
                             </div>
 
