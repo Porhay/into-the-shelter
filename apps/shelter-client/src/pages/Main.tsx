@@ -30,7 +30,7 @@ const MainPage = () => {
     }
     
     return (
-        <div className="page-container">
+        <div className="main-page-container">
             <div className="all-rooms-container">
                 <div className="search-input">
                     <input

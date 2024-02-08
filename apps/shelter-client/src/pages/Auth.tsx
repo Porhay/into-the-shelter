@@ -1,8 +1,9 @@
 import React from "react"
+import '../styles/Auth.scss'
 
 const AuthPage = () => {
     return (
-        <div>
+        <div className="auth-page-container">
             AuthPage
         </div>
     )
