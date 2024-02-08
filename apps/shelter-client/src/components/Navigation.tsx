@@ -7,12 +7,29 @@ import intoTheShelter from '../assets/images/Into the shelter.png'
 import '../styles/Navigation.scss';
 
 
+interface IState {
+    isAuth: boolean;
+    stages: string[];
+    isVisible: boolean;
+    isLoginOpened: boolean;
+}
+
 const Navigation = () => {
     const [state, setState] = useState({
         isAuth: false,
         stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
-        isVisible: !!window.location.pathname.split('/').includes('rooms')
+        isVisible: !!window.location.pathname.split('/').includes('rooms'),
+        isLoginOpened: false
     })
+
+    const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => {
+        setState({...state, [prop]: value});
+    }
+
+    const authList = [
+        {type: 'Google', icon: "googleColorIcon"},
+        {type: 'Discord', icon: "discordIcon"}
+    ]
 
     return (
         <div className='navigation-container'>
@@ -30,7 +47,18 @@ const Navigation = () => {
                     </>
                     :
                     <div className='login-container'>
-                        <Button custom={true} stylesheet="login-btn" icon='enterIcon' text='Login' />
+                        <Button custom={true} stylesheet="login-btn" icon='enterIcon' text='Login' 
+                            onClick={(() => updateState('isLoginOpened', !state.isLoginOpened))} />
+                        {state.isLoginOpened ?
+                            <div className="login-container">
+                                <div className="login-down">
+                                    {authList.map(item => {
+                                        return (
+                                            <Button icon={item.icon} text={item.type} onClick={() => console.log(item.type)} />
+                                        )
+                                    })}
+                                </div>
+                            </div> : null}
                     </div>
                 }
             </nav>

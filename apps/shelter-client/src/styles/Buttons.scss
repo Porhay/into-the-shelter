@@ -76,3 +76,9 @@ $camera-color:invert(48%) sepia(13%) saturate(3207%) hue-rotate(180deg) brightne
         filter: $camera-color;
     }
 }
+
+.small {
+    img {
+        width: 14px;
+    }
+}

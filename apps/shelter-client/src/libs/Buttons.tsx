@@ -1,6 +1,9 @@
 import '../styles/Buttons.scss';
 import videocamIcon from '../assets/icons/videocam-icon.png'
 import enterIcon from '../assets/icons/enter-icon.png';
+import googleIcon from '../assets/icons/google-icon.png';
+import googleColorIcon from '../assets/icons/google-color-icon.png';
+import discordIcon from '../assets/icons/discord-icon.png';
 import genderIcon from '../assets/icons/ingame/gender-icon.png';
 import healthIcon from '../assets/icons/ingame/health-icon.png';
 import hobbyIcon from '../assets/icons/ingame/hobby-icon.png';
@@ -22,6 +25,9 @@ const Icon = (props: any) => {
         case 'backpackIcon': return <img src={backpackIcon} alt={alt} />
         case 'additionalInfoIcon': return <img src={additionalInfoIcon} alt={alt} />
         case 'enterIcon': return <img src={enterIcon} alt={alt} />
+        case 'googleIcon': return <img src={googleIcon} alt={alt} />
+        case 'googleColorIcon': return <img src={googleColorIcon} alt={alt} />
+        case 'discordIcon': return <img src={discordIcon} alt={alt} />
         default: return <img src={healthIcon} alt={alt} />
     }
 }
@@ -42,6 +48,10 @@ export const Button = (props: any) => {
             stylesheet = "icon-text-button"
             break;
     }    
+
+    if (props.size === "s") {
+        stylesheet = stylesheet += " small"
+    }
 
     return (
         <a className={stylesheet} onClick={props.onClick} href="javascript:;">
