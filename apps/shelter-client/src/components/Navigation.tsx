@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Timeline } from '../libs/Timeline';
+import { Button } from '../libs/Buttons';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import notificationsIcon from '../assets/icons/notifications-icon.png';
 import intoTheShelter from '../assets/images/Into the shelter.png'
@@ -29,9 +30,7 @@ const Navigation = () => {
                     </>
                     :
                     <div className='login-container'>
-                        <a onClick={() => console.log('Login')}>
-                            Login
-                        </a>
+                        <Button custom={true} stylesheet="login-btn" icon='enterIcon' text='Login' />
                     </div>
                 }
             </nav>

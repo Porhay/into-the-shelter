@@ -1,5 +1,6 @@
 import '../styles/Buttons.scss';
 import videocamIcon from '../assets/icons/videocam-icon.png'
+import enterIcon from '../assets/icons/enter-icon.png';
 import genderIcon from '../assets/icons/ingame/gender-icon.png';
 import healthIcon from '../assets/icons/ingame/health-icon.png';
 import hobbyIcon from '../assets/icons/ingame/hobby-icon.png';
@@ -20,6 +21,7 @@ const Icon = (props: any) => {
         case 'phobiaIcon': return <img src={phobiaIcon} alt={alt} />
         case 'backpackIcon': return <img src={backpackIcon} alt={alt} />
         case 'additionalInfoIcon': return <img src={additionalInfoIcon} alt={alt} />
+        case 'enterIcon': return <img src={enterIcon} alt={alt} />
         default: return <img src={healthIcon} alt={alt} />
     }
 }
@@ -27,8 +29,8 @@ const Icon = (props: any) => {
 export const Button = (props: any) => {
     let stylesheet = "text-button"
     switch (true) {
-        case props.bottomList:
-            stylesheet = "bottom-icon"
+        case props.custom:
+            stylesheet = props.stylesheet
             break;
         case !props.icon && props.text:
             stylesheet = "text-button"

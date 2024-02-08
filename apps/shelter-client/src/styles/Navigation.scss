@@ -5,7 +5,7 @@ $border-radius: 8px;
     nav {
         display: flex;
         justify-content: space-between;
-        margin: 10px 20px 0 20px;
+        margin: 6px 20px 6px 20px;
         align-items:center;
 
         .logo {
@@ -59,5 +59,31 @@ $border-radius: 8px;
     text-align: center;
     color: #fff;
     cursor: pointer;
+}
+
+.login-btn {
+    cursor: pointer;
+    display: flex;
+    color: white;
+    padding-bottom: 2px;
+    align-items: center;
+    text-decoration: none;
+
+    img {
+        width: 20px;
+        filter: invert(100%);
+    }
+
+    span {
+        margin-left: 4px;
+    }
+
+    &:hover {
+        opacity: 1;
+        color: #000;
+        img {
+            filter: invert(0);
+        }        
+    }
 }
 
