@@ -23,12 +23,12 @@ const Navigation = () => {
     })
 
     const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => {
-        setState({...state, [prop]: value});
+        setState({ ...state, [prop]: value });
     }
 
     const authList = [
-        {type: 'Google', icon: "googleColorIcon"},
-        {type: 'Discord', icon: "discordIcon"}
+        { type: 'Google', icon: "googleColorIcon" },
+        { type: 'Discord', icon: "discordIcon" }
     ]
 
     return (
@@ -47,17 +47,21 @@ const Navigation = () => {
                     </>
                     :
                     <div className='login-container'>
-                        <Button custom={true} stylesheet="login-btn" icon='enterIcon' text='Login' 
+                        <Button custom={true} stylesheet="login-btn" icon='enterIcon' text='Login'
                             onClick={(() => updateState('isLoginOpened', !state.isLoginOpened))} />
                         {state.isLoginOpened ?
-                            <div className="login-container">
-                                <div className="login-down">
-                                    {authList.map(item => {
-                                        return (
+                            <div className="login-down">
+                                <pre>
+                                    Way to log in:{`\n`}
+                                    -------------
+                                </pre>
+                                {authList.map(item => {
+                                    return (
+                                        <div className='button-wraper'>
                                             <Button icon={item.icon} text={item.type} onClick={() => console.log(item.type)} />
-                                        )
-                                    })}
-                                </div>
+                                        </div>
+                                    )
+                                })}
                             </div> : null}
                     </div>
                 }
