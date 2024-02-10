@@ -8,6 +8,9 @@ async function bootstrap() {
   const logger = new Logger('shelter-gateway:main');
   const config = app.get(ConfigService);
 
+  // Enable CORS
+  app.enableCors();
+
   await app.listen(config.get('GATEWAY_PORT'), () => {
     logger.log(`Server is started on port: ${config.get('GATEWAY_PORT')}`)
   });

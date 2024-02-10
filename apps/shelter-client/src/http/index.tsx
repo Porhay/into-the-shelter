@@ -12,3 +12,6 @@ const registration = async (email: string, password: string) => {
 }
 
 
+export const updateBackground = async () => {
+    return await host.post(`/uploads/update-background/`)
+}
