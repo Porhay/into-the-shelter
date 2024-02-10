@@ -34,12 +34,17 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 .webcam-avatar {
     width: 260px;
     height: 200px;
-    background-color: white;
+    background-color: rgb(0, 0, 0);
     display: flex;
     justify-content: center;
 
     img {
-        height: 100%;
+        width: 100%;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 }
 
