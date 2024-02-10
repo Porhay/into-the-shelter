@@ -3,8 +3,10 @@ import axios from 'axios';
 import * as fs from 'fs';
 import * as FormData from 'form-data';
 import { Response } from 'express';
+import * as path from 'path';
 
 const folderPath: string = './persistent/image-data/';
+const MLURL: string = `http://127.0.0.1:8008` // shelter-ml
 
 @Controller('uploads')
 export class UploadsController {
@@ -22,7 +24,7 @@ export class UploadsController {
       formData.append('file', fileStream);
 
       // Axios request with form data
-      const response = await axios.post('http://127.0.0.1:8008/update-background/', formData, {
+      const response = await axios.post(`${MLURL}/update-background/`, formData, {
         headers: {
           ...formData.getHeaders(),
         },
@@ -33,13 +35,15 @@ export class UploadsController {
         const newFilePath = folderPath + 'file1.jpg';
         fs.writeFileSync(newFilePath, response.data);
 
-        res
-          .status(200)
-          .header('Content-Length', response.data.length)
-          .header('Content-Disposition', 'attachment; filename=file1.jpg')
-          .send(response.data);
+        // res
+        //   .status(200)
+        //   .header('Content-Length', response.data.length)
+        //   .header('Content-Disposition', 'attachment; filename=file1.jpg')
+        //   .send(response.data);
+        // return { status: 'OK' };
 
-        return { status: 'OK' };
+        const filePath = path.join(__dirname, '../../../persistent/image-data/', 'file1.jpg');
+        return res.sendFile(filePath);
       }
     } catch (error) {
       console.error(error);

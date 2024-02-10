@@ -14,6 +14,7 @@ const RoomPage = () => {
         actionTip: 'YOUR TURN',
         inviteLinkTextBox: 'http://invite-link.com',
         inviteLink: 'http://invite-link.com',
+        fileUrl: '',
         webcamList: [1, 2, 3, 4, 5, 6, 7],
         charList: [
             { icon: 'genderIcon', text: 'Чоловік' },
@@ -30,7 +31,7 @@ const RoomPage = () => {
     const Avatar = () => {
         return (
             <div className="webcam-avatar">
-                <img src={avatarDefault} alt='webcam avatar' />
+                <img src={state.fileUrl ? state.fileUrl : avatarDefault} alt='webcam avatar' />
             </div>
         )
     }
@@ -85,7 +86,10 @@ const RoomPage = () => {
 
     const ActionTipContainer = () => {
         const _updateBackground = async () => {
-            await updateBackground()
+            const data = await updateBackground()
+            if (data) {
+                setState({ ...state, fileUrl: data })
+            }
         }
 
         return (
