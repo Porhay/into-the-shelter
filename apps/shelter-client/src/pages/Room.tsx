@@ -4,6 +4,7 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../libs/Buttons'
 import Webcam from '../libs/Webcam'
 import Chat from '../libs/Chat'
+import { updateBackground } from '../http/index'
 
 
 const RoomPage = () => {
@@ -13,6 +14,7 @@ const RoomPage = () => {
         actionTip: 'YOUR TURN',
         inviteLinkTextBox: 'http://invite-link.com',
         inviteLink: 'http://invite-link.com',
+        fileUrl: '',
         webcamList: [1, 2, 3, 4, 5, 6, 7],
         charList: [
             { icon: 'genderIcon', text: 'Чоловік' },
@@ -29,7 +31,7 @@ const RoomPage = () => {
     const Avatar = () => {
         return (
             <div className="webcam-avatar">
-                <img src={avatarDefault} alt='webcam avatar'/>
+                <img src={state.fileUrl ? state.fileUrl : avatarDefault} alt='webcam avatar' />
             </div>
         )
     }
@@ -83,8 +85,15 @@ const RoomPage = () => {
     }
 
     const ActionTipContainer = () => {
+        const _updateBackground = async () => {
+            const data = await updateBackground()
+            if (data) {
+                setState({ ...state, fileUrl: data })
+            }
+        }
+
         return (
-            <div className="action-tip-container">
+            <div className="action-tip-container" onClick={() => _updateBackground()}>
                 {state.actionTip}
             </div>
         )
@@ -98,7 +107,7 @@ const RoomPage = () => {
                     <div className="invite-link-container" onClick={() => {
                         navigator.clipboard.writeText(state.inviteLink)
                         setState({ ...state, inviteLinkTextBox: 'Copied!' })
-                        setTimeout(() => setState({ ...state, inviteLinkTextBox: state.inviteLink }), 1000)                    
+                        setTimeout(() => setState({ ...state, inviteLinkTextBox: state.inviteLink }), 1000)
                     }}>
                         {state.inviteLinkTextBox}
                     </div>

@@ -31,6 +31,9 @@ async function bootstrap() {
   app.use(passport.initialize())
   app.use(passport.session())
   
+  // Enable CORS
+  app.enableCors();
+
   app.setGlobalPrefix('api');
   await app.listen(config.get('ACCOUNTS_PORT'), () => {
     logger.log(`Server is started on PORT: ${config.get('ACCOUNTS_PORT')}`)
