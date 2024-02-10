@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@app/common'
 import { StatusModule } from './status/status.module';
-import { UploadsModule } from './uploads/status.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
