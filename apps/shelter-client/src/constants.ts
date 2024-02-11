@@ -1,9 +1,15 @@
+import config from './config'
+
 export const ROUTES = {
+    /* Pages */
     MAIN: '/',
     AUTH: '/auth',
     ROOMS: '/rooms',
     SETTINGS: '/settings',
-    PROFILE: '/profile'
+    PROFILE: '/profile',
+
+    /* All other */
+    GOOGLE_LOGIN: config.accountsUrl + 'api/auth/google/login'
 }
 
 

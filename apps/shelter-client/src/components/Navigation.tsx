@@ -1,14 +1,18 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Timeline } from '../libs/Timeline';
-import { Button } from '../libs/Buttons';
-import { ROUTES } from '../constants';
-import { deshCount } from '../helpers'
+import '../styles/Navigation.scss';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import notificationsIcon from '../assets/icons/notifications-icon.png';
-import intoTheShelter from '../assets/images/Into the shelter.png'
-import '../styles/Navigation.scss';
+import intoTheShelter from '../assets/images/Into the shelter.png';
 
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { ROUTES } from '../constants';
+import { deshCount } from '../helpers';
+import { Timeline } from '../libs/Timeline';
+import { Button } from '../libs/Buttons';
+import { RootState } from '../redux/store';
+import { setUserSessionId, resetUser } from '../redux/reducers/userSlice';
+import { cookieHelper } from '../helpers'
 
 
 interface IState {
@@ -21,41 +25,52 @@ interface IState {
 }
 
 const Navigation = () => {
-    const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const userSessionId = cookieHelper.getCookie('userSessionId')
+        dispatch(setUserSessionId(userSessionId || ''));
+    }, [dispatch]);
+    const user = useSelector((state: RootState) => state.user);
+
+
+    // LOCAL STATE
     const [state, setState] = useState({
         isAuth: true,
         stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
-        isVisible: !!window.location.pathname.split('/').includes('rooms'),
+        isVisible: !!window.location.pathname.split('/').includes('rooms'), // TODO: update via global state
         isLoginOpened: false,
         isAccountOpened: false,
         isNotificationsOpened: false
     })
+    const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => setState({ ...state, [prop]: value });
 
-    const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => {
-        setState({ ...state, [prop]: value });
-    }
 
+    // DATASETS
     const authList = [
-        { type: 'Google', icon: "googleColorIcon", action: () => logIn() },
+        { type: 'Google', icon: "googleColorIcon", action: () => loginGoogle() },
         { type: 'Discord', icon: "discordIcon" }
     ]
-
     const navigationList = [
         { type: 'Your profile', icon: "profileIcon", action: () => navigate(ROUTES.PROFILE) },
         { type: 'Settings', icon: "settingsIcon", action: () => navigate(ROUTES.SETTINGS) },
-        { type: 'Log out', icon: "exitIcon", action: () => logOut() },
+        { type: 'Log out', icon: "exitIcon", action: () => logout() },
     ]
 
-    const logIn = () => {
-        updateState('isAuth', !state.isAuth)
-        navigate(ROUTES.MAIN)
+
+    // FUNCTIONS
+    const loginGoogle = () => {
+        window.location.replace(ROUTES.GOOGLE_LOGIN);
+    }
+    const logout = () => {
+        cookieHelper.removeAllCookies();
+        dispatch(resetUser());
+        navigate(ROUTES.AUTH);
     }
 
-    const logOut = () => {
-        updateState('isAuth', !state.isAuth)
-        navigate(ROUTES.AUTH)
-    }
 
+    // COMPONENTS
     const Dropdown = (props: any) => {
         return (
             <div className='login-container'>
@@ -84,7 +99,7 @@ const Navigation = () => {
                 <a href="/" className="logo" onClick={() => console.log('Main page')}>
                     <img src={intoTheShelter} />
                 </a>
-                {state.isAuth ?
+                {user.userSessionId ?
                     <>
                         <Timeline stages={state.stages} visible={state.isVisible} />
                         <ul>
