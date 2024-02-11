@@ -8,4 +8,4 @@ import { DatabaseModule } from '@app/common';
   controllers: [UsersController],
   providers: [UsersService]
 })
-export class UsersModule {}
+export class UsersModule { }

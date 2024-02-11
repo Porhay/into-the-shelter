@@ -1,5 +1,7 @@
+import { useSelector } from 'react-redux';
 import { Routes, Route } from 'react-router-dom'
 import { ROUTES } from "../constants";
+import { RootState } from '../redux/store';
 import MainPage from "../pages/Main";
 import AuthPage from "../pages/Auth";
 import RoomPage from "../pages/Room";
@@ -34,10 +36,10 @@ export const publicRoutes = [
 
 
 const Router = () => {
-    const user = { isAuth: true } // TODO: get from app state
+    const user = useSelector((state: RootState) => state.user);
     return (
         <Routes>
-            {user.isAuth && authRoutes.map(({ path, Component }) =>
+            {user.userSessionId && authRoutes.map(({ path, Component }) =>
                 <Route path={path} element={<Component />} />
             )}
             {publicRoutes.map(({ path, Component }) =>

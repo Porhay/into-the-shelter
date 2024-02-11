@@ -6,9 +6,6 @@ import Webcam from '../libs/Webcam'
 import Chat from '../libs/Chat'
 import { updateBackground } from '../http/index'
 
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
-
 
 const RoomPage = () => {
     const [state, setState] = useState({

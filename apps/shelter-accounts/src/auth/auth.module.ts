@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { GoogleStrategy } from './strategies/GoogleStrategy';
-import { AuthService } from './auth.service';
 import { DatabaseModule } from '@app/common';
+import { AuthController } from './auth.controller';
+import { AuthMiddleware } from './auth.middleware';
+import { AuthService } from './auth.service';
 import { SessionSerializer } from './utils/Serializer';
+import { GoogleStrategy } from './strategies/GoogleStrategy';
+
 
 @Module({
   imports: [
@@ -13,10 +15,11 @@ import { SessionSerializer } from './utils/Serializer';
   providers: [
     GoogleStrategy,
     SessionSerializer,
+    AuthMiddleware,
     {
       provide: 'AUTH_SERVICE',
       useClass: AuthService
     }
   ],
 })
-export class AuthModule {}
+export class AuthModule { };

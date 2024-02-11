@@ -1,12 +1,14 @@
-import { Controller, Post, Body, Delete, Param, Get } from '@nestjs/common';
 import { DatabaseService } from '@app/common'
+import { Controller, Post, Body, Delete, Param, Get, UseGuards } from '@nestjs/common';
+import { AuthMiddleware } from '../auth/auth.middleware';
 
 @Controller('users')
+@UseGuards(AuthMiddleware)
 export class UsersController {
-  constructor(private readonly databaseService: DatabaseService,) {}
+  constructor(private readonly databaseService: DatabaseService,) { }
 
   @Post()
-  async createUser(@Body() user: {displayName: string, email: string}) {
+  async createUser(@Body() user: { displayName: string, email: string }) {
     return this.databaseService.createUser(user);
   }
 

@@ -1,12 +1,14 @@
 import * as Joi from 'joi';
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@app/common'
+import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { StatusModule } from './status/status.module';
+import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
+import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
-import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -24,6 +26,10 @@ import { PassportModule } from '@nestjs/passport';
     PassportModule.register({ session: true })
   ],
   controllers: [AuthController],
-  providers: [],
+  providers: [AuthMiddleware],
 })
-export class AccountsModule {}
+export class AccountsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes(UsersController);
+  }
+}

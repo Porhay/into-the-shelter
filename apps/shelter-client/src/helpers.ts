@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-export class CookieHelper {
+class CookieHelper {
     saveCookie(key: string, value: string): void {
         Cookies.set(key, value);
     }
@@ -27,7 +27,12 @@ export class CookieHelper {
             this.removeCookie(cookieName);
         });
     }
+
+    getAllCookies(): Record<string, string> {
+        return Cookies.get();
+    }
 }
+export const cookieHelper = new CookieHelper();
 
 
 /**

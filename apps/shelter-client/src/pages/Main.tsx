@@ -1,34 +1,36 @@
+import '../styles/Main.scss'
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
-import {ROUTES} from '../constants'
-import '../styles/Main.scss'
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from "../redux/store";
+import { ROUTES } from '../constants'
 
 interface IState {
     searchText: string;
-    roomList: {name: string, id: string}[];
+    roomList: { name: string, id: string }[];
 }
 
 const MainPage = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const user = useSelector((state: RootState) => state.user);
+
     const [state, setState] = useState<IState>({
         searchText: '',
-        roomList: [{name: 'Room 1', id: '1'}, {name: 'Room 2', id: '2'}],
+        roomList: [{ name: 'Room 1', id: '1' }, { name: 'Room 2', id: '2' }],
     });
+    const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => setState({ ...state, [prop]: value });
 
-   const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => {
-    setState({...state, [prop]: value});
-   }
+    const handleSearchRoom = () => {
+        if (state.searchText !== '') {
+            updateState('searchText', '');
+        }
+    }
 
-   const handleSearchRoom = () => {
-    if (state.searchText !== '') {
-        updateState('searchText', '');
-      }
-   }
-
-   const joinRoom = async (roomId: string) => {
+    const joinRoom = async (roomId: string) => {
         navigate(ROUTES.ROOMS + '/' + roomId)
     }
-    
+
     return (
         <div className="main-page-container">
             <div className="all-rooms-container">
@@ -43,8 +45,8 @@ const MainPage = () => {
                 </div>
                 <div className="rooms-list">
                     {state.roomList.map(room => {
-                        return(
-                            <div className="room-item" onClick={() =>joinRoom(room.id)}>
+                        return (
+                            <div className="room-item" onClick={() => joinRoom(room.id)}>
                                 <div className="room-text">{room.name}</div>
                             </div>
                         )
