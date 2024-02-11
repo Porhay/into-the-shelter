@@ -1,6 +1,10 @@
 import '../styles/Auth.scss'
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 const AuthPage = () => {
+    const username = useSelector((state: RootState) => state.user.username);
+
     const description: string = 
         `Into the shelter - it's discussion based game where\n` +
         `you should prove other players that you should go to the shelter.\n` +
@@ -14,6 +18,7 @@ const AuthPage = () => {
         <div className="auth-page-container">
             <pre>
                 {description}
+                {` ${username}`}
             </pre>
         </div>
     )
