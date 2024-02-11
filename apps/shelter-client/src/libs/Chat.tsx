@@ -19,6 +19,12 @@ const Chat: React.FC = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage()
+    }
+  }
+
   return (
     <div className="chat-container">
       <div className="messages-container">
@@ -35,6 +41,7 @@ const Chat: React.FC = () => {
           placeholder="Type your message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <button onClick={handleSendMessage}>Send</button>
       </div>
