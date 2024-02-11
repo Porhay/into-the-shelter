@@ -18,7 +18,7 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         // maxAge: 60000 * 60 * 24 // 1d
-        maxAge: 30000
+        maxAge: 60000
       },
       store: new (connect(session))({ // TODO: update lib
         conObject: {

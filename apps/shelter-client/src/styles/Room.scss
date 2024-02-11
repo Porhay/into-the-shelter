@@ -39,8 +39,9 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     justify-content: center;
 
     img {
-        width: 100%;
-        height: auto;
+        width: 100%; /* make the image fill the width of the parent container */
+        height: 100%; /* make the image fill the height of the parent container */
+        object-fit: cover;
         position: absolute;
         top: 50%;
         left: 50%;
@@ -91,8 +92,13 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             justify-content: center;
 
             img {
-                height: 100%;
-                
+                width: 100%; /* make the image fill the width of the parent container */
+                height: 100%; /* make the image fill the height of the parent container */
+                object-fit: cover;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);  
             }
         }
 
