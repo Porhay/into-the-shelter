@@ -66,7 +66,7 @@ const Navigation = () => {
     const logout = () => {
         cookieHelper.removeAllCookies();
         dispatch(resetUser());
-        navigate(ROUTES.AUTH);
+        navigate(ROUTES.WELCOME);
     }
 
 
