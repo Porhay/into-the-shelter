@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { ROUTES } from "../constants";
 import { RootState } from '../redux/store';
 import MainPage from "../pages/Main";
-import AuthPage from "../pages/Auth";
+import WelcomePage from "../pages/Welcome";
 import RoomPage from "../pages/Room";
 import SettingsPage from "../pages/Settings";
 import ProfilePage from "../pages/Profile";
@@ -29,8 +29,8 @@ export const authRoutes = [
 
 export const publicRoutes = [
     {
-        path: ROUTES.AUTH,
-        Component: AuthPage
+        path: ROUTES.WELCOME,
+        Component: WelcomePage
     },
 ]
 

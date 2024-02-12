@@ -1,8 +1,8 @@
-import '../styles/Auth.scss'
+import '../styles/Welcome.scss'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 
-const AuthPage = () => { // TODO: refactor to WelcomePage
+const WelcomePage = () => {
     const username = useSelector((state: RootState) => state.user.username);
 
     const description: string =
@@ -15,7 +15,7 @@ const AuthPage = () => { // TODO: refactor to WelcomePage
         `- or not :D`
 
     return (
-        <div className="auth-page-container">
+        <div className="welcome-page-container">
             <pre>
                 {description}
                 {` ${username}`}
@@ -24,4 +24,4 @@ const AuthPage = () => { // TODO: refactor to WelcomePage
     )
 }
 
-export default AuthPage
+export default WelcomePage;

@@ -3,7 +3,7 @@ import config from './config'
 export const ROUTES = {
     /* Pages */
     MAIN: '/',
-    AUTH: '/auth',
+    WELCOME: '/welcome',
     ROOMS: '/rooms',
     SETTINGS: '/settings',
     PROFILE: '/profile',
