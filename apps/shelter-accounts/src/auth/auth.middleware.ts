@@ -6,7 +6,7 @@ export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     console.log('middleware', req.isAuthenticated(), req.user, req.headers.authorization);
 
-    if (req.isAuthenticated() && req.user) {
+    if (req.isAuthenticated()) {
       // The user is authenticated, proceed to the next middleware or route handler
       return next();
     } else {

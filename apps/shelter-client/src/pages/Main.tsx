@@ -15,21 +15,25 @@ const MainPage = () => {
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.user);
 
+
+    // LOCAL STATE
+    const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
     const [state, setState] = useState<IState>({
         searchText: '',
         roomList: [{ name: 'Room 1', id: '1' }, { name: 'Room 2', id: '2' }],
     });
-    const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => setState({ ...state, [prop]: value });
 
+
+    // FUNCTIONS
     const handleSearchRoom = () => {
         if (state.searchText !== '') {
-            updateState('searchText', '');
+            updateState({searchText: ''});
         }
     }
-
     const joinRoom = async (roomId: string) => {
         navigate(ROUTES.ROOMS + '/' + roomId)
     }
+
 
     return (
         <div className="main-page-container">
@@ -38,7 +42,7 @@ const MainPage = () => {
                     <input
                         value={state.searchText}
                         type='text'
-                        onChange={e => updateState('searchText', e.target.value)}
+                        onChange={e => updateState({searchText: e.target.value})}
                         placeholder='Write here'
                     />
                     <button onClick={handleSearchRoom}>Search</button>

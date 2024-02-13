@@ -24,7 +24,7 @@ export class AuthController {
 
         // Set accessible cookie for the client side
         res.cookie('userSessionId', req.sessionID, { maxAge: 3600000 }); // Expires in 1 hour
-
+        res.cookie('userId', req.user.id, { maxAge: 30 * 24 * 60 * 60 * 1000 }); // Expires in 30 days
         const clientUrl = this.configService.get<string>('CLIENT_URL');
         return res.redirect(clientUrl)
     }

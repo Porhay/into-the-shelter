@@ -7,8 +7,21 @@ import Chat from '../libs/Chat'
 import { updateBackground } from '../http/index'
 
 
+interface IState {
+    isCameraOn: boolean,
+    isDetailsOpened: boolean,
+    actionTip: string,
+    inviteLinkTextBox: string,
+    inviteLink: string,
+    fileUrl: string,
+    webcamList: number[],
+    charList: { icon: string, text: string }[];
+}
 const RoomPage = () => {
-    const [state, setState] = useState({
+
+    // LOCAL STATE
+    const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
+    const [state, setState] = useState<IState>({
         isCameraOn: false,
         isDetailsOpened: false,
         actionTip: 'YOUR TURN',
@@ -27,17 +40,16 @@ const RoomPage = () => {
         ]
     })
 
-    // Avatar. Should be updated while playing...
-    const Avatar = () => {
+
+    // COMPONENTS
+    const Avatar = () => { // Avatar. Should be updated while playing...
         return (
             <div className="webcam-avatar">
                 <img src={state.fileUrl ? state.fileUrl : avatarDefault} alt='webcam avatar' />
             </div>
         )
     }
-
-    // User's characteristics list
-    const CharList = () => {
+    const CharList = () => {  // User's characteristics list
         return (
             <div className="char-list-container">
                 {state.charList.map(char => {
@@ -48,9 +60,7 @@ const RoomPage = () => {
             </div>
         )
     }
-
-    // Players webcam list with characteristics
-    const WebcamList = () => {
+    const WebcamList = () => { // Players webcam list with characteristics
         return (
             <div className="webcam-list">
                 {state.webcamList.map(blockId => {
@@ -61,7 +71,7 @@ const RoomPage = () => {
                             </div>
                             <div className="chars-row-container">
                                 <div className="chars-row" onClick={() => {
-                                    setState({ ...state, isDetailsOpened: !state.isDetailsOpened })
+                                    updateState({ isDetailsOpened: !state.isDetailsOpened })
                                 }}>
                                     {state.charList.map(char => <Button icon={char.icon} custom={true} stylesheet="bottom-icon" />)}
                                 </div>
@@ -83,12 +93,11 @@ const RoomPage = () => {
             </div>
         )
     }
-
     const ActionTipContainer = () => {
         const _updateBackground = async () => {
             const data = await updateBackground()
             if (data) {
-                setState({ ...state, fileUrl: data })
+                updateState({ fileUrl: data })
             }
         }
 
@@ -99,6 +108,7 @@ const RoomPage = () => {
         )
     }
 
+
     return (
         <div className="room-page-container">
             <WebcamList />
@@ -106,14 +116,14 @@ const RoomPage = () => {
                 <div className="link-camera-wrapper">
                     <div className="invite-link-container" onClick={() => {
                         navigator.clipboard.writeText(state.inviteLink)
-                        setState({ ...state, inviteLinkTextBox: 'Copied!' })
-                        setTimeout(() => setState({ ...state, inviteLinkTextBox: state.inviteLink }), 1000)
+                        updateState({ inviteLinkTextBox: 'Copied!' })
+                        setTimeout(() => updateState({ inviteLinkTextBox: state.inviteLink }), 1000)
                     }}>
                         {state.inviteLinkTextBox}
                     </div>
                     <div className="webcam-container">
                         <div className="webcam-btn">
-                            <Button icon="videocamIcon" onClick={() => setState({ ...state, isCameraOn: !state.isCameraOn })} />
+                            <Button icon="videocamIcon" onClick={() => updateState({ isCameraOn: !state.isCameraOn })} />
                         </div>
                         <div className="webcam">
                             {state.isCameraOn ? <Webcam /> : <Avatar />}
@@ -125,7 +135,6 @@ const RoomPage = () => {
             <ActionTipContainer />
             <Chat />
         </div>
-
     )
 }
 
