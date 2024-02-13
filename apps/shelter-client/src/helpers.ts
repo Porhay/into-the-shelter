@@ -20,7 +20,6 @@ class CookieHelper {
         return Cookies.remove(key);
     }
 
-    // Remove all cookies
     removeAllCookies(): void {
         const allCookies = Cookies.get();
         Object.keys(allCookies).forEach((cookieName) => {

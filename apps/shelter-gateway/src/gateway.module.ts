@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@app/common'
 import { StatusModule } from './status/status.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { ChatGateway } from './chat/chat.gateway';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { UploadsModule } from './uploads/uploads.module';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [ChatGateway],
 })
 export class GatewayModule {}

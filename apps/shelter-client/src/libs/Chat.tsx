@@ -1,21 +1,46 @@
 import '../styles/Chat.scss'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
+import io from 'socket.io-client';
+import config from '../config'
 
+interface IState {
+  messages: Message[];
+  newMessage: string;
+}
 
 interface Message {
-  text: string;
+  sender: string;
+  message: string;
   icon: string;
 }
 
+const socket = io(config.baseURL);
+
 const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState<string>('');
+  const [state, setState] = useState<IState>({
+    messages: [],
+    newMessage: ''
+  });
+
+  const updateState = (newState: Partial<IState>): void => {
+    setState((prevState) => ({
+      ...prevState,
+      ...newState,
+    }));
+  };
+
+  useEffect(() => {
+    socket.on('message', (data: Message) => {
+      updateState({ messages: [...state.messages, data] });
+
+    });
+  }, [state.messages]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() !== '') {
-      setMessages([...messages, { text: newMessage, icon: 'user' }]);
-      setNewMessage('');
+    if (state.newMessage.trim() !== '') {
+      socket.emit('message', { sender: 'denys', message: state.newMessage, icon: 'user' });
+      updateState({ newMessage: '' });
     }
   };
 
@@ -28,10 +53,10 @@ const Chat: React.FC = () => {
   return (
     <div className="chat-container">
       <div className="messages-container">
-        {messages.map((message, index) => (
+        {state.messages.map((message, index) => (
           <div className="message" key={index}>
             <img src={userAvatar} className="message-icon" alt="user avatar" />
-            <div className="message-text">{message.text}</div>
+            <div className="message-text">{message.message}</div>
           </div>
         ))}
       </div>
@@ -39,8 +64,8 @@ const Chat: React.FC = () => {
         <input
           type="text"
           placeholder="Type your message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          value={state.newMessage}
+          onChange={(e) => updateState({ newMessage: e.target.value })}
           onKeyDown={handleKeyDown}
         />
         <button onClick={handleSendMessage}>Send</button>
