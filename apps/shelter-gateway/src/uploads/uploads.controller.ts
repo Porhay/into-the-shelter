@@ -1,19 +1,18 @@
-import { Controller, Get, Post, Res } from '@nestjs/common';
-import axios from 'axios';
 import * as fs from 'fs';
-import * as FormData from 'form-data';
-import { Response } from 'express';
+import axios from 'axios';
 import * as path from 'path';
-
-const folderPath: string = './persistent/image-data/';
-const MLURL: string = `http://127.0.0.1:8008` // shelter-ml
+import * as FormData from 'form-data';
+import { Controller, Post, Res } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 
 @Controller('uploads')
 export class UploadsController {
-  constructor() {}
+  constructor(private readonly configService: ConfigService) {}
 
   @Post('update-background')
   async uploadFile(@Res() res: Response) {
+    const folderPath: string = './persistent/image-data/';
     const filePath = folderPath + 'profile-image-default.jpg';
 
     try {
@@ -24,7 +23,8 @@ export class UploadsController {
       formData.append('file', fileStream);
 
       // Axios request with form data
-      const response = await axios.post(`${MLURL}/update-background/`, formData, {
+      const mlUrl = this.configService.get<string>('ML_URL');
+      const response = await axios.post(`${mlUrl}/update-background/`, formData, {
         headers: {
           ...formData.getHeaders(),
         },
@@ -34,14 +34,6 @@ export class UploadsController {
       if (response.data) {
         const newFilePath = folderPath + 'file1.jpg';
         fs.writeFileSync(newFilePath, response.data);
-
-        // res
-        //   .status(200)
-        //   .header('Content-Length', response.data.length)
-        //   .header('Content-Disposition', 'attachment; filename=file1.jpg')
-        //   .send(response.data);
-        // return { status: 'OK' };
-
         const filePath = path.join(__dirname, '../../../persistent/image-data/', 'file1.jpg');
         return res.sendFile(filePath);
       }
