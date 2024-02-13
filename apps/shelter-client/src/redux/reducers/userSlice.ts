@@ -5,13 +5,15 @@ interface UserState {
   displayName?: string;
   userSessionId?: string;
   userId?: string;
+  avatar?: string | null
 }
 
 const initialState: UserState = {
   username: '',
   displayName: 'stranger',
   userSessionId: '',
-  userId: ''
+  userId: '',
+  avatar: null
 };
 
 const userSlice = createSlice({

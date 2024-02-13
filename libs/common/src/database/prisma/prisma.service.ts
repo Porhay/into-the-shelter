@@ -7,7 +7,7 @@ export class PrismaService {
     prisma.$connect();
   }
 
-  user = prisma.user;
+  users = prisma.users;
 
   async disconnect() {
     await prisma.$disconnect();
