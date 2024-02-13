@@ -5,7 +5,14 @@ const gatewayHost = axios.create({ baseURL: config.gatewayUrl, timeout: config.t
 const accountsHost = axios.create({ baseURL: config.accountsUrl, timeout: config.timeout })
 
 
-export const getUser = async (userId: string) => await accountsHost.get(`/api/users/${userId}/`)
+export const getUser = async (userId: string) => {
+    try {
+        const user = await accountsHost.get(`/api/users/${userId}/`)
+        return user.data
+    } catch (error) {
+        console.log('Error while getting user', error);
+    }
+}
 
 export const updateBackground = async () => {
     try {

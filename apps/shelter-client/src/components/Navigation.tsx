@@ -30,9 +30,13 @@ const Navigation = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const userSessionId = cookieHelper.getCookie('userSessionId')
         const userId = cookieHelper.getCookie('userId')
-        dispatch(updateUser({ userSessionId: userSessionId, userId: userId }));
+        const userSessionId = cookieHelper.getCookie('userSessionId')
+        if (userId) {
+            getUser(String(userId)).then((user: any) => {
+                dispatch(updateUser({ userId, userSessionId, displayName: user.displayName }));
+            })
+        }
     }, [dispatch]);
     const user = useSelector((state: RootState) => state.user);
 
@@ -50,6 +54,7 @@ const Navigation = () => {
     
 
     // DATASETS
+    const displayName: string = `Hello, ${user.displayName}!`
     const authList = [
         { type: 'Google', icon: "googleColorIcon", action: () => loginGoogle() },
         { type: 'Discord', icon: "discordIcon" }
@@ -112,7 +117,7 @@ const Navigation = () => {
                                 </Dropdown>
                             </li>
                             <li>
-                                <Dropdown list={navigationList} text="Hello, troobadure!" isOpened={state.isAccountOpened}>
+                                <Dropdown list={navigationList} text={displayName} isOpened={state.isAccountOpened}>
                                     <img src={avatarDefault} className="navigation-profile-image" alt="profile image"
                                         onClick={(() => updateState({isAccountOpened: !state.isAccountOpened}))} />
                                 </Dropdown>

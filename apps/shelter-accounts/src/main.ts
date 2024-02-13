@@ -13,7 +13,7 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: 'my-secret',
+      secret: config.get('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -31,12 +31,12 @@ async function bootstrap() {
   app.use(passport.initialize())
   app.use(passport.session())
 
-  // Enable CORS
   app.enableCors();
-
   app.setGlobalPrefix('api');
-  await app.listen(config.get('ACCOUNTS_PORT'), () => {
-    logger.log(`Server is started on PORT: ${config.get('ACCOUNTS_PORT')}`)
+
+  const port = config.get('ACCOUNTS_PORT')
+  await app.listen(port, () => {
+    logger.log(`Server is started on PORT: ${port}`)
   });
 }
 bootstrap();
