@@ -68,16 +68,15 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     display: flex;
     flex-wrap: nowrap; /* Prevent wrapping to the next line */
     justify-content: space-between; /* Distribute space between the elements */
-    // padding-left: 10px;
 
     .block-container {
         width: 20%; /* Adjust the width as needed (100% / 8 - margin) */
-        // margin-right: 10px; /* Adjust the margin as needed */
         box-sizing: border-box; /* Include padding and border in the width calculation */
         
-        padding: 2px 0; /* Optional: Add padding */
+        padding: 2px 0;
         z-index: 2;
         position: relative;
+        border: black solid 1px;
         
 
         .camera-block {
@@ -85,7 +84,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             color: white;
             text-align: center;
             background-color: #fff;
-            border: black solid 1px;
+            
             // width: 180px;
             height: 140px;
             display: flex;
@@ -115,7 +114,6 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             align-items: center;
             padding: 0 2px;
             cursor: pointer;
-            
         }
     }
 }
@@ -126,6 +124,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     transform-origin: top center;
     position: absolute;
     background-color:rgba(0, 0, 0, 0.6);
+    width: 100%;
 }
 @keyframes growDown {
     0% {
