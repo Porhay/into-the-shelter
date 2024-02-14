@@ -6,14 +6,14 @@ export class DatabaseService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(user: {email: string, displayName: string}) {
-    return this.prisma.user.create({
+    return this.prisma.users.create({
       data: user,
     });
   }
 
   async deleteUser(userId: number) {
     // Check if the user exists
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { id: userId },
     });
 
@@ -22,13 +22,13 @@ export class DatabaseService {
     }
 
     // Delete the user
-    return this.prisma.user.delete({
+    return this.prisma.users.delete({
       where: { id: userId },
     });
   }
 
   async getUserById(userId: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { id: userId },
     });
 
@@ -40,7 +40,7 @@ export class DatabaseService {
   }
 
   async getUserByEmail(email: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { email },
     });
 

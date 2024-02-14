@@ -1,7 +1,7 @@
 import { Request } from 'express'
 import { ConfigService } from '@nestjs/config';
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { GoogleAuthGuard } from './guards/Guards';
+import { GoogleAuthGuard } from './guards/googleAuth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,15 +16,9 @@ export class AuthController {
     @Get('google/redirect')
     @UseGuards(GoogleAuthGuard)
     handleRedirect(@Req() req, @Res() res) {
-        // Set HTTP-only cookie for session management
-        console.log(req.session);
-        console.log('Cookies:', req.headers.cookie);
-
-        res.cookie('session', req.session, { httpOnly: true }); // httpOnly
-
-        // Set accessible cookie for the client side
-        res.cookie('userSessionId', req.sessionID, { maxAge: 3600000 }); // Expires in 1 hour
-
+        const maxAge = 30 * 24 * 60 * 60 * 1000 // 30d
+        res.cookie('userId', req.user.id, { maxAge });
+        res.cookie('userSessionId', req.sessionID, { maxAge });
         const clientUrl = this.configService.get<string>('CLIENT_URL');
         return res.redirect(clientUrl)
     }

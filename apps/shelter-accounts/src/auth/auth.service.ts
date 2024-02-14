@@ -4,12 +4,10 @@ import { DatabaseService } from '@app/common'
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly databaseService: DatabaseService,
-    ) { }
+    constructor(private readonly databaseService: DatabaseService,) { }
+
     async validateUser(details: UserDetails) {
-        console.log('UserDetails');
-        console.log(details);
+        console.log('UserDetails', details);
 
         const user = await this.databaseService.getUserByEmail(details.email);
         if (user) {

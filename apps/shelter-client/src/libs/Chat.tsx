@@ -15,20 +15,14 @@ interface Message {
   icon: string;
 }
 
-const socket = io(config.baseURL);
+const socket = io(config.gatewayUrl);
 
 const Chat: React.FC = () => {
+  const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState<IState>({
     messages: [],
     newMessage: ''
   });
-
-  const updateState = (newState: Partial<IState>): void => {
-    setState((prevState) => ({
-      ...prevState,
-      ...newState,
-    }));
-  };
 
   useEffect(() => {
     socket.on('message', (data: Message) => {

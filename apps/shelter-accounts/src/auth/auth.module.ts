@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '@app/common';
 import { AuthController } from './auth.controller';
-import { AuthMiddleware } from './auth.middleware';
 import { AuthService } from './auth.service';
-import { SessionSerializer } from './utils/Serializer';
+import { SessionSerializer } from './utils/session.serializer';
 import { GoogleStrategy } from './strategies/GoogleStrategy';
 
 
@@ -15,7 +14,6 @@ import { GoogleStrategy } from './strategies/GoogleStrategy';
   providers: [
     GoogleStrategy,
     SessionSerializer,
-    AuthMiddleware,
     {
       provide: 'AUTH_SERVICE',
       useClass: AuthService

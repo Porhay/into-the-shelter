@@ -1,9 +1,9 @@
 import { DatabaseService } from '@app/common'
 import { Controller, Post, Body, Delete, Param, Get, UseGuards } from '@nestjs/common';
-import { AuthMiddleware } from '../auth/auth.middleware';
+import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 
 @Controller('users')
-@UseGuards(AuthMiddleware)
+// @UseGuards(AuthenticatedGuard) // TODO: Investigate why session id is not atached while req from cs
 export class UsersController {
   constructor(private readonly databaseService: DatabaseService,) { }
 

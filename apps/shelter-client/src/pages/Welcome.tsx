@@ -1,10 +1,6 @@
 import '../styles/Welcome.scss'
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
 
 const WelcomePage = () => {
-    const username = useSelector((state: RootState) => state.user.username);
-
     const description: string =
         `Into the shelter - it's discussion based game where\n` +
         `you should prove other players that you should go to the shelter.\n` +
@@ -18,7 +14,6 @@ const WelcomePage = () => {
         <div className="welcome-page-container">
             <pre>
                 {description}
-                {` ${username}`}
             </pre>
         </div>
     )

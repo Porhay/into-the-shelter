@@ -8,12 +8,13 @@ generator client {
   output   = "./generated/client"
 }
 
-model User {
+model users {
   id          Int     @id @default(autoincrement())
   displayName String?
   email       String  @unique
   username    String? 
   password    String?
+  avatar      String?
 }
 
 model session {

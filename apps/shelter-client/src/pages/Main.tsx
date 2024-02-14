@@ -6,7 +6,7 @@ import { RootState } from "../redux/store";
 import { ROUTES } from '../constants'
 
 interface IState {
-    searchText: string;
+    createInput: string;
     roomList: { name: string, id: string }[];
 }
 
@@ -15,34 +15,42 @@ const MainPage = () => {
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.user);
 
+
+    // LOCAL STATE
+    const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
     const [state, setState] = useState<IState>({
-        searchText: '',
+        createInput: '',
         roomList: [{ name: 'Room 1', id: '1' }, { name: 'Room 2', id: '2' }],
     });
-    const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => setState({ ...state, [prop]: value });
 
-    const handleSearchRoom = () => {
-        if (state.searchText !== '') {
-            updateState('searchText', '');
+
+    // FUNCTIONS
+    const handleCreateRoom = () => {
+        if (state.createInput !== '') {
+            navigate(ROUTES.ROOMS + '/' + state.createInput)
+            updateState({createInput: ''});
         }
     }
-
     const joinRoom = async (roomId: string) => {
         navigate(ROUTES.ROOMS + '/' + roomId)
     }
 
+
     return (
         <div className="main-page-container">
             <div className="all-rooms-container">
-                <div className="search-input">
+                <div className="create-input">
                     <input
-                        value={state.searchText}
+                        value={state.createInput}
                         type='text'
-                        onChange={e => updateState('searchText', e.target.value)}
-                        placeholder='Write here'
+                        onChange={e => updateState({createInput: e.target.value})}
+                        placeholder='Write here...'
                     />
-                    <button onClick={handleSearchRoom}>Search</button>
+                    <button onClick={handleCreateRoom}>NEW ROOM</button>
                 </div>
+
+                <h2>EXPLORE GAMES</h2>
+                <hr />
                 <div className="rooms-list">
                     {state.roomList.map(room => {
                         return (

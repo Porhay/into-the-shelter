@@ -11,8 +11,9 @@ import { deshCount } from '../helpers';
 import { Timeline } from '../libs/Timeline';
 import { Button } from '../libs/Buttons';
 import { RootState } from '../redux/store';
-import { setUserSessionId, resetUser } from '../redux/reducers/userSlice';
+import { resetUser, updateUser } from '../redux/reducers/userSlice';
 import { cookieHelper } from '../helpers'
+import { getUser } from '../http/index'
 
 
 interface IState {
@@ -29,13 +30,24 @@ const Navigation = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const userId = cookieHelper.getCookie('userId')
         const userSessionId = cookieHelper.getCookie('userSessionId')
-        dispatch(setUserSessionId(userSessionId || ''));
+        if (userId) {
+            getUser(String(userId)).then((data: any) => {
+                dispatch(updateUser({
+                    userId,
+                    userSessionId,
+                    displayName: data ? data.displayName : 'stranger',
+                    avatar: data ? data.avatar : null,
+                }));
+            })
+        }
     }, [dispatch]);
     const user = useSelector((state: RootState) => state.user);
 
 
     // LOCAL STATE
+    const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
     const [state, setState] = useState({
         isAuth: true,
         stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
@@ -44,10 +56,10 @@ const Navigation = () => {
         isAccountOpened: false,
         isNotificationsOpened: false
     })
-    const updateState = (prop: keyof IState, value: typeof state[keyof IState]) => setState({ ...state, [prop]: value });
 
 
     // DATASETS
+    const displayName: string = user && user.displayName ? `Hello, ${user.displayName}!` : 'Hello, stranger'
     const authList = [
         { type: 'Google', icon: "googleColorIcon", action: () => loginGoogle() },
         { type: 'Discord', icon: "discordIcon" }
@@ -106,13 +118,13 @@ const Navigation = () => {
                             <li>
                                 <Dropdown list={[]} text="You don't have new notifications" isOpened={state.isNotificationsOpened}>
                                     <img src={notificationsIcon} className="notification-img"
-                                        onClick={(() => updateState('isNotificationsOpened', !state.isNotificationsOpened))} />
+                                        onClick={(() => updateState({ isNotificationsOpened: !state.isNotificationsOpened }))} />
                                 </Dropdown>
                             </li>
                             <li>
-                                <Dropdown list={navigationList} text="Hello, troobadure!" isOpened={state.isAccountOpened}>
-                                    <img src={avatarDefault} className="navigation-profile-image" alt="profile image"
-                                        onClick={(() => updateState('isAccountOpened', !state.isAccountOpened))} />
+                                <Dropdown list={navigationList} text={displayName} isOpened={state.isAccountOpened}>
+                                    <img src={user.avatar || avatarDefault} className="navigation-profile-image" alt="profile image"
+                                        onClick={(() => updateState({ isAccountOpened: !state.isAccountOpened }))} />
                                 </Dropdown>
                             </li>
                         </ul>
@@ -120,7 +132,7 @@ const Navigation = () => {
                     :
                     <Dropdown list={authList} text="Way to log in:" isOpened={state.isLoginOpened}>
                         <Button custom={true} stylesheet="login-btn" icon='enterIcon' text='Login'
-                            onClick={(() => updateState('isLoginOpened', !state.isLoginOpened))} />
+                            onClick={(() => updateState({ isLoginOpened: !state.isLoginOpened }))} />
                     </Dropdown>
                 }
             </nav>
