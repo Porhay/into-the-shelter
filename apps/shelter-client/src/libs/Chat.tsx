@@ -1,8 +1,8 @@
-import '../styles/Chat.scss'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { io, Socket } from 'socket.io-client';
+import config from '../config';
 import userAvatar from '../assets/images/profile-image-default.jpg';
-import io from 'socket.io-client';
-import config from '../config'
+import '../styles/Chat.scss';
 
 interface IState {
   messages: Message[];
@@ -15,34 +15,41 @@ interface Message {
   icon: string;
 }
 
-const socket = io(config.gatewayUrl);
-
 const Chat: React.FC = () => {
-  const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
-  const [state, setState] = useState<IState>({
-    messages: [],
-    newMessage: ''
-  });
+  const [state, setState] = useState<IState>({ messages: [], newMessage: '' });
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    socket.on('message', (data: Message) => {
-      updateState({ messages: [...state.messages, data] });
+    socketRef.current = io(config.gatewayUrl);
 
+    socketRef.current.on('message', (data: Message) => {
+      setState((prevState) => ({ ...prevState, messages: [...prevState.messages, data] }));
     });
-  }, [state.messages]);
 
-  const handleSendMessage = () => {
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, []);
+
+  const handleSendMessage = useCallback(() => {
     if (state.newMessage.trim() !== '') {
-      socket.emit('message', { sender: 'denys', message: state.newMessage, icon: 'user' });
-      updateState({ newMessage: '' });
+      socketRef.current?.emit('message', { sender: 'User', message: state.newMessage, icon: 'user' });
+      setState((prevState) => ({ ...prevState, newMessage: '' }));
     }
-  };
+  }, [state.newMessage]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage()
-    }
-  }
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        handleSendMessage();
+      }
+    },
+    [handleSendMessage]
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState((prevState) => ({ ...prevState, newMessage: e.target.value }));
+  };
 
   return (
     <div className="chat-container">
@@ -59,7 +66,7 @@ const Chat: React.FC = () => {
           type="text"
           placeholder="Type your message..."
           value={state.newMessage}
-          onChange={(e) => updateState({ newMessage: e.target.value })}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
         />
         <button onClick={handleSendMessage}>Send</button>
