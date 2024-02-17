@@ -26,7 +26,7 @@ def process(frame):
         
         # Get the segmentation mask
         mask = np.expand_dims(results.segmentation_mask, axis=-1)
-        
+
         # Resize frame and background image to match the mask size
         frame = cv2.resize(frame, (mask.shape[1], mask.shape[0]), interpolation=cv2.INTER_AREA)
         background_image = cv2.resize(background_image, (mask.shape[1], mask.shape[0]), interpolation=cv2.INTER_AREA)
