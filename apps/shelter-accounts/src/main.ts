@@ -8,7 +8,7 @@ import { AccountsModule } from './accounts.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AccountsModule);
-  const logger = new Logger('tycoonv-gateway:main');
+  const logger = new Logger('shelter-accounts:main');
   const config = app.get(ConfigService);
 
   app.use(
@@ -22,7 +22,7 @@ async function bootstrap() {
       },
       store: new (connect(session))({ // TODO: update lib
         conObject: {
-          connectionString: 'postgres://root:root@localhost:5432/root',
+          connectionString: config.get('DATABASE_URL') || 'postgres://root:root@localhost:5432/root',
         },
       }),
     }),

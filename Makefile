@@ -1,6 +1,5 @@
 # DATABASE
 db:
-	mkdir -p persistent/imported-data
 	mkdir -p persistent/image-data
 
 	docker-compose -f docker-compose.yml down;
@@ -47,8 +46,9 @@ cs:
 all:
     # start postgres and shelter-gateway
 	@echo "[0] Starting postgresql db"
+	make db
 	@echo "[1] Starting shelter-gateway"
-	@osascript -e 'tell app "Terminal" to do script "cd $(CURDIR) && make db && make gateway"'
+	@osascript -e 'tell app "Terminal" to do script "cd $(CURDIR) make gateway"'
 
     # shelter-accounts
 	@echo "[2] Starting shelter-accounts"

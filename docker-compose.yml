@@ -11,6 +11,51 @@ services:
     ports:
       - "5432:5432"
     volumes:
-    - ./persistent/postgres-data/:/var/lib/postgresql/data
+      - ./persistent/postgres-data/:/var/lib/postgresql/data
 
-  
+  shelter-client:
+    build:
+      context: ./apps/shelter-client
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+      - shelter-accounts
+      - shelter-gateway
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+
+  shelter-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/shelter-gateway/Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '8000:8000'
+    restart: unless-stopped
+
+  shelter-accounts:
+    build:
+      context: .
+      dockerfile: ./apps/shelter-accounts/Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '8001:8001'
+    restart: unless-stopped
