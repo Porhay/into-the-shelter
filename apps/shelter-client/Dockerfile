@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 # Ensure all dependencies, including devDependencies, are installed
-RUN npm install --only=development
+RUN npm install
 
 # Copy app files
 COPY . .
