@@ -1,5 +1,5 @@
 FROM node:14-alpine AS builder
-ENV NODE_ENV production
+# ENV NODE_ENV production Removed this line to ensure devDependencies are installed
 
 # Add a work directory
 WORKDIR /app
@@ -7,7 +7,8 @@ WORKDIR /app
 # Cache and Install dependencies
 COPY package*.json ./
 COPY tsconfig.json ./
-RUN npm i
+# Ensure all dependencies, including devDependencies, are installed
+RUN npm install --only=development
 
 # Copy app files
 COPY . .
