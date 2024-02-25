@@ -5,6 +5,7 @@ import { DatabaseModule } from '@app/common'
 import { StatusModule } from './status/status.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { ChatGateway } from './chat/chat.gateway';
+import config from '../../../config'
 
 @Module({
   imports: [
@@ -12,11 +13,8 @@ import { ChatGateway } from './chat/chat.gateway';
     UploadsModule,
     DatabaseModule,
     ConfigModule.forRoot({
+      load: [config],
       isGlobal: true,
-      validationSchema: Joi.object({
-        GATEWAY_PORT: Joi.number().required(),
-      }),
-      envFilePath: './.env',
     }),
   ],
   controllers: [],

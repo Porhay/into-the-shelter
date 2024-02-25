@@ -2,7 +2,7 @@ import '../styles/Chat.scss'
 import React, { useEffect, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
 import io from 'socket.io-client';
-import config from '../config'
+import * as config from '../config'
 
 interface IState {
   messages: Message[];

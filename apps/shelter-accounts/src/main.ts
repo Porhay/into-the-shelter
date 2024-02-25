@@ -13,16 +13,15 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: config.get('SESSION_SECRET') || 'MyS1cr3t',
+      secret: config.get('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 60000 * 60 * 24 // 1d
-        // maxAge: 60000 // 1m
+        maxAge: config.get('maxAge')
       },
       store: new (connect(session))({ // TODO: update lib
         conObject: {
-          connectionString: config.get('DATABASE_URL') || 'postgres://root:root@localhost:5432/root',
+          connectionString: config.get('DATABASE_URL'),
         },
       }),
     }),

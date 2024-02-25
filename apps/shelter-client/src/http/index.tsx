@@ -1,5 +1,5 @@
 import axios from 'axios'
-import config from '../config'
+import * as config from '../config'
 
 const gatewayHost = axios.create({ baseURL: config.gatewayUrl, timeout: config.timeout })
 const accountsHost = axios.create({ baseURL: config.accountsUrl, timeout: config.timeout })

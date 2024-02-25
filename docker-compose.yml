@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./persistent/postgres-data/:/var/lib/postgresql/data
+      - ./data/postgresql/:/var/lib/postgresql/data
 
   shelter-client:
     build:
@@ -28,12 +28,8 @@ services:
       - ./.env
     depends_on:
       - postgresql
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - '8000:8000'
-    restart: unless-stopped
 
   shelter-accounts:
     build:
@@ -43,12 +39,8 @@ services:
       - ./.env
     depends_on:
       - postgresql
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - '8001:8001'
-    restart: unless-stopped
 
   shelter-ml:
     build:
@@ -60,4 +52,3 @@ services:
       - postgresql
     ports:
       - '8008:8008'
-    restart: unless-stopped
