@@ -9,7 +9,7 @@ export const ROUTES = {
     PROFILE: '/profile',
 
     /* All other */
-    GOOGLE_LOGIN: config.accountsUrl + 'api/auth/google/login'
+    GOOGLE_LOGIN: config.accountsUrl + '/api/auth/google/login'
 }
 
 
