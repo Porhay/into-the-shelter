@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
 import '../styles/Welcome.scss'
-import { useDispatch } from 'react-redux';
-import { updateUser } from '../redux/reducers/userSlice';
 
 const WelcomePage = () => {
     const description: string =
@@ -14,8 +12,6 @@ const WelcomePage = () => {
         `- or not :D`
 
     useEffect(() => {
-        const dispatch = useDispatch();
-
         // Function to extract parameters from the URL
         const getQueryParam = (name: string): string | null => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -40,8 +36,7 @@ const WelcomePage = () => {
         // Optionally, remove the parameters from the URL
         const newUrl = window.location.href.split('?')[0];
         window.history.replaceState({}, document.title, newUrl);
-
-        dispatch(updateUser({ userId, userSessionId }));
+        window.location.reload();
     }, []);
 
     return (
