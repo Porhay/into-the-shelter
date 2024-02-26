@@ -1,4 +1,4 @@
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 ENV NODE_ENV production
 
 ENV REACT_APP_NODE_ENV $REACT_APP_NODE_ENV
