@@ -11,6 +11,44 @@ services:
     ports:
       - "5432:5432"
     volumes:
-    - ./persistent/postgres-data/:/var/lib/postgresql/data
+      - ./data/postgresql/:/var/lib/postgresql/data
 
-  
+  shelter-client:
+    build:
+      context: ./apps/shelter-client
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'
+
+  shelter-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/shelter-gateway/Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+    ports:
+      - '8000:8000'
+
+  shelter-accounts:
+    build:
+      context: .
+      dockerfile: ./apps/shelter-accounts/Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+    ports:
+      - '8001:8001'
+
+  shelter-ml:
+    build:
+      context: ./apps/shelter-ml
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+    ports:
+      - '8008:8008'

@@ -4,7 +4,7 @@ libs/common/src/database/prisma/migrations
 libs/common/src/database/prisma/generated
 
 # Database
-persistent/
+data/
 
 # config
 .env

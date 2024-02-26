@@ -8,21 +8,20 @@ import { AccountsModule } from './accounts.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AccountsModule);
-  const logger = new Logger('tycoonv-gateway:main');
+  const logger = new Logger('shelter-accounts:main');
   const config = app.get(ConfigService);
 
   app.use(
     session({
-      secret: config.get('SESSION_SECRET') || 'MyS1cr3t',
+      secret: config.get('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 60000 * 60 * 24 // 1d
-        // maxAge: 60000 // 1m
+        maxAge: config.get('maxAge')
       },
       store: new (connect(session))({ // TODO: update lib
         conObject: {
-          connectionString: 'postgres://root:root@localhost:5432/root',
+          connectionString: config.get('DATABASE_URL'),
         },
       }),
     }),
