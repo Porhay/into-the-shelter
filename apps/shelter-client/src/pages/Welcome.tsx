@@ -1,5 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/Welcome.scss'
+
+interface IState {
+    reloaded: boolean;
+}
 
 const WelcomePage = () => {
     const description: string =
@@ -10,6 +14,12 @@ const WelcomePage = () => {
         `and die beyound the shelter.\n\n` +
         `Only half will survive!\n` +
         `- or not :D`
+
+    // LOCAL STATE
+    const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
+    const [state, setState] = useState<IState>({
+        reloaded: false
+    });
 
     useEffect(() => {
         // Function to extract parameters from the URL
@@ -31,12 +41,15 @@ const WelcomePage = () => {
             // Set cookies with extracted values
             setCookie('userId', userId, 30 * 24 * 60 * 60); // 30 days
             setCookie('userSessionId', userSessionId, 30 * 24 * 60 * 60); // 30 days
+
+            // trigger a page reload
+            updateState({ reloaded: true });
         }
 
-        // Optionally, remove the parameters from the URL
+        // remove the parameters from the URL
         const newUrl = window.location.href.split('?')[0];
         window.history.replaceState({}, document.title, newUrl);
-        window.location.reload();
+
     }, []);
 
     return (
