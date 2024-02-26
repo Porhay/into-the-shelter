@@ -24,6 +24,8 @@ export class AuthController {
         res.cookie('userSessionId', req.sessionID, { maxAge });
         const clientUrl = this.configService.get<string>('CLIENT_URL');
         logger.log(clientUrl)
+        logger.log(`userSessionId: ${JSON.stringify(req.sessionID)}`)
+        logger.log(`res: ${JSON.stringify(res)}`)
         return res.redirect(clientUrl)
     }
 
