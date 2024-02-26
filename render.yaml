@@ -3,22 +3,22 @@ services:
     name: shelter-client
     env: docker
     dockerfilePath: ./apps/shelter-client/Dockerfile
-    plan: starter
+    plan: free
 
   - type: web
     name: shelter-gateway
     env: docker
     dockerfilePath: ./apps/shelter-gateway/Dockerfile
-    plan: starter
+    plan: free
 
   - type: web
     name: shelter-accounts
     env: docker
     dockerfilePath: ./apps/shelter-accounts/Dockerfile
-    plan: starter
+    plan: free
 
   - type: web
     name: shelter-ml
     env: docker
     dockerfilePath: ./apps/shelter-ml/Dockerfile
-    plan: starter
+    plan: free
