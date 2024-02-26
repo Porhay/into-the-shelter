@@ -23,7 +23,7 @@ export class AuthController {
         // const clientUrl = this.configService.get<string>('CLIENT_URL');
         // return res.redirect(clientUrl)
 
-        // Redirect with tokens in the URL
+        // TODO: make it in secure way!
         const clientUrl = this.configService.get<string>('CLIENT_URL');
         const redirectUrl = `${clientUrl}?userId=${req.user.id}&userSessionId=${req.sessionID}`;
 
