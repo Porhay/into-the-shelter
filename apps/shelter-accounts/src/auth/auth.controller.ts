@@ -2,7 +2,6 @@ import { Request } from 'express'
 import { ConfigService } from '@nestjs/config';
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { GoogleAuthGuard } from './guards/googleAuth.guard';
-import { Logger } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -17,16 +16,18 @@ export class AuthController {
     @Get('google/redirect')
     @UseGuards(GoogleAuthGuard)
     handleRedirect(@Req() req, @Res() res) {
-        const logger = new Logger('auth.controller');
-        logger.log('handleRedirect')
-        const maxAge = 30 * 24 * 60 * 60 * 1000 // 30d
-        res.cookie('userId', req.user.id, { maxAge });
-        res.cookie('userSessionId', req.sessionID, { maxAge });
+        // const logger = new Logger('auth.controller');
+        // const maxAge = 30 * 24 * 60 * 60 * 1000 // 30d
+        // res.cookie('userId', req.user.id, { maxAge });
+        // res.cookie('userSessionId', req.sessionID, { maxAge });
+        // const clientUrl = this.configService.get<string>('CLIENT_URL');
+        // return res.redirect(clientUrl)
+
+        // Redirect with tokens in the URL
         const clientUrl = this.configService.get<string>('CLIENT_URL');
-        logger.log(clientUrl)
-        logger.log(`userSessionId: ${JSON.stringify(req.sessionID)}`)
-        logger.log(`res: ${JSON.stringify(res)}`)
-        return res.redirect(clientUrl)
+        const redirectUrl = `${clientUrl}?userId=${req.user.id}&userSessionId=${req.sessionID}`;
+
+        return res.redirect(redirectUrl);
     }
 
     @Get('status')
