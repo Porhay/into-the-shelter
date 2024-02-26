@@ -1,44 +1,28 @@
 services:
-  - name: postgresql
-    env:
-      - key: POSTGRES_DB
-        value: root
-      - key: POSTGRES_USER
-        value: root
-      - key: POSTGRES_PASSWORD
-        value: root
-    instanceType: Standard
-    disk: 10
-    plan: free
-    ports:
-      - 5432
-    environment:
-      - PGDATA: /var/lib/postgresql/data
+  - type: web
+    name: shelter-client
+    env: docker
+    dockerfilePath: ./apps/shelter-client/Dockerfile
+    plan: starter
+    port: 8080
 
-  - name: shelter-client
-    buildCommand: |
-      docker build -t shelter-client ./apps/shelter-client
-    startCommand: |
-      docker run -d -p 8080:80 shelter-client
-    plan: free
+  - type: web
+    name: shelter-gateway
+    env: docker
+    dockerfilePath: ./apps/shelter-gateway/Dockerfile
+    plan: starter
+    port: 8000
 
-  - name: shelter-gateway
-    buildCommand: |
-      docker build -t shelter-gateway -f ./apps/shelter-gateway/Dockerfile .
-    startCommand: |
-      docker run -d -p 8000:8000
-    plan: free
+  - type: web
+    name: shelter-accounts
+    env: docker
+    dockerfilePath: ./apps/shelter-accounts/Dockerfile
+    plan: starter
+    port: 8001
 
-  - name: shelter-accounts
-    buildCommand: |
-      docker build -t shelter-accounts -f ./apps/shelter-accounts/Dockerfile .
-    startCommand: |
-      docker run -d -p 8001:8001
-    plan: free
-
-  - name: shelter-ml
-    buildCommand: |
-      docker build -t shelter-ml ./apps/shelter-ml
-    startCommand: |
-      docker run -d -p 8008:8008
-    plan: free
+  - type: web
+    name: shelter-ml
+    env: docker
+    dockerfilePath: ./apps/shelter-ml/Dockerfile
+    plan: starter
+    port: 8008
