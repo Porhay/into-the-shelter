@@ -1,4 +1,15 @@
 services:
+ - type: postgres
+    name: shelter-postgres
+    plan: free
+    env: postgres
+    properties:
+      version: "16"
+      database: 
+        name: root
+        user: root
+        password: root
+
   - type: web
     name: shelter-client
     env: docker
