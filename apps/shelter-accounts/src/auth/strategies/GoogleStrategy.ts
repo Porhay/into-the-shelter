@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20'
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
@@ -19,9 +20,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(accessToken: string, refreshToken: string, profile: Profile) {
-        console.log(accessToken);
-        console.log(refreshToken);
-        console.log(profile);
+        const logger = new Logger('GoogleStrategy');
+        logger.log(accessToken);
+        logger.log(refreshToken);
+        logger.log(profile);
         const user = await this.authService.validateUser({
             email: profile.emails[0].value,
             displayName: profile.displayName,
