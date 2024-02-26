@@ -4,25 +4,21 @@ services:
     env: docker
     dockerfilePath: ./apps/shelter-client/Dockerfile
     plan: starter
-    port: 8080
 
   - type: web
     name: shelter-gateway
     env: docker
     dockerfilePath: ./apps/shelter-gateway/Dockerfile
     plan: starter
-    port: 8000
 
   - type: web
     name: shelter-accounts
     env: docker
     dockerfilePath: ./apps/shelter-accounts/Dockerfile
     plan: starter
-    port: 8001
 
   - type: web
     name: shelter-ml
     env: docker
     dockerfilePath: ./apps/shelter-ml/Dockerfile
     plan: starter
-    port: 8008
