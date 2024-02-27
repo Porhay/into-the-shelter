@@ -45,7 +45,7 @@ const Router = () => {
             {publicRoutes.map(({ path, Component }) =>
                 <Route path={path} element={<Component />} />
             )}
-            <Route path='*' element={<p>There's nothing here!</p>} />
+            <Route path='*' element={<WelcomePage />} />
         </Routes>
     )
 }

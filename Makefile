@@ -1,7 +1,5 @@
 # DATABASE
 db:
-	mkdir -p persistent/image-data
-
 	docker-compose -f docker-compose.yml down;
 	docker-compose -f docker-compose.yml up -d postgresql;
 	until nc -z -v -w30 localhost 5432; do echo "Waiting for postgresql...";  sleep 5; done
@@ -48,7 +46,7 @@ all:
 	@echo "[0] Starting postgresql db"
 	make db
 	@echo "[1] Starting shelter-gateway"
-	@osascript -e 'tell app "Terminal" to do script "cd $(CURDIR) make gateway"'
+	@osascript -e 'tell app "Terminal" to do script "cd $(CURDIR) && make gateway"'
 
     # shelter-accounts
 	@echo "[2] Starting shelter-accounts"

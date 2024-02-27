@@ -16,7 +16,7 @@ export const getUser = async (userId: string) => {
 
 export const updateBackground = async () => {
     try {
-        const response = await fetch('http://localhost:8000/uploads/update-background', { method: 'POST' }) // TODO: update to axios
+        const response = await fetch(`${config.gatewayUrl}/uploads/update-background`, { method: 'POST' }) // TODO: update to axios
         const buffer = await response.arrayBuffer()
         const blob = new Blob([buffer]);
         const url = URL.createObjectURL(blob);

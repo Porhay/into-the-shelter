@@ -16,11 +16,18 @@ export class AuthController {
     @Get('google/redirect')
     @UseGuards(GoogleAuthGuard)
     handleRedirect(@Req() req, @Res() res) {
-        const maxAge = 30 * 24 * 60 * 60 * 1000 // 30d
-        res.cookie('userId', req.user.id, { maxAge });
-        res.cookie('userSessionId', req.sessionID, { maxAge });
+        // const logger = new Logger('auth.controller');
+        // const maxAge = 30 * 24 * 60 * 60 * 1000 // 30d
+        // res.cookie('userId', req.user.id, { maxAge });
+        // res.cookie('userSessionId', req.sessionID, { maxAge });
+        // const clientUrl = this.configService.get<string>('CLIENT_URL');
+        // return res.redirect(clientUrl)
+
+        // TODO: make it in secure way!
         const clientUrl = this.configService.get<string>('CLIENT_URL');
-        return res.redirect(clientUrl)
+        const redirectUrl = `${clientUrl}?userId=${req.user.id}&userSessionId=${req.sessionID}`;
+
+        return res.redirect(redirectUrl);
     }
 
     @Get('status')

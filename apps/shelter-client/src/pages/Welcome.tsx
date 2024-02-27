@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
+import { cookieHelper } from '../helpers'
 import '../styles/Welcome.scss'
+
 
 const WelcomePage = () => {
     const description: string =
@@ -9,6 +12,25 @@ const WelcomePage = () => {
         `and die beyound the shelter.\n\n` +
         `Only half will survive!\n` +
         `- or not :D`
+
+    useEffect(() => {
+        // TODO: Rework in secure way
+        const _getQueryParam = (name: string): string | null => {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        };
+
+        const userId = _getQueryParam('userId');
+        const userSessionId = _getQueryParam('userSessionId');
+        if (userId && userSessionId) {
+            cookieHelper.setCookieWithMaxAge('userId', userId, 30 * 24 * 60 * 60); // 30 days
+            cookieHelper.setCookieWithMaxAge('userSessionId', userSessionId, 30 * 24 * 60 * 60);
+        }
+
+        // remove parameters from URL
+        const newUrl = window.location.href.split('?')[0];
+        window.history.replaceState({}, document.title, newUrl);
+    }, []);
 
     return (
         <div className="welcome-page-container">

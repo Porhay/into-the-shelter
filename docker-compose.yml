@@ -14,13 +14,15 @@ services:
       - ./data/postgresql/:/var/lib/postgresql/data
 
   shelter-client:
+    container_name: shelter-client
     build:
       context: ./apps/shelter-client
       dockerfile: Dockerfile
     ports:
-      - '8080:80'
+      - '3000:3000'
 
   shelter-gateway:
+    container_name: shelter-gateway
     build:
       context: .
       dockerfile: ./apps/shelter-gateway/Dockerfile
@@ -32,6 +34,7 @@ services:
       - '8000:8000'
 
   shelter-accounts:
+    container_name: shelter-accounts
     build:
       context: .
       dockerfile: ./apps/shelter-accounts/Dockerfile
@@ -43,12 +46,11 @@ services:
       - '8001:8001'
 
   shelter-ml:
+    container_name: shelter-ml
     build:
       context: ./apps/shelter-ml
       dockerfile: Dockerfile
     env_file:
       - ./.env
-    depends_on:
-      - postgresql
     ports:
       - '8008:8008'
