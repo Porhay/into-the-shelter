@@ -1,5 +1,5 @@
 import '../styles/Chat.scss'
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
 import io from 'socket.io-client';
 import * as config from '../config'
@@ -17,8 +17,10 @@ interface Message {
 
 const socket = io(config.gatewayUrl);
 
-const Chat: React.FC = () => {
+const Chat: FC = () => {
   const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
+  const chatRef = useRef<HTMLDivElement>(null)
+  const messageTextRef = useRef<HTMLDivElement>(null)
   const [state, setState] = useState<IState>({
     messages: [],
     newMessage: ''
@@ -26,9 +28,14 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     socket.on('message', (data: Message) => {
-      updateState({ messages: [...state.messages, data] });
-
+      if (data && data.message) {
+        updateState({ messages: [...state.messages, data] });
+      }
     });
+
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
   }, [state.messages]);
 
   const handleSendMessage = () => {
@@ -46,11 +53,11 @@ const Chat: React.FC = () => {
 
   return (
     <div className="chat-container">
-      <div className="messages-container">
+      <div className="messages-container" ref={chatRef}>
         {state.messages.map((message, index) => (
           <div className="message" key={index}>
             <img src={userAvatar} className="message-icon" alt="user avatar" />
-            <div className="message-text">{message.message}</div>
+            <div ref={messageTextRef} className="message-text">{message.message}</div>
           </div>
         ))}
       </div>
