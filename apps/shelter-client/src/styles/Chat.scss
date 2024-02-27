@@ -36,9 +36,10 @@
     cursor: pointer;
   }
 
-  .message-text {
-    display: flex;
-    justify-content: flex-start;
+  .message-container {
+    display: block;
+    // display: flex;
+    // justify-content: flex-start;
     align-items: center;
     background-color: rgb(255, 255, 255);
     min-height: 26px;
@@ -46,6 +47,16 @@
     border-radius: 4px;
     overflow-wrap: break-word;
     word-break: break-all;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .message-sender {
+    margin: 0;
+    color: rgb(242, 122, 122);
+    font-size: 14px;
   }
 }
 
