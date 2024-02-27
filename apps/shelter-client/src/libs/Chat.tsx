@@ -3,6 +3,8 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
 import io from 'socket.io-client';
 import * as config from '../config'
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 interface IState {
   messages: Message[];
@@ -12,19 +14,23 @@ interface IState {
 interface Message {
   sender: string;
   message: string;
-  icon: string;
+  avatar: string;
 }
 
 const socket = io(config.gatewayUrl);
 
 const Chat: FC = () => {
-  const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
+  const user = useSelector((state: RootState) => state.user);
   const chatRef = useRef<HTMLDivElement>(null)
   const messageTextRef = useRef<HTMLDivElement>(null)
+
+  // LOCAL STATE
+  const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState<IState>({
     messages: [],
     newMessage: ''
   });
+
 
   useEffect(() => {
     socket.on('message', (data: Message) => {
@@ -38,26 +44,31 @@ const Chat: FC = () => {
     }
   }, [state.messages]);
 
+
+  // FUNCTIONS
   const handleSendMessage = () => {
     if (state.newMessage.trim() !== '') {
-      socket.emit('message', { sender: 'denys', message: state.newMessage, icon: 'user' });
+      socket.emit('message', { sender: user.displayName, message: state.newMessage, avatar: user.avatar });
       updateState({ newMessage: '' });
     }
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSendMessage()
     }
   }
 
+
   return (
     <div className="chat-container">
       <div className="messages-container" ref={chatRef}>
         {state.messages.map((message, index) => (
           <div className="message" key={index}>
-            <img src={userAvatar} className="message-icon" alt="user avatar" />
-            <div ref={messageTextRef} className="message-text">{message.message}</div>
+            <img src={message.avatar || userAvatar} className="message-icon" alt="user avatar" />
+            <div ref={messageTextRef} className="message-container">
+              <p className='message-sender'>{message.sender}</p>
+              <p className='message-text'>{message.message}</p>
+            </div>
           </div>
         ))}
       </div>
