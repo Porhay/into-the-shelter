@@ -5,6 +5,10 @@ class CookieHelper {
         Cookies.set(key, value);
     }
 
+    setCookieWithMaxAge = (key: string, value: string, maxAge: number) => {
+        document.cookie = `${key}=${value}; max-age=${maxAge}; path=/`;
+    };
+
     updateCookie(key: string, newValue: string): void {
         const currentValue = this.getCookie(key);
         if (currentValue !== undefined) {

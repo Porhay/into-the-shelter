@@ -8,15 +8,17 @@ import { Response } from 'express';
 
 @Controller('uploads')
 export class UploadsController {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) { }
 
   @Post('update-background')
   async uploadFile(@Res() res: Response) {
-    const folderPath: string = './persistent/image-data/';
-    const filePath = folderPath + 'profile-image-default.jpg';
+    const imagesFolderPath = 'data/images'
+
+    const filename = 'profile-image-default.jpg';
+    const filepath: string = path.join(imagesFolderPath, filename);
 
     try {
-      const fileStream = fs.createReadStream(filePath);
+      const fileStream = fs.createReadStream(filepath);
       const formData = new FormData();
 
       // Append file to the form data
@@ -32,10 +34,11 @@ export class UploadsController {
       });
 
       if (response.data) {
-        const newFilePath = folderPath + 'file1.jpg';
-        fs.writeFileSync(newFilePath, response.data);
-        const filePath = path.join(__dirname, '../../../persistent/image-data/', 'file1.jpg');
-        return res.sendFile(filePath);
+        const procFilename: string = 'file1.jpg'
+        const procFilepath = path.join(__dirname, '../../../data/images/', procFilename);
+
+        fs.writeFileSync(procFilepath, response.data);
+        return res.sendFile(procFilepath);
       }
     } catch (error) {
       console.error(error);

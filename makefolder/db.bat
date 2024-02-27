@@ -1,6 +1,3 @@
-mkdir persistent\imported-data
-mkdir persistent\image-data
-
 docker-compose -f docker-compose.yml down
 docker-compose -f docker-compose.yml up -d postgresql
 

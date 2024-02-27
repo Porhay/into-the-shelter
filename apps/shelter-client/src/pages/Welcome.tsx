@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { cookieHelper } from '../helpers'
 import '../styles/Welcome.scss'
 
 
@@ -13,23 +14,20 @@ const WelcomePage = () => {
         `- or not :D`
 
     useEffect(() => {
+        // TODO: Rework in secure way
         const _getQueryParam = (name: string): string | null => {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         };
-        const _setCookie = (name: string, value: string, maxAge: number) => {
-            document.cookie = `${name}=${value}; max-age=${maxAge}; path=/`;
-        };
-
 
         const userId = _getQueryParam('userId');
         const userSessionId = _getQueryParam('userSessionId');
         if (userId && userSessionId) {
-            _setCookie('userId', userId, 30 * 24 * 60 * 60); // 30 days
-            _setCookie('userSessionId', userSessionId, 30 * 24 * 60 * 60);
+            cookieHelper.setCookieWithMaxAge('userId', userId, 30 * 24 * 60 * 60); // 30 days
+            cookieHelper.setCookieWithMaxAge('userSessionId', userSessionId, 30 * 24 * 60 * 60);
         }
 
-        // remove the parameters from the URL
+        // remove parameters from URL
         const newUrl = window.location.href.split('?')[0];
         window.history.replaceState({}, document.title, newUrl);
     }, []);
