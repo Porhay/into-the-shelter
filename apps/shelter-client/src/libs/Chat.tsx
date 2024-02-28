@@ -15,6 +15,7 @@ interface Message {
   sender: string;
   message: string;
   avatar: string;
+  timeSent: string;
 }
 
 const socket = io(config.gatewayUrl);
@@ -28,8 +29,9 @@ const Chat: FC = () => {
   const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState<IState>({
     messages: [],
-    newMessage: ''
+    newMessage: '',
   });
+
 
 
   useEffect(() => {
@@ -48,7 +50,9 @@ const Chat: FC = () => {
   // FUNCTIONS
   const handleSendMessage = () => {
     if (state.newMessage.trim() !== '') {
-      socket.emit('message', { sender: user.displayName, message: state.newMessage, avatar: user.avatar });
+      const date = new Date()
+      const dateStr = `${date.getHours()}:${date.getMinutes()}`
+      socket.emit('message', { sender: user.displayName, message: state.newMessage, avatar: user.avatar, timeSent: dateStr });
       updateState({ newMessage: '' });
     }
   };
@@ -66,7 +70,10 @@ const Chat: FC = () => {
           <div className="message" key={index}>
             <img src={message.avatar || userAvatar} className="message-icon" alt="user avatar" />
             <div ref={messageTextRef} className="message-container">
-              <p className='message-sender'>{message.sender}</p>
+              <div className='message-data'>
+                <p className='message-sender'>{message.sender}</p>
+                <p className='message-time'>{message.timeSent}</p>
+              </div>
               <p className='message-text'>{message.message}</p>
             </div>
           </div>

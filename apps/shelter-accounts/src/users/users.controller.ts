@@ -12,6 +12,11 @@ export class UsersController {
     return this.databaseService.createUser(user);
   }
 
+  // @Post()
+  // async updateUser(@Body() user: { displayName: string, email: string }) {
+  //   return this.databaseService.updateUser(user);
+  // }
+
   @Delete(':userId')
   async deleteUser(@Param('userId') userId: string) {
     return this.databaseService.deleteUser(Number(userId));

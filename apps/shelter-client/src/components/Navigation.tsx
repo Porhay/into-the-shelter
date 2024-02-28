@@ -85,10 +85,10 @@ const Navigation = () => {
     // COMPONENTS
     const Dropdown = (props: any) => {
         return (
-            <div className='login-container'>
+            <div className='dropdown-container'>
                 {props.children}
                 {props.isOpened ?
-                    <div className="login-down">
+                    <div className="dropdown-down">
                         <pre>
                             {props.text}{`\n`}
                             {deshCount(props.text)}
