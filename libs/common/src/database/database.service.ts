@@ -1,14 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
+import { updateUserRequest } from 'apps/shelter-accounts/src/users/dto/updateUser.request';
 
 @Injectable()
 export class DatabaseService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  async createUser(user: {email: string, displayName: string}) {
+  async createUser(user: { email: string, displayName: string }) {
     return this.prisma.users.create({
       data: user,
     });
+  }
+
+  async updateUser(userId: number, data: updateUserRequest) {
+    return await this.prisma.users.update({
+      where: { id: userId }, data: data
+    })
   }
 
   async deleteUser(userId: number) {

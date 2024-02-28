@@ -1,6 +1,7 @@
 import { DatabaseService } from '@app/common'
 import { Controller, Post, Body, Delete, Param, Get, UseGuards } from '@nestjs/common';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
+import { updateUserRequest } from './dto/updateUser.request';
 
 @Controller('users')
 // @UseGuards(AuthenticatedGuard) // TODO: Investigate why session id is not atached while req from cs
@@ -12,10 +13,10 @@ export class UsersController {
     return this.databaseService.createUser(user);
   }
 
-  // @Post()
-  // async updateUser(@Body() user: { displayName: string, email: string }) {
-  //   return this.databaseService.updateUser(user);
-  // }
+  @Post(':userId')
+  async updateUser(@Param('userId') userId: string, @Body() data: updateUserRequest) {
+    return this.databaseService.updateUser(Number(userId), data);
+  }
 
   @Delete(':userId')
   async deleteUser(@Param('userId') userId: string) {
