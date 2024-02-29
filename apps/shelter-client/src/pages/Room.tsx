@@ -4,7 +4,9 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../libs/Buttons'
 import Webcam from '../libs/Webcam'
 import Chat from '../libs/Chat'
-import { updateBackground } from '../http/index'
+import { updateBackgroundReq } from '../http/index'
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 
 interface IState {
@@ -18,6 +20,7 @@ interface IState {
     charList: { icon: string, text: string }[];
 }
 const RoomPage = () => {
+    const user = useSelector((state: RootState) => state.user);
 
     // LOCAL STATE
     const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
@@ -95,7 +98,7 @@ const RoomPage = () => {
     }
     const ActionTipContainer = () => {
         const _updateBackground = async () => {
-            const data = await updateBackground()
+            const data = await updateBackgroundReq(user.userId)
             if (data) {
                 updateState({ fileUrl: data })
             }

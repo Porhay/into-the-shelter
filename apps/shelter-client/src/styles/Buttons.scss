@@ -77,8 +77,20 @@ $camera-color:invert(48%) sepia(13%) saturate(3207%) hue-rotate(180deg) brightne
     }
 }
 
+.add-avatar-button {
+    filter: invert(0);
+    display: flex;
+    justify-content: center;
+
+    img {
+        width: 24px;
+    }
+
+}
+
 .small {
     img {
         width: 14px;
     }
 }
+

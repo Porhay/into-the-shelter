@@ -10,6 +10,7 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.enableCors();
+  app.setGlobalPrefix('api');
   app.useWebSocketAdapter(new IoAdapter(app));
 
   const port = config.get('GATEWAY_PORT')

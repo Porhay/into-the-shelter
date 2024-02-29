@@ -5,7 +5,7 @@ $border-radius: 8px;
     nav {
         display: flex;
         justify-content: space-between;
-        margin: 8px 20px;
+        margin: 10px 0px 0 20px;
         align-items: center;
 
         .logo {
@@ -31,33 +31,33 @@ $border-radius: 8px;
             }
         }
     }
-
 }
 
-.navigation-profile-image {
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 60px;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-}
-
-.notification-img {
-    width: 30px;
-    height: 30px;
-    margin: 0 30px 0 0;
-    cursor: pointer;
-    opacity: 0.9;
-    filter: invert(98%) sepia(23%) saturate(207%) hue-rotate(120deg) brightness(195%) contrast(90%);
-
-    &:hover {
-        opacity: 1;
-    }
-}
-
-.login-container {
+.dropdown-container {
     position: relative;
     cursor: pointer;
+    margin: 0 20px 0 0;
+
+    .notification-img {
+        width: 30px;
+        height: 30px;
+        
+        cursor: pointer;
+        opacity: 0.9;
+        filter: invert(98%) sepia(23%) saturate(207%) hue-rotate(120deg) brightness(195%) contrast(90%);
+    
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .navigation-profile-image {
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        border-radius: 60px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
 
     .login-btn {
         cursor: pointer;
@@ -85,7 +85,7 @@ $border-radius: 8px;
         }
     }
 
-    .login-down {
+    .dropdown-down {
         z-index: 10; // dropdown should be at the top
         right: 0;
         color: #fff;
@@ -102,7 +102,6 @@ $border-radius: 8px;
             margin-bottom: 2px;
             padding: 0 5px 0 2px;
             background-color: #242324;
-            
         }
     }
 }

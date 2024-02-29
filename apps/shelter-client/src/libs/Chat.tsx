@@ -1,10 +1,12 @@
 import '../styles/Chat.scss'
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
 import io from 'socket.io-client';
 import * as config from '../config'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { handleKeyDown } from '../helpers'
+
 
 interface IState {
   messages: Message[];
@@ -15,6 +17,7 @@ interface Message {
   sender: string;
   message: string;
   avatar: string;
+  timeSent: string;
 }
 
 const socket = io(config.gatewayUrl);
@@ -28,7 +31,7 @@ const Chat: FC = () => {
   const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState<IState>({
     messages: [],
-    newMessage: ''
+    newMessage: '',
   });
 
 
@@ -48,15 +51,13 @@ const Chat: FC = () => {
   // FUNCTIONS
   const handleSendMessage = () => {
     if (state.newMessage.trim() !== '') {
-      socket.emit('message', { sender: user.displayName, message: state.newMessage, avatar: user.avatar });
+      const date = new Date()
+      const dateStr = `${date.getHours()}:${date.getMinutes()}`
+      socket.emit('message', { sender: user.displayName, message: state.newMessage, avatar: user.avatar, timeSent: dateStr });
       updateState({ newMessage: '' });
     }
   };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage()
-    }
-  }
+
 
 
   return (
@@ -66,7 +67,10 @@ const Chat: FC = () => {
           <div className="message" key={index}>
             <img src={message.avatar || userAvatar} className="message-icon" alt="user avatar" />
             <div ref={messageTextRef} className="message-container">
-              <p className='message-sender'>{message.sender}</p>
+              <div className='message-data'>
+                <p className='message-sender'>{message.sender}</p>
+                <p className='message-time'>{message.timeSent}</p>
+              </div>
               <p className='message-text'>{message.message}</p>
             </div>
           </div>
@@ -77,8 +81,8 @@ const Chat: FC = () => {
           type="text"
           placeholder="Type your message..."
           value={state.newMessage}
-          onChange={(e) => updateState({ newMessage: e.target.value })}
-          onKeyDown={handleKeyDown}
+          onChange={e => updateState({ newMessage: e.target.value })}
+          onKeyDown={e => handleKeyDown(e, handleSendMessage)}
         />
         <button onClick={handleSendMessage}>Send</button>
       </div>

@@ -13,7 +13,7 @@ import { Button } from '../libs/Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
 import { cookieHelper } from '../helpers'
-import { getUser } from '../http/index'
+import { getUserReq } from '../http/index'
 
 
 interface IState {
@@ -29,16 +29,28 @@ const Navigation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const fillIngameAvatars = () => {
+        const ingameAvatars: any = []
+        const arr = []        
+        if (ingameAvatars.length < 3) {
+            for (let i = 0; i < 3 - ingameAvatars.length; i++) {
+                arr.push('default')
+            }
+        }
+        return [...arr, ...ingameAvatars]
+    }
+
     useEffect(() => {
         const userId = cookieHelper.getCookie('userId')
         const userSessionId = cookieHelper.getCookie('userSessionId')
         if (userId) {
-            getUser(String(userId)).then((data: any) => {
+            getUserReq(String(userId)).then((data: any) => {
                 dispatch(updateUser({
                     userId,
                     userSessionId,
                     displayName: data ? data.displayName : 'stranger',
                     avatar: data ? data.avatar : null,
+                    ingameAvatars: fillIngameAvatars()
                 }));
             })
         }
@@ -85,10 +97,10 @@ const Navigation = () => {
     // COMPONENTS
     const Dropdown = (props: any) => {
         return (
-            <div className='login-container'>
+            <div className='dropdown-container'>
                 {props.children}
                 {props.isOpened ?
-                    <div className="login-down">
+                    <div className="dropdown-down">
                         <pre>
                             {props.text}{`\n`}
                             {deshCount(props.text)}
