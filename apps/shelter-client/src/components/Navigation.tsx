@@ -29,6 +29,17 @@ const Navigation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const fillIngameAvatars = () => {
+        const ingameAvatars: any = []
+        const arr = []        
+        if (ingameAvatars.length < 3) {
+            for (let i = 0; i < 3 - ingameAvatars.length; i++) {
+                arr.push('default')
+            }
+        }
+        return [...arr, ...ingameAvatars]
+    }
+
     useEffect(() => {
         const userId = cookieHelper.getCookie('userId')
         const userSessionId = cookieHelper.getCookie('userSessionId')
@@ -39,6 +50,7 @@ const Navigation = () => {
                     userSessionId,
                     displayName: data ? data.displayName : 'stranger',
                     avatar: data ? data.avatar : null,
+                    ingameAvatars: fillIngameAvatars()
                 }));
             })
         }

@@ -7,6 +7,7 @@ import discordIcon from '../assets/icons/discord-icon.png';
 import profileIcon from '../assets/icons/profile-icon.png';
 import settingsIcon from '../assets/icons/settings-icon.png';
 import exitIcon from '../assets/icons/exit-icon.png';
+import plusIcon from '../assets/icons/plus-icon.png';
 import genderIcon from '../assets/icons/ingame/gender-icon.png';
 import healthIcon from '../assets/icons/ingame/health-icon.png';
 import hobbyIcon from '../assets/icons/ingame/hobby-icon.png';
@@ -14,6 +15,7 @@ import jobIcon from '../assets/icons/ingame/job-icon.png';
 import phobiaIcon from '../assets/icons/ingame/phobia-icon.png';
 import backpackIcon from '../assets/icons/ingame/backpack-icon.png';
 import additionalInfoIcon from '../assets/icons/ingame/additional-info-icon.png';
+
 
 
 const Icon = (props: any) => {
@@ -34,6 +36,7 @@ const Icon = (props: any) => {
         case 'profileIcon': return <img src={profileIcon} alt={alt} />
         case 'settingsIcon': return <img src={settingsIcon} alt={alt} />
         case 'exitIcon': return <img src={exitIcon} alt={alt} />
+        case 'plusIcon': return <img src={plusIcon} alt={alt} />
         default: return <img src={healthIcon} alt={alt} />
     }
 }

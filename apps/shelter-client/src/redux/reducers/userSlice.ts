@@ -5,7 +5,8 @@ interface UserState {
   displayName?: string | null;
   userSessionId?: string | null;
   userId?: string | null;
-  avatar?: string | null
+  avatar?: string | null;
+  ingameAvatars: string[];
 }
 
 const initialState: UserState = {
@@ -13,7 +14,8 @@ const initialState: UserState = {
   displayName: 'stranger',
   userSessionId: '',
   userId: '',
-  avatar: null
+  avatar: null,
+  ingameAvatars: [],
 };
 
 const userSlice = createSlice({
