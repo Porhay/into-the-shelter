@@ -51,3 +51,8 @@ export const deshCount = (string: string) => {
     return dashArr.join('')
 }
 
+export const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, func: Function) => {
+    if (e.key === 'Enter') {
+        func()
+    }
+  }

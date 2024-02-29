@@ -1,10 +1,12 @@
 import '../styles/Chat.scss'
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
 import io from 'socket.io-client';
 import * as config from '../config'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { handleKeyDown } from '../helpers'
+
 
 interface IState {
   messages: Message[];
@@ -33,7 +35,6 @@ const Chat: FC = () => {
   });
 
 
-
   useEffect(() => {
     socket.on('message', (data: Message) => {
       if (data && data.message) {
@@ -56,11 +57,7 @@ const Chat: FC = () => {
       updateState({ newMessage: '' });
     }
   };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage()
-    }
-  }
+
 
 
   return (
@@ -84,8 +81,8 @@ const Chat: FC = () => {
           type="text"
           placeholder="Type your message..."
           value={state.newMessage}
-          onChange={(e) => updateState({ newMessage: e.target.value })}
-          onKeyDown={handleKeyDown}
+          onChange={e => updateState({ newMessage: e.target.value })}
+          onKeyDown={e => handleKeyDown(e, handleSendMessage)}
         />
         <button onClick={handleSendMessage}>Send</button>
       </div>

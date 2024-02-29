@@ -13,7 +13,7 @@ import { Button } from '../libs/Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
 import { cookieHelper } from '../helpers'
-import { getUser } from '../http/index'
+import { getUserRequest } from '../http/index'
 
 
 interface IState {
@@ -44,7 +44,7 @@ const Navigation = () => {
         const userId = cookieHelper.getCookie('userId')
         const userSessionId = cookieHelper.getCookie('userSessionId')
         if (userId) {
-            getUser(String(userId)).then((data: any) => {
+            getUserRequest(String(userId)).then((data: any) => {
                 dispatch(updateUser({
                     userId,
                     userSessionId,
