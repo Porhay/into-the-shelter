@@ -3,6 +3,11 @@
  *  [SERVER SIDE] MAIN CONFIG FILE
  */
 
+import * as path from 'path';
+import { diskStorage } from 'multer';
+import { MulterModuleOptions } from '@nestjs/platform-express/multer';
+
+
 const isProduction: boolean = process.env.NODE_ENV === 'production';
 
 // Render.com provides a DATABASE_URL environment variable
@@ -29,6 +34,19 @@ const firebaseConfig = {
 
 const CLIENT_URL: string = isProduction ? process.env.CLIENT_URL || '' : 'http://localhost:3000';
 const ML_URL: string = isProduction ? process.env.ML_URL || '' : 'http://localhost:8008'; // or replace localhost with docker container name (http://shelter-ml:8008)
+
+
+export const multerConfig: MulterModuleOptions = {
+    storage: diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, 'data/images');
+        },
+        filename: (req, file, cb) => {
+            const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + '-' + Date.now();
+            cb(null, `${filename}${path.extname(file.originalname)}`);
+        },
+    }),
+};
 
 
 export default () => ({

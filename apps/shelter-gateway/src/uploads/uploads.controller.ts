@@ -2,9 +2,11 @@ import * as fs from 'fs';
 import axios from 'axios';
 import * as path from 'path';
 import * as FormData from 'form-data';
-import { Controller, Post, Res } from '@nestjs/common';
+import { Controller, Post, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
+import { FilesInterceptor } from '@nestjs/platform-express/multer';
+import { multerConfig } from 'config';
 
 @Controller('uploads')
 export class UploadsController {
@@ -45,4 +47,12 @@ export class UploadsController {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
+
+  @Post('files')
+  @UseInterceptors(FilesInterceptor('files', 4, multerConfig)) 
+  async filesUpload(@UploadedFiles() files: Array<Express.Multer.File>) {
+    return files.map(file => file.filename);
+  }
+  
 }

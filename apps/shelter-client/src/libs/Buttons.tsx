@@ -17,7 +17,6 @@ import backpackIcon from '../assets/icons/ingame/backpack-icon.png';
 import additionalInfoIcon from '../assets/icons/ingame/additional-info-icon.png';
 
 
-
 const Icon = (props: any) => {
     const alt = 'icon'
     switch (props.icon) {

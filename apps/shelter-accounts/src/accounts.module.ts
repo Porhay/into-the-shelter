@@ -7,7 +7,7 @@ import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-import config from '../../../config';
+import config from 'config';
 
 @Module({
   imports: [
