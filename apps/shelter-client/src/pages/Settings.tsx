@@ -33,7 +33,7 @@ const SettingsPage = () => {
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const filesArray = Array.from(e.target.files);
-            await handleUploadReq(filesArray)
+            await handleUploadReq(user.userId, filesArray)
         }
     };
     const handleButtonClick = () => {

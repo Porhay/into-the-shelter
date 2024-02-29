@@ -16,7 +16,7 @@ const DATABASE_URL: string = isProduction
     ? process.env.DATABASE_URL || ''
     : 'postgres://root:root@localhost:5432/root';
 
-const firebaseConfig = {
+export const firebaseConfig = {
     storageBucket: process.env.storageBucket || 'gs://into-the-shelter.appspot.com',
     type: "service_account",
     project_id: "into-the-shelter",
@@ -52,7 +52,6 @@ export const multerConfig: MulterModuleOptions = {
 export default () => ({
     isProduction,
     DATABASE_URL,
-    firebaseConfig,
 
     CLIENT_URL,
     ML_URL,

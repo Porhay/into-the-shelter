@@ -23,9 +23,9 @@ export const updateUserReq = async (userId: string | undefined, data: any) => {
     }
 }
 
-export const updateBackgroundReq = async () => {
+export const updateBackgroundReq = async (userId: string | undefined) => {
     try {
-        const response = await fetch(`${config.gatewayUrl}/api/uploads/update-background`, { method: 'POST' }) // TODO: update to axios
+        const response = await fetch(`${config.gatewayUrl}/api/users/${userId}/files/update-background`, { method: 'POST' }) // TODO: update to axios
         const buffer = await response.arrayBuffer()
         const blob = new Blob([buffer]);
         const url = URL.createObjectURL(blob);
@@ -35,7 +35,7 @@ export const updateBackgroundReq = async () => {
     }
 }
 
-export const handleUploadReq = async (files: any[]) => {
+export const handleUploadReq = async (userId: string | undefined, files: any[]) => {
     if (files.length > 0) {
       const formData = new FormData();
       files.forEach(file => {
@@ -43,7 +43,7 @@ export const handleUploadReq = async (files: any[]) => {
       });
   
       try {
-        const response = await gatewayHost.post('api/uploads/files', formData, {
+        const response = await gatewayHost.post(`api/users/${userId}/files`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
