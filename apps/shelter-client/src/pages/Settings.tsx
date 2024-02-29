@@ -52,10 +52,8 @@ const SettingsPage = () => {
                 </div>
 
                 <div className='settings-block'>
-                    <p className='settings-title'>
-                        Ingame avatar settings
-                        <span>(Note that the biggest image in the field will be your ingame avatar)</span>
-                    </p>
+                    <p className='settings-title'>In-game avatars settings</p>
+                    <p className='settings-text'>(Note that the biggest image in the field will be your ingame avatar)</p>
 
                     <div className='settings-form avatar-container'>
                         <div className='avatar-block'>
