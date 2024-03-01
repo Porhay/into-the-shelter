@@ -33,7 +33,7 @@ const Navigation = () => {
         const arr = []
         if (gameAvatars.length <= 4) {
             for (let i = 0; i < 3 - gameAvatars.length; i++) {
-                arr.push({downloadUrl: 'default', metadata: {position: 0}})
+                arr.push({downloadUrl: 'default', metadata: {position: 0}, fileId: 0})
             }
         }
         return [...arr, ...gameAvatars]

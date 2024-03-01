@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Get, Param, Post, Query, Req, Res,
+  Body, Controller, Delete, Get, Param, Post, Query, Req, Res,
   UploadedFiles, UseInterceptors
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -23,9 +23,14 @@ export class UploadsController {
     return this.uploadsService.filesUpload(userId, files, type)
   }
 
-  @Get(':fileId/')
+  @Get(':fileId')
   async getFile(@Param('userId') userId: string, @Query('type') type: string) {
     return this.uploadsService.getFiles(userId, type);
+  }
+
+  @Delete(':fileId')
+  async deleteFile(@Param('userId') userId: string, @Param('fileId') fileId: string) {
+    return this.uploadsService.deleteFile(fileId);
   }
 
   @Post('update-background')

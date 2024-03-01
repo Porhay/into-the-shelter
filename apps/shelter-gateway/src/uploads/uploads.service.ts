@@ -69,13 +69,21 @@ export class UploadsService {
             const dbFile = await this.databaseService.createFile(context)
             console.log(`File created, id:${dbFile.id}`);
             dbFile.metadata = JSON.parse(dbFile.metadata)
-            uploadedFiles.push({ downloadUrl: downloadUrl, ...dbFile })
+            uploadedFiles.push({ downloadUrl: downloadUrl, metadata: dbFile.metadata, fileId: dbFile.id })
         }
         return uploadedFiles
     }
 
-    getFiles(userId: string, type: string): object {
-        return this.databaseService.getFilesByUserId(userId, type)
+    async getFiles(userId: string, type: string): Promise<object> {
+        return await this.databaseService.getFilesByUserId(userId, type)
+    }
+
+    async deleteFile(fileId: string) {        
+        const file = await this.databaseService.getFileById(fileId)
+        if (file) {
+            await this.firebaseService.deleteFile(file.filename)
+            return await this.databaseService.deleteFile(fileId)
+        }
     }
 
     async updateBackground(): Promise<any> {

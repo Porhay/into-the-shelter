@@ -57,10 +57,10 @@ export const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, func: Fu
     }
 }
 
-export const gameAvatarUrlByPosition = (gameAvatars: any, position: number) => {
+export const gameAvatarByPosition = (gameAvatars: any, position: number) => {
     try {
-        const url = gameAvatars?.find((elem: { metadata: { position: number; }; }) => elem.metadata.position === position).downloadUrl || null
-        return url
+        const avatarObj = gameAvatars?.find((elem: { metadata: { position: number; }; }) => elem.metadata.position === position) || null
+        return avatarObj
     } catch {
         return null
     }

@@ -64,9 +64,8 @@ export class FirebaseService {
     }
   }
 
-  async deleteFile(file: { filename: string }): Promise<string | null> {
+  async deleteFile(filename: string): Promise<string | null> {
     try {
-      const { filename } = file;
       await this.bucket.file(filename).delete();
       return `File ${filename} deleted successfully.`;
     } catch (error) {

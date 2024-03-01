@@ -17,9 +17,8 @@ export class UsersService {
         const gameAvatars = await this.databaseService.getFilesByUserId(dbUser.id, 'gameAvatar')
         for (const elem of gameAvatars) {
             const downloadUrl = await this.firebaseService.getSignedUrlByFilename(elem.filename)
-            updatedGameAvatars.push({metadata: JSON.parse(elem.metadata), downloadUrl})
+            updatedGameAvatars.push({metadata: JSON.parse(elem.metadata), downloadUrl, fileId: elem.id})
         }
-        console.log('updatedGameAvatars', updatedGameAvatars);
         
         const res = {...dbUser, gameAvatars: updatedGameAvatars}
         console.log(res);

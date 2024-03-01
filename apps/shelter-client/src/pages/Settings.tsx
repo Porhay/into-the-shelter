@@ -4,8 +4,8 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { ChangeEvent, useRef, useState } from 'react';
-import { handleKeyDown, gameAvatarUrlByPosition } from '../helpers';
-import { updateUserReq, handleUploadReq } from '../http/index'
+import { handleKeyDown, gameAvatarByPosition } from '../helpers';
+import { updateUserReq, handleUploadReq, deleteFileReq } from '../http/index'
 import { updateUser } from '../redux/reducers/userSlice';
 import penIcon from '../assets/icons/pen-icon.png';
 
@@ -47,7 +47,6 @@ const SettingsPage = () => {
                         gameAvatars: [
                             ...user.gameAvatars || [],
                             ...response
-                            // ...response.filter((e: { downloadUrl: string; metadata: any; }) => e.downloadUrl || e.metadata)
                         ]
                     }));
                     break;
@@ -55,8 +54,11 @@ const SettingsPage = () => {
 
         }
     };
-    const handleIngameAvatarDelete = (indexOfAvatar: any) => {
-        // user.gameAvatars?.splice(indexOfAvatar, indexOfAvatar);
+    const handleGameAvatarDelete = async (fileId: string) => {
+        await deleteFileReq(user.userId, fileId)
+        dispatch(updateUser({
+            gameAvatars: user.gameAvatars?.filter((obj) => obj.fileId !== fileId)
+        }));
     }
     const handleButtonClick = () => {
         // Trigger the click event of the hidden file input
@@ -131,8 +133,8 @@ const SettingsPage = () => {
                     <div className='settings-form avatar-container'>
                         <div className='avatar-block'>
                             <div className='avatar-ingame'>
-                                <img className='avatar-main' src={gameAvatarUrlByPosition(user.gameAvatars, 1) || user.avatar || avatarDefault} />
-                                <div className='close' onClick={index => { handleIngameAvatarDelete(index) }}></div>
+                                <img className='avatar-main' src={gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl || user.avatar || avatarDefault} />
+                                <div className='close' onClick={() => handleGameAvatarDelete(gameAvatarByPosition(user.gameAvatars, 1)?.fileId)}></div>
                             </div>
                             <div className='avatar-change'>
                                 <div className='avatar-add'>
@@ -159,8 +161,8 @@ const SettingsPage = () => {
                                         } else {
                                             return (
                                                 <div className='avatar-mini'>
-                                                    <img src={gameAvatarUrlByPosition(user.gameAvatars, elem.metadata.position)} />
-                                                    <div className='close' onClick={() => handleIngameAvatarDelete(2)}></div>
+                                                    <img src={gameAvatarByPosition(user.gameAvatars, elem.metadata.position).downloadUrl} />
+                                                    <div className='close' onClick={() => handleGameAvatarDelete(gameAvatarByPosition(user.gameAvatars, elem.metadata.position).fileId)}></div>
                                                 </div>
                                             )
 

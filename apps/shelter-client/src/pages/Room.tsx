@@ -7,7 +7,7 @@ import Chat from '../libs/Chat'
 import { updateBackgroundReq } from '../http/index'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { gameAvatarUrlByPosition } from '../helpers';
+import { gameAvatarByPosition } from '../helpers';
 
 
 interface IState {
@@ -49,7 +49,7 @@ const RoomPage = () => {
     const Avatar = () => { // Avatar. Should be updated while playing...
         return (
             <div className="webcam-avatar">
-                <img src={gameAvatarUrlByPosition(user.gameAvatars, 1) || avatarDefault} alt='webcam avatar' />
+                <img src={gameAvatarByPosition(user.gameAvatars, 1).downloadUrl || avatarDefault} alt='webcam avatar' />
             </div>
         )
     }
