@@ -15,16 +15,16 @@ export class UsersController {
 
   @Post(':userId')
   async updateUser(@Param('userId') userId: string, @Body() data: updateUserRequest) {
-    return this.databaseService.updateUser(Number(userId), data);
+    return this.databaseService.updateUser(userId, data);
   }
 
   @Delete(':userId')
   async deleteUser(@Param('userId') userId: string) {
-    return this.databaseService.deleteUser(Number(userId));
+    return this.databaseService.deleteUser(userId);
   }
 
   @Get(':userId')
   async getByUserId(@Param('userId') userId: string) {
-    return this.databaseService.getUserById(Number(userId));
+    return this.databaseService.getUserById(userId);
   }
 }

@@ -20,7 +20,7 @@ export class AuthService {
         return newUser;
     }
 
-    async findUser(id: number) {
+    async findUser(id: string) {
         const user = await this.databaseService.getUserById(id);
         return user;
     }

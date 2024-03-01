@@ -10,21 +10,47 @@ generator client {
 }
 
 model users {
-  id          Int     @id @default(autoincrement())
-  displayName String?
-  email       String  @unique
-  username    String? 
+  id          String    @id @default(uuid())
+  email       String    @unique
   password    String?
+  displayName String?
   avatar      String?
 }
 
 model session {
-  id       Int       @id @default(autoincrement())
-  sid      String
-  sess     Json
-  expire   DateTime
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime? @updatedAt @db.Timestamp(6)
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sid       String
+  sess      Json
+  expire    DateTime
+  createdAt DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt DateTime?   @updatedAt @db.Timestamp(6)
 
   @@unique([sid])
+}
+
+model files {
+  id        String   @id @default(uuid())
+  userId    String
+  filename  String?
+  size      Int      @default(0)
+  mime      String?
+  type      String?
+  metadata  String?
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+  
+  @@map(name: "files")
+}
+
+model notifications {
+  id          String   @id @default(uuid())
+  senderId    String
+  recipientId String
+  type        String?
+  data        String
+  seen        Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @map(name: "updated_at")
+  
+  @@map(name: "notifications")
 }

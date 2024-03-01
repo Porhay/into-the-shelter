@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Param, Post, Res,
+  Body, Controller, Get, Param, Post, Query, Req, Res,
   UploadedFiles, UseInterceptors
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -15,13 +15,17 @@ export class UploadsController {
 
   @Post('')
   @UseInterceptors(FilesInterceptor('files', 4, multerConfig))
-  async filesUpload(@UploadedFiles() files: Array<Express.Multer.File>, @Param('userId') userId: string, ) {
-    return this.uploadsService.filesUpload(userId, files)
+  async filesUpload(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Param('userId') userId: string,
+    @Body('type') type: string
+  ) {
+    return this.uploadsService.filesUpload(userId, files, type)
   }
 
   @Get(':fileId/')
-  async getFile() {
-    return this.uploadsService.getFile();
+  async getFile(@Param('userId') userId: string, @Query('type') type: string) {
+    return this.uploadsService.getFiles(userId, type);
   }
 
   @Post('update-background')

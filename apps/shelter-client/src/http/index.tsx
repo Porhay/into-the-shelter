@@ -35,12 +35,14 @@ export const updateBackgroundReq = async (userId: string | undefined) => {
     }
 }
 
-export const handleUploadReq = async (userId: string | undefined, files: any[]) => {
+export const handleUploadReq = async (userId: string | undefined, files: any[], type: string) => {
     if (files.length > 0) {
       const formData = new FormData();
       files.forEach(file => {
-        formData.append('files', file); // Make sure 'files' matches the name expected by your NestJS backend
+        formData.append('files', file);
+        formData.append('type', type);
       });
+      
   
       try {
         const response = await gatewayHost.post(`api/users/${userId}/files`, formData, {
@@ -50,6 +52,7 @@ export const handleUploadReq = async (userId: string | undefined, files: any[]) 
         });
   
         console.log('Files uploaded successfully:', response.data);
+        return response.data
       } catch (error) {
         console.error('Error uploading files:', error);
       }

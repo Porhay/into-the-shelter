@@ -4,38 +4,78 @@ import * as path from 'path';
 import * as FormData from 'form-data';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { FirebaseService } from '@app/common'
+import { DatabaseService, FirebaseService } from '@app/common'
+import { CreateFileDto } from '@app/common/database/dto/create-file.dto';
 
 
 @Injectable()
 export class UploadsService {
     constructor(
         private readonly configService: ConfigService,
-        private readonly firebaseService: FirebaseService
+        private readonly firebaseService: FirebaseService,
+        private readonly databaseService: DatabaseService
     ) { }
 
-    async filesUpload(userId, files: any): Promise<any> {
-        // const {mimetype, filename, size} = req.files[0]
-
-        const downloadUrlsWithId: { downloadUrl: string, fileId?: any }[] = []
-        for (const file of files) {
-            // const { mimetype, filename, size } = file
-            const dUrl = await this.firebaseService.singleUpload(file)
-
-            // const file = await dal.files.create({
-            //     userId: userId,
-            //     filename: filename,
-            //     size: size,
-            //     mime: mimetype,
-            // })
-            // const user = await dal.users.updateUserFields(userId, {image: file.id})
-            downloadUrlsWithId.push({ downloadUrl: dUrl }) //, fileId: file.id
-        }
-        return downloadUrlsWithId
+    private deleteLocal(files: any) {
+        files.forEach((element: { filename: string; }) => {
+            fs.unlink(path.join('data/images', element.filename), (err) => err ? console.error('Error deleting local file:', err) :
+                console.log('Local file deleted successfully.'))
+        });
+        return
     }
 
-    getFile(): object {
-        return null
+    async filesUpload(userId: string, files: any, fileType: string): Promise<any> {
+        let remainPositions: number[] = []
+
+        if (fileType === 'avatar' && files.length > 1) {
+            return this.deleteLocal(files)
+        }
+        if (fileType === 'gameAvatar') {
+            const dbFiles = await this.databaseService.getFilesByUserId(userId, fileType)
+
+            // max length for game avatars is reached. Delete local file only.
+            if (dbFiles && dbFiles.length >= 4) {
+                return this.deleteLocal(files)
+            }
+
+            if (dbFiles) {
+                const takenPositions: number[] = []
+                dbFiles.forEach(f => takenPositions.push(JSON.parse(f.metadata).position));
+                takenPositions.sort((a, b) => a - b); // sort from min to max
+                remainPositions = [1, 2, 3, 4].filter(elem => !takenPositions.includes(elem)); // keep only in free fields
+            }
+        }
+
+        const uploadedFiles = []
+        for (const file of files) {
+            const downloadUrl = await this.firebaseService.singleUpload(file)
+            const context: CreateFileDto = {
+                userId: userId,
+                filename: file.filename,
+                size: file.size,
+                mime: file.mimetype,
+            }
+
+            if (fileType) {
+                context.type = fileType // ie: gameAvatar or avatar
+            }
+            if (fileType && fileType === 'gameAvatar') {
+                context.metadata = JSON.stringify({ position: remainPositions.shift() }) // get only first and delete from arr
+            }
+            if (fileType && fileType === 'avatar') {
+                this.databaseService.updateUser(userId, { avatar: downloadUrl })
+            }
+
+            const dbFile = await this.databaseService.createFile(context)
+            console.log(`File created, id:${dbFile.id}`);
+            dbFile.metadata = JSON.parse(dbFile.metadata)
+            uploadedFiles.push({ downloadUrl: downloadUrl, ...dbFile })
+        }
+        return uploadedFiles
+    }
+
+    getFiles(userId: string, type: string): object {
+        return this.databaseService.getFilesByUserId(userId, type)
     }
 
     async updateBackground(): Promise<any> {
