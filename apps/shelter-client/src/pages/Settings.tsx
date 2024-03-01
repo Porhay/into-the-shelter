@@ -36,13 +36,28 @@ const SettingsPage = () => {
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>, type: string) => {
         if (e.target.files) {
             const filesArray = Array.from(e.target.files);
-            // const response = await handleUploadReq(user.userId, filesArray, 'gameAvatar')
-            const response = await handleUploadReq(user.userId, filesArray, 'avatar')
-            dispatch(updateUser({ avatar: response[0].downloadUrl }));
+            const response = await handleUploadReq(user.userId, filesArray, type)
+            console.log('handleUploadReq', response);
+
+            switch (type) {
+                case 'avatar':
+                    dispatch(updateUser({ avatar: response[0].downloadUrl }));
+                    break;
+                case 'gameAvatar':
+                    dispatch(updateUser({
+                        gameAvatars: [
+                            ...user.gameAvatars || [],
+                            ...response
+                            // ...response.filter((e: { downloadUrl: string; metadata: any; }) => e.downloadUrl || e.metadata)
+                        ]
+                    }));
+                    break;
+            }
+
         }
     };
-    const handIngameAvatarDelete = (indexOfAvatar: any) => {
-        user.ingameAvatars?.splice(indexOfAvatar, indexOfAvatar);
+    const handleIngameAvatarDelete = (indexOfAvatar: any) => {
+        // user.gameAvatars?.splice(indexOfAvatar, indexOfAvatar);
     }
     const handleButtonClick = () => {
         // Trigger the click event of the hidden file input
@@ -58,6 +73,13 @@ const SettingsPage = () => {
         ref1.current.classList.remove('show');
         ref2.current.classList.remove('show');
     }
+    const urlByPosition = (position: number) => {
+        const url = user.gameAvatars?.find(elem => elem.metadata.position === position).downloadUrl
+        console.log(url);
+
+        return url
+    }
+
 
     return (
         <div className="settings-page-container">
@@ -116,8 +138,8 @@ const SettingsPage = () => {
                     <div className='settings-form avatar-container'>
                         <div className='avatar-block'>
                             <div className='avatar-ingame'>
-                                <img className='avatar-main' src={user.avatar || avatarDefault} />
-                                <div className='close' onClick={(e) => { }}></div>
+                                <img className='avatar-main' src={urlByPosition(1) || user.avatar || avatarDefault} />
+                                <div className='close' onClick={index => { handleIngameAvatarDelete(index) }}></div>
                             </div>
                             <div className='avatar-change'>
                                 <div className='avatar-add'>
@@ -134,20 +156,22 @@ const SettingsPage = () => {
                                     </label>
                                 </div>
                                 {
-                                    user.ingameAvatars?.map((avatar, index) => {
-                                        if (avatar === 'default') {
+                                    user.gameAvatars?.filter(e => e.metadata.position !== 1).map(elem => {
+
+                                        if (elem.downloadUrl === 'default') {
                                             return (
                                                 <div className='avatar-mini default'>
-                                                    <div className='close' onClick={(e) => { }}></div>
+                                                    <div className='close'></div>
                                                 </div>
                                             )
                                         } else {
                                             return (
                                                 <div className='avatar-mini'>
-                                                    <img src={avatar} />
-                                                    <div className='close' onClick={(index) => { handIngameAvatarDelete(index) }}></div>
+                                                    <img src={urlByPosition(elem.metadata.position)} />
+                                                    <div className='close' onClick={() => handleIngameAvatarDelete(2)}></div>
                                                 </div>
                                             )
+
                                         }
                                     })
                                 }

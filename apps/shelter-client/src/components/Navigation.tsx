@@ -29,28 +29,27 @@ const Navigation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const fillIngameAvatars = () => {
-        const ingameAvatars: any = []
-        const arr = []        
-        if (ingameAvatars.length < 3) {
-            for (let i = 0; i < 3 - ingameAvatars.length; i++) {
-                arr.push('default')
+    const fillGameAvatars = (gameAvatars: any) => {
+        const arr = []
+        if (gameAvatars.length <= 4) {
+            for (let i = 0; i < 3 - gameAvatars.length; i++) {
+                arr.push({downloadUrl: 'default'})
             }
         }
-        return [...arr, ...ingameAvatars]
+        return [...arr, ...gameAvatars]
     }
 
     useEffect(() => {
         const userId = cookieHelper.getCookie('userId')
         const userSessionId = cookieHelper.getCookie('userSessionId')
         if (userId) {
-            getUserReq(String(userId)).then((data: any) => {
+            getUserReq(String(userId)).then((data: any) => {                
                 dispatch(updateUser({
                     userId,
                     userSessionId,
                     displayName: data ? data.displayName : 'stranger',
                     avatar: data ? data.avatar : null,
-                    ingameAvatars: fillIngameAvatars()
+                    gameAvatars: fillGameAvatars(data.gameAvatars || [])
                 }));
             })
         }
