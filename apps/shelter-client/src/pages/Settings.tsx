@@ -37,7 +37,6 @@ const SettingsPage = () => {
         if (e.target.files) {
             const filesArray = Array.from(e.target.files);
             const response = await handleUploadReq(user.userId, filesArray, type)
-            console.log('handleUploadReq', response);
 
             switch (type) {
                 case 'avatar':
@@ -75,8 +74,6 @@ const SettingsPage = () => {
     }
     const urlByPosition = (position: number) => {
         const url = user.gameAvatars?.find(elem => elem.metadata.position === position).downloadUrl
-        console.log(url);
-
         return url
     }
 
@@ -157,7 +154,6 @@ const SettingsPage = () => {
                                 </div>
                                 {
                                     user.gameAvatars?.filter(e => e.metadata.position !== 1).map(elem => {
-
                                         if (elem.downloadUrl === 'default') {
                                             return (
                                                 <div className='avatar-mini default'>
