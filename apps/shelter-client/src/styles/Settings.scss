@@ -1,3 +1,5 @@
+$image-border: 1px solid rgb(255, 255, 255, 0.2);;
+
 .settings-page-container {
     display: flex;
     justify-content: center;
@@ -12,16 +14,39 @@
     padding: 0;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 30px 0;
-    
-    pre {
-        background-color: rgba(0, 0, 0, 0.5);
-        padding: 40px;
+
+    .settings-block-container {
+        display: grid;
+        grid-template-columns: 80% 15%;
+        column-gap: 5%;
     }
 
-    .settings-block {
+    .settings-underline {
+        height: 1px;
+        background-color: #fff;
+        margin-top: 10px;
+        display: block;
+        border: none;
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            display: block;
+            height: 0.5px;
+            background-color: rgb(255, 255, 255);
+        }
+    }
+
+    .settings-block-userdata {
+        width: 100%;
+        height: fit-content;
+    }
+
+    .settings-block, .settings-block-container {
+        position: relative;
         width: 40vw;
         background-color: #000;
-        border: 1px solid rgb(255, 255, 255, 0.2);
+        border: $image-border;
         padding: 20px 20px;
         margin-bottom: 20px;
 
@@ -35,38 +60,69 @@
         font-size: 20px;
         position: relative;
         margin: 0;
-
-        &::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background-color: #fff;
-            margin-top: 20px;
-        }
     }
 
-    .settings-text, span {
-        padding: 20px 0 5px 0;
+    .settings-avatar {
+        position: relative;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        border: $image-border;
+    }
+
+    .settings-avatar-background {
+        display: none;
+        position: absolute;
+        background-color: #000;
+        width: 100%;
+        height: 100%;
+        opacity: .5;
+    }
+
+    .settings-avatar-change {
+        display: flex;
+        justify-content: center;
+    }
+
+    .settings-avatar-upload {
+        display: none;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        filter: invert(100%);
+        margin: 50% 0;
+        opacity: 1;
+    }
+
+    .settings-avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .settings-text {
+        padding: 5px 0 5px 0;
         margin: 0;
         font-size: 12px;
         font-weight: 300;
     }
 
+    .settings-nickname {
+        padding: 0;
+    }
+
     .settings-form {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
     }
 
     .settings-input {
-        width: 80%;
+        width: 85%;
         padding: 8px;
         border: 1px solid #ccc;
         background-color: #000;
         border-radius: 4px;
-        // margin-right: 6px;
+        margin-right: 10px;
         color: #ffffff;
         outline: none;
     }
@@ -86,17 +142,44 @@
     .avatar-block {
         width: 100%;
         display: grid;
-        grid-template-columns: 70% 25%;
-        column-gap: 5%;
+        grid-template-columns: 75% 22%;
+        column-gap: 3%;
     }
 
     .avatar-ingame {
+        position: relative;
         height: 20vw;
         display: flex;
         justify-content: center;
         align-items: center;
         background-color: rgba(51, 51, 51, 0.5);
         cursor: pointer;
+        border: $image-border;
+
+        .close {
+            top: 5px;
+            right: 5px;
+            width: 7%;
+            height: 9%;
+
+            &::after {
+                width: 3px;
+                height: 90%;
+                background-color: #ffffff;
+                transform: rotate(45deg);
+                right: 44%;
+                top: 5%;
+            }
+            
+            &::before {
+                width: 3px;
+                height: 90%;
+                background-color: #ffffff;
+                transform: rotate(-45deg);
+                left: 48%;
+                top: 5%;
+            }
+        }
     }
 
     .avatar-main{
@@ -113,6 +196,7 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        border: $image-border;
     }
 
     .avatar-change {
@@ -124,7 +208,8 @@
 
     .avatar-mini {
         width: 100%;
-        height: 22%;
+        height: 100%;
+        border: $image-border;
 
         img {
             width: 100%;
@@ -132,11 +217,56 @@
             object-fit: cover;
         }
     }
-
     
     .default {
         width: 100%;
         height: 22%;
         background-color: rgb(255, 255, 255);
+        position: relative;
+    }
+
+    .close {
+        width: 15%;
+        height: 25%;
+        background-color: rgb(255, 0, 81);
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        cursor: pointer;
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 90%;
+            background-color: #ffffff;
+            transform: rotate(45deg);
+            right: 43%;
+            top: 5%;
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 90%;
+            background-color: #ffffff;
+            transform: rotate(-45deg);
+            left: 45%;
+            top: 5%;
+        }
+    }
+
+    .show {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    .settings-page {
+        .settings-block-container {
+            grid-template-columns: 75% 20%;
+            column-gap: 5%;
+        }
     }
 }
