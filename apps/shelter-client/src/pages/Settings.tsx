@@ -4,7 +4,7 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { ChangeEvent, useRef, useState } from 'react';
-import { handleKeyDown } from '../helpers';
+import { handleKeyDown, gameAvatarUrlByPosition } from '../helpers';
 import { updateUserReq, handleUploadReq } from '../http/index'
 import { updateUser } from '../redux/reducers/userSlice';
 import penIcon from '../assets/icons/pen-icon.png';
@@ -72,10 +72,6 @@ const SettingsPage = () => {
         ref1.current.classList.remove('show');
         ref2.current.classList.remove('show');
     }
-    const urlByPosition = (position: number) => {
-        const url = user.gameAvatars?.find(elem => elem.metadata.position === position).downloadUrl
-        return url
-    }
 
 
     return (
@@ -135,7 +131,7 @@ const SettingsPage = () => {
                     <div className='settings-form avatar-container'>
                         <div className='avatar-block'>
                             <div className='avatar-ingame'>
-                                <img className='avatar-main' src={urlByPosition(1) || user.avatar || avatarDefault} />
+                                <img className='avatar-main' src={gameAvatarUrlByPosition(user.gameAvatars, 1) || user.avatar || avatarDefault} />
                                 <div className='close' onClick={index => { handleIngameAvatarDelete(index) }}></div>
                             </div>
                             <div className='avatar-change'>
@@ -163,7 +159,7 @@ const SettingsPage = () => {
                                         } else {
                                             return (
                                                 <div className='avatar-mini'>
-                                                    <img src={urlByPosition(elem.metadata.position)} />
+                                                    <img src={gameAvatarUrlByPosition(user.gameAvatars, elem.metadata.position)} />
                                                     <div className='close' onClick={() => handleIngameAvatarDelete(2)}></div>
                                                 </div>
                                             )

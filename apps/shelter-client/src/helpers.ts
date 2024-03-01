@@ -55,4 +55,9 @@ export const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, func: Fu
     if (e.key === 'Enter') {
         func()
     }
-  }
+}
+
+export const gameAvatarUrlByPosition = (gameAvatars: any, position: number) => {
+    const url = gameAvatars?.find((elem: { metadata: { position: number; }; }) => elem.metadata.position === position).downloadUrl || null
+    return url
+}
