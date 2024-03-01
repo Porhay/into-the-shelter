@@ -33,7 +33,7 @@ const SettingsPage = () => {
         dispatch(updateUser({ displayName: updatedUser.displayName }));
         updateState({ inputName: '' });
     };
-    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>, type: string) => {
         if (e.target.files) {
             const filesArray = Array.from(e.target.files);
             // const response = await handleUploadReq(user.userId, filesArray, 'gameAvatar')
@@ -66,7 +66,7 @@ const SettingsPage = () => {
                 <div className='settings-block-container'>
                     <div className='settings-block-userdata'>
                         <p className='settings-title'>User settings</p>
-                        <hr className='settings-underline'/>
+                        <hr className='settings-underline' />
 
                         <div className='settings-nickname'>
                             <p className='settings-text'>Change usename</p>
@@ -102,7 +102,7 @@ const SettingsPage = () => {
                             className='select-image'
                             style={{ display: "none" }}
                             type="file"
-                            onChange={handleFileChange}
+                            onChange={e => handleFileChange(e, 'avatar')}
                             multiple
                         />
                     </label>
@@ -110,7 +110,7 @@ const SettingsPage = () => {
 
                 <div className='settings-block'>
                     <p className='settings-title'>In-game avatars settings</p>
-                    <hr className='settings-underline'/>
+                    <hr className='settings-underline' />
                     <p className='settings-text'>(Note that the biggest image in the field will be your ingame avatar)</p>
 
                     <div className='settings-form avatar-container'>
@@ -128,7 +128,7 @@ const SettingsPage = () => {
                                             className='select-image'
                                             style={{ display: "none" }}
                                             type="file"
-                                            onChange={handleFileChange}
+                                            onChange={e => handleFileChange(e, 'gameAvatar')}
                                             multiple
                                         />
                                     </label>
