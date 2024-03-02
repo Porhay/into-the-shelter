@@ -4,7 +4,7 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { ChangeEvent, useRef, useState } from 'react';
-import { handleKeyDown, gameAvatarByPosition } from '../helpers';
+import { handleKeyDown, gameAvatarByPosition, fillGameAvatars } from '../helpers';
 import { updateUserReq, handleUploadReq, deleteFileReq } from '../http/index'
 import { updateUser } from '../redux/reducers/userSlice';
 import penIcon from '../assets/icons/pen-icon.png';
@@ -44,10 +44,10 @@ const SettingsPage = () => {
                     break;
                 case 'gameAvatar':
                     dispatch(updateUser({
-                        gameAvatars: [
+                        gameAvatars: fillGameAvatars([
                             ...user.gameAvatars || [],
                             ...response
-                        ]
+                        ])
                     }));
                     break;
             }
@@ -57,7 +57,7 @@ const SettingsPage = () => {
     const handleGameAvatarDelete = async (fileId: string) => {
         await deleteFileReq(user.userId, fileId)
         dispatch(updateUser({
-            gameAvatars: user.gameAvatars?.filter((obj) => obj.fileId !== fileId)
+            gameAvatars: fillGameAvatars(user.gameAvatars?.filter((obj) => obj.fileId !== fileId))
         }));
     }
     const handleButtonClick = () => {
@@ -155,7 +155,7 @@ const SettingsPage = () => {
                                         if (elem.downloadUrl === 'default') {
                                             return (
                                                 <div className='avatar-mini default'>
-                                                    <div className='close'></div>
+                                                    {/* <div className='close'></div> */}
                                                 </div>
                                             )
                                         } else {

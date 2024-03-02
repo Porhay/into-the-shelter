@@ -65,3 +65,15 @@ export const gameAvatarByPosition = (gameAvatars: any, position: number) => {
         return null
     }
 }
+
+export const fillGameAvatars = (gameAvatars: any) => {
+    // filter before use
+    gameAvatars = gameAvatars.filter((avatarObj: { downloadUrl: string; }) => avatarObj.downloadUrl !== 'default')
+
+    const arr = []
+    const index = gameAvatars.length === 0 ? 3 : 4
+    for (let i = 0; i < index - gameAvatars.length; i++) {
+        arr.push({ downloadUrl: 'default', metadata: { position: 0 }, fileId: 0 })
+    }
+    return [...arr, ...gameAvatars]
+}

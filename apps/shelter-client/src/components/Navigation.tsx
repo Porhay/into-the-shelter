@@ -12,7 +12,7 @@ import { Timeline } from '../libs/Timeline';
 import { Button } from '../libs/Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper } from '../helpers'
+import { cookieHelper, fillGameAvatars } from '../helpers'
 import { getUserReq } from '../http/index'
 
 
@@ -28,16 +28,6 @@ interface IState {
 const Navigation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    const fillGameAvatars = (gameAvatars: any) => {
-        const arr = []
-        if (gameAvatars.length <= 4) {
-            for (let i = 0; i < 3 - gameAvatars.length; i++) {
-                arr.push({downloadUrl: 'default', metadata: {position: 0}, fileId: 0})
-            }
-        }
-        return [...arr, ...gameAvatars]
-    }
 
     useEffect(() => {
         const userId = cookieHelper.getCookie('userId')
