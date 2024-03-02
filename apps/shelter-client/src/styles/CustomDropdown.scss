@@ -1,0 +1,69 @@
+.login-container,
+.login-container,
+.login-container {
+  position: relative;
+  cursor: pointer;
+
+  .login-btn {
+    cursor: pointer;
+    display: flex;
+    color: white;
+    padding-bottom: 6px;
+    text-decoration: none;
+
+    img {
+      width: 20px;
+      filter: invert(100%);
+    }
+
+    span {
+      margin-left: 4px;
+    }
+
+    &:hover {
+      opacity: 1;
+      color: #000;
+
+      img {
+        filter: invert(0);
+      }
+    }
+  }
+
+
+
+  .drop-down-content {
+    min-width: 200px;
+    max-width: 300px;
+    width: auto;
+    z-index: 10;
+    right: 0;
+    color: #fff;
+    animation: growDown 300ms ease-in-out forwards;
+    transform-origin: top right;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+
+    &.notifications-content {
+      max-width: 400px;
+    }
+
+    .login-down-text {
+      padding: 0 0 4px 0;
+      border-bottom: 1px dashed #fff;
+      margin-bottom: 10px;
+    }
+    .notifications-down-text {
+      padding: 0 0 4px 0;
+      border-bottom: 1px dashed #fff;
+      margin-bottom: 10px;
+    }
+    .button-wraper {
+      margin-bottom: 2px;
+      padding: 0 5px 0 2px;
+      background-color: #242324;
+
+    }
+  }
+}
