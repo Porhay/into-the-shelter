@@ -207,9 +207,11 @@ $image-border: 1px solid rgb(255, 255, 255, 0.2);;
     }
 
     .avatar-mini {
+        position: relative;
         width: 100%;
-        height: 100%;
+        height: 4.5vw;
         border: $image-border;
+        background-color: #fff;
 
         img {
             width: 100%;
@@ -220,9 +222,8 @@ $image-border: 1px solid rgb(255, 255, 255, 0.2);;
     
     .default {
         width: 100%;
-        height: 22%;
+        height: 4.5vw;
         background-color: rgb(255, 255, 255);
-        position: relative;
     }
 
     .close {

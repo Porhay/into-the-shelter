@@ -8,6 +8,7 @@ export class PrismaService {
   }
 
   users = prisma.users;
+  files = prisma.files;
 
   async disconnect() {
     await prisma.$disconnect();

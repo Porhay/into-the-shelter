@@ -3,11 +3,15 @@ import { UploadsController } from './uploads.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from 'config';
 import { UploadsService } from './uploads.service';
-import { FirebaseModule } from '@app/common';
+import { DatabaseModule, FirebaseModule } from '@app/common';
 
 
 @Module({
-  imports: [MulterModule.register(multerConfig), FirebaseModule],
+  imports: [
+    MulterModule.register(multerConfig),
+    FirebaseModule,
+    DatabaseModule,
+  ],
   controllers: [UploadsController],
   providers: [UploadsService]
 })

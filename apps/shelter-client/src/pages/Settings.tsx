@@ -4,8 +4,8 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { ChangeEvent, useRef, useState } from 'react';
-import { handleKeyDown } from '../helpers';
-import { updateUserReq, handleUploadReq } from '../http/index'
+import { handleKeyDown, gameAvatarByPosition, fillGameAvatars } from '../helpers';
+import { updateUserReq, handleUploadReq, deleteFileReq } from '../http/index'
 import { updateUser } from '../redux/reducers/userSlice';
 import penIcon from '../assets/icons/pen-icon.png';
 
@@ -33,14 +33,32 @@ const SettingsPage = () => {
         dispatch(updateUser({ displayName: updatedUser.displayName }));
         updateState({ inputName: '' });
     };
-    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>, type: string) => {
         if (e.target.files) {
             const filesArray = Array.from(e.target.files);
-            await handleUploadReq(user.userId, filesArray)
+            const response = await handleUploadReq(user.userId, filesArray, type)
+
+            switch (type) {
+                case 'avatar':
+                    dispatch(updateUser({ avatar: response[0].downloadUrl }));
+                    break;
+                case 'gameAvatar':
+                    dispatch(updateUser({
+                        gameAvatars: fillGameAvatars([
+                            ...user.gameAvatars || [],
+                            ...response
+                        ])
+                    }));
+                    break;
+            }
+
         }
     };
-    const handIngameAvatarDelete = (indexOfAvatar: any) => {
-        user.ingameAvatars?.splice(indexOfAvatar, indexOfAvatar);
+    const handleGameAvatarDelete = async (fileId: string) => {
+        await deleteFileReq(user.userId, fileId)
+        dispatch(updateUser({
+            gameAvatars: fillGameAvatars(user.gameAvatars?.filter((obj) => obj.fileId !== fileId))
+        }));
     }
     const handleButtonClick = () => {
         // Trigger the click event of the hidden file input
@@ -57,6 +75,7 @@ const SettingsPage = () => {
         ref2.current.classList.remove('show');
     }
 
+
     return (
         <div className="settings-page-container">
             <div className='settings-page'>
@@ -64,7 +83,7 @@ const SettingsPage = () => {
                 <div className='settings-block-container'>
                     <div className='settings-block-userdata'>
                         <p className='settings-title'>User settings</p>
-                        <hr className='settings-underline'/>
+                        <hr className='settings-underline' />
 
                         <div className='settings-nickname'>
                             <p className='settings-text'>Change usename</p>
@@ -100,7 +119,7 @@ const SettingsPage = () => {
                             className='select-image'
                             style={{ display: "none" }}
                             type="file"
-                            onChange={handleFileChange}
+                            onChange={e => handleFileChange(e, 'avatar')}
                             multiple
                         />
                     </label>
@@ -108,48 +127,48 @@ const SettingsPage = () => {
 
                 <div className='settings-block'>
                     <p className='settings-title'>In-game avatars settings</p>
-                    <hr className='settings-underline'/>
+                    <hr className='settings-underline' />
                     <p className='settings-text'>(Note that the biggest image in the field will be your ingame avatar)</p>
 
                     <div className='settings-form avatar-container'>
                         <div className='avatar-block'>
                             <div className='avatar-ingame'>
-                                <img className='avatar-main' src={user.avatar || avatarDefault} />
-                                <div className='close' onClick={(e) => { }}></div>
+                                <img className='avatar-main' src={gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl || user.avatar || avatarDefault} />
+                                {gameAvatarByPosition(user.gameAvatars, 1) ? <div className='close' onClick={() => handleGameAvatarDelete(gameAvatarByPosition(user.gameAvatars, 1)?.fileId)}></div> : null}
                             </div>
                             <div className='avatar-change'>
-                                <div className='avatar-add'>
-                                    <label htmlFor="select-image">
-                                        <Button custom={true} stylesheet='add-avatar-button' icon='plusIcon' onClick={handleButtonClick} />
+                                <label htmlFor="avatar-add">
+                                    <div className='avatar-add' onClick={handleButtonClick} >
+                                        <Button custom={true} stylesheet='add-avatar-button' icon='plusIcon' />
                                         <input
                                             ref={fileInputRef}
                                             className='select-image'
                                             style={{ display: "none" }}
                                             type="file"
-                                            onChange={handleFileChange}
+                                            onChange={e => handleFileChange(e, 'gameAvatar')}
                                             multiple
                                         />
-                                    </label>
-                                </div>
+                                    </div>
+                                </label>
                                 {
-                                    user.ingameAvatars?.map((avatar, index) => {
-                                        if (avatar === 'default') {
+                                    user.gameAvatars?.filter(e => e.metadata.position !== 1).map(elem => {
+                                        if (elem.downloadUrl === 'default') {
                                             return (
                                                 <div className='avatar-mini default'>
-                                                    <div className='close' onClick={(e) => { }}></div>
+                                                    {/* <div className='close'></div> */}
                                                 </div>
                                             )
                                         } else {
                                             return (
                                                 <div className='avatar-mini'>
-                                                    <img src={avatar} />
-                                                    <div className='close' onClick={(index) => { handIngameAvatarDelete(index) }}></div>
+                                                    <img src={gameAvatarByPosition(user.gameAvatars, elem.metadata.position).downloadUrl} />
+                                                    <div className='close' onClick={() => handleGameAvatarDelete(gameAvatarByPosition(user.gameAvatars, elem.metadata.position).fileId)}></div>
                                                 </div>
                                             )
+
                                         }
                                     })
                                 }
-
                             </div>
                         </div>
                     </div>

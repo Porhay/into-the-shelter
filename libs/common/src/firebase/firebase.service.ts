@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { firebaseConfig } from 'config';
 
+
 admin.initializeApp({
   credential: admin.credential.cert(firebaseConfig as admin.ServiceAccount),
   storageBucket: firebaseConfig.storageBucket,
@@ -12,21 +13,25 @@ admin.initializeApp({
 
 @Injectable()
 export class FirebaseService {
-  constructor() {}
+  constructor() { }
 
   private bucket = admin.storage().bucket();
 
-  async getSignedUrlByFilename(filename: string): Promise<string> {
+  async getSignedUrlByFilename(filename: string, expireIn?: number): Promise<string> {
     try {
-      // Create a storage reference from the storage bucket and specify the path to the file
       const fileRef = this.bucket.file(filename);
+      const currentDate = new Date();
 
-      const expirationDate = new Date();
-      expirationDate.setDate(expirationDate.getDate() + 1); // Set expiration to 1 day from now
+      if (expireIn) {
+        const expirationDate = new Date(currentDate.setDate(currentDate.getDate() + expireIn)); // Set expiration to <expireIn> day from now
+        const [url] = await fileRef.getSignedUrl({ action: 'read', expires: expirationDate });
+        return url;
+      }
 
-      const [url] = await fileRef.getSignedUrl({ action: 'read', expires: expirationDate.toISOString() });
-
+      const expirationDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 10)); // Set the expiration to 10 years from now
+      const [url] = await fileRef.getSignedUrl({ action: 'read', expires: expirationDate });
       return url;
+
     } catch (error) {
       console.error('Error generating signed URL:', error);
       throw error;
@@ -47,6 +52,7 @@ export class FirebaseService {
       });
 
       const downloadUrl = await this.getSignedUrlByFilename(filename);
+      console.log(downloadUrl);
 
       fs.unlink(localFilePath, (err) => err ? console.error('Error deleting local file:', err) :
         console.log('Local file deleted successfully.'))
@@ -58,9 +64,8 @@ export class FirebaseService {
     }
   }
 
-  async deleteFile(file: { filename: string }): Promise<string | null> {
+  async deleteFile(filename: string): Promise<string | null> {
     try {
-      const { filename } = file;
       await this.bucket.file(filename).delete();
       return `File ${filename} deleted successfully.`;
     } catch (error) {

@@ -1,24 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { updateUserRequest } from 'apps/shelter-accounts/src/users/dto/updateUser.request';
+import { CreateFileDto } from './dto/create-file.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class DatabaseService {
   constructor(private readonly prisma: PrismaService) { }
 
-  async createUser(user: { email: string, displayName: string }) {
+  //  -----------
+  //  USERS TABLE
+  //  -----------
+
+  async createUser(user: CreateUserDto) {
     return this.prisma.users.create({
       data: user,
     });
   }
 
-  async updateUser(userId: number, data: updateUserRequest) {
+  async updateUser(userId: string, data: updateUserRequest) {
     return await this.prisma.users.update({
       where: { id: userId }, data: data
     })
   }
 
-  async deleteUser(userId: number) {
+  async deleteUser(userId: string) {
     // Check if the user exists
     const user = await this.prisma.users.findUnique({
       where: { id: userId },
@@ -34,7 +40,7 @@ export class DatabaseService {
     });
   }
 
-  async getUserById(userId: number) {
+  async getUserById(userId: string) {
     const user = await this.prisma.users.findUnique({
       where: { id: userId },
     });
@@ -56,5 +62,43 @@ export class DatabaseService {
     }
 
     return user || null;
+  }
+
+
+  //  -----------
+  //  FILES TABLE
+  //  -----------
+
+  async createFile(file: CreateFileDto) {
+    return this.prisma.files.create({
+      data: file,
+    });
+  }
+
+  async deleteFile(fileId: string) {
+    const file = await this.prisma.files.findUnique({ where: { id: fileId } });
+    if (!file) {
+      throw new Error(`File with ID ${fileId} not found`);
+    }
+
+    return this.prisma.files.delete({
+      where: { id: fileId },
+    });
+  }
+
+  async getFileById(fileId: string) {
+    const file = await this.prisma.files.findUnique({ where: { id: fileId } });
+    if (!file) {
+      throw new Error(`File with ID ${fileId} not found`);
+    }
+    return file;
+  }
+
+  async getFilesByUserId(userId: string, type: string = null) {
+    const files = await this.prisma.files.findMany({ where: { userId: userId, type: type } });
+    if (!files) {
+      return null
+    }
+    return files;
   }
 }

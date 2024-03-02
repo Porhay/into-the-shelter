@@ -12,7 +12,7 @@ import { Timeline } from '../libs/Timeline';
 import { Button } from '../libs/Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper } from '../helpers'
+import { cookieHelper, fillGameAvatars } from '../helpers'
 import { getUserReq } from '../http/index'
 
 
@@ -29,28 +29,17 @@ const Navigation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const fillIngameAvatars = () => {
-        const ingameAvatars: any = []
-        const arr = []        
-        if (ingameAvatars.length < 3) {
-            for (let i = 0; i < 3 - ingameAvatars.length; i++) {
-                arr.push('default')
-            }
-        }
-        return [...arr, ...ingameAvatars]
-    }
-
     useEffect(() => {
         const userId = cookieHelper.getCookie('userId')
         const userSessionId = cookieHelper.getCookie('userSessionId')
         if (userId) {
-            getUserReq(String(userId)).then((data: any) => {
+            getUserReq(String(userId)).then((data: any) => {                
                 dispatch(updateUser({
                     userId,
                     userSessionId,
                     displayName: data ? data.displayName : 'stranger',
                     avatar: data ? data.avatar : null,
-                    ingameAvatars: fillIngameAvatars()
+                    gameAvatars: fillGameAvatars(data.gameAvatars || [])
                 }));
             })
         }

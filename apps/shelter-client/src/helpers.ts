@@ -55,4 +55,25 @@ export const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, func: Fu
     if (e.key === 'Enter') {
         func()
     }
-  }
+}
+
+export const gameAvatarByPosition = (gameAvatars: any, position: number) => {
+    try {
+        const avatarObj = gameAvatars?.find((elem: { metadata: { position: number; }; }) => elem.metadata.position === position) || null
+        return avatarObj
+    } catch {
+        return null
+    }
+}
+
+export const fillGameAvatars = (gameAvatars: any) => {
+    // filter before use
+    gameAvatars = gameAvatars.filter((avatarObj: { downloadUrl: string; }) => avatarObj.downloadUrl !== 'default')
+
+    const arr = []
+    const index = gameAvatars.length === 0 ? 3 : 4
+    for (let i = 0; i < index - gameAvatars.length; i++) {
+        arr.push({ downloadUrl: 'default', metadata: { position: 0 }, fileId: 0 })
+    }
+    return [...arr, ...gameAvatars]
+}
