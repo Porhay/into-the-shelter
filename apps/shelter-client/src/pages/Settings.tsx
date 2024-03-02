@@ -134,12 +134,12 @@ const SettingsPage = () => {
                         <div className='avatar-block'>
                             <div className='avatar-ingame'>
                                 <img className='avatar-main' src={gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl || user.avatar || avatarDefault} />
-                                <div className='close' onClick={() => handleGameAvatarDelete(gameAvatarByPosition(user.gameAvatars, 1)?.fileId)}></div>
+                                {gameAvatarByPosition(user.gameAvatars, 1) ? <div className='close' onClick={() => handleGameAvatarDelete(gameAvatarByPosition(user.gameAvatars, 1)?.fileId)}></div> : null}
                             </div>
                             <div className='avatar-change'>
-                                <div className='avatar-add'>
-                                    <label htmlFor="select-image">
-                                        <Button custom={true} stylesheet='add-avatar-button' icon='plusIcon' onClick={handleButtonClick} />
+                                <label htmlFor="avatar-add">
+                                    <div className='avatar-add' onClick={handleButtonClick} >
+                                        <Button custom={true} stylesheet='add-avatar-button' icon='plusIcon' />
                                         <input
                                             ref={fileInputRef}
                                             className='select-image'
@@ -148,8 +148,8 @@ const SettingsPage = () => {
                                             onChange={e => handleFileChange(e, 'gameAvatar')}
                                             multiple
                                         />
-                                    </label>
-                                </div>
+                                    </div>
+                                </label>
                                 {
                                     user.gameAvatars?.filter(e => e.metadata.position !== 1).map(elem => {
                                         if (elem.downloadUrl === 'default') {
