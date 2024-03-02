@@ -29,6 +29,8 @@ COPY --from=builder /usr/src/shelter-gateway/package*.json ./
 COPY --from=builder /usr/src/shelter-gateway/libs/common/src/database/prisma/schema.prisma ./libs/common/src/database/prisma/
 COPY --from=builder /usr/src/shelter-gateway/libs/common/src/database/prisma/generated ./libs/common/src/database/prisma/generated
 
+RUN mkdir -p /usr/src/shelter-gateway/data/images
+
 # Installing only production dependencies (if any additional ones are needed)
 # This step might be redundant if all dependencies are already included in the node_modules copied from the builder
 RUN npm install --production
