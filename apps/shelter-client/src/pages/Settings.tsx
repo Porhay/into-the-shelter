@@ -17,6 +17,7 @@ const SettingsPage = () => {
     const dispatch = useDispatch();
     const user = useSelector((state: RootState) => state.user);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const avatarInputRef = useRef<HTMLInputElement>(null);
     const changeAvatarBackgroundRef = useRef<HTMLDivElement>(null);
     const changeAvatarIconRef = useRef<HTMLImageElement>(null);
 
@@ -60,12 +61,6 @@ const SettingsPage = () => {
             gameAvatars: fillGameAvatars(user.gameAvatars?.filter((obj) => obj.fileId !== fileId))
         }));
     }
-    const handleButtonClick = () => {
-        // Trigger the click event of the hidden file input
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
     const handleMouseOver = (ref1: any, ref2: any) => {
         ref1.current.classList.add('show');
         ref2.current.classList.add('show');
@@ -74,7 +69,6 @@ const SettingsPage = () => {
         ref1.current.classList.remove('show');
         ref2.current.classList.remove('show');
     }
-
 
     return (
         <div className="settings-page-container">
@@ -106,7 +100,7 @@ const SettingsPage = () => {
                         <div className='settings-avatar'
                             onMouseOver={() => handleMouseOver(changeAvatarBackgroundRef, changeAvatarIconRef)}
                             onMouseOut={() => handleMouseOut(changeAvatarBackgroundRef, changeAvatarIconRef)}
-                            onClick={handleButtonClick}
+                            onClick={() => avatarInputRef.current?.click()}
                         >
                             <div className='settings-avatar-background' ref={changeAvatarBackgroundRef}></div>
                             <div className='settings-avatar-change'>
@@ -115,7 +109,7 @@ const SettingsPage = () => {
                             <img className='settings-avatar-img' src={user.avatar || avatarDefault} />
                         </div>
                         <input
-                            ref={fileInputRef}
+                            ref={avatarInputRef}
                             className='select-image'
                             style={{ display: "none" }}
                             type="file"
@@ -128,7 +122,7 @@ const SettingsPage = () => {
                 <div className='settings-block'>
                     <p className='settings-title'>In-game avatars settings</p>
                     <hr className='settings-underline' />
-                    <p className='settings-text'>(Note that the biggest image in the field will be your ingame avatar)</p>
+                    <p className='settings-text'>(Note, that the biggest image will be used as your main game avatar. Don't worry, you can swap between another avatars directly while playing)</p>
 
                     <div className='settings-form avatar-container'>
                         <div className='avatar-block'>
@@ -138,7 +132,7 @@ const SettingsPage = () => {
                             </div>
                             <div className='avatar-change'>
                                 <label htmlFor="avatar-add">
-                                    <div className='avatar-add' onClick={handleButtonClick} >
+                                    <div className='avatar-add' onClick={() => fileInputRef.current?.click()} >
                                         <Button custom={true} stylesheet='add-avatar-button' icon='plusIcon' />
                                         <input
                                             ref={fileInputRef}
@@ -165,7 +159,6 @@ const SettingsPage = () => {
                                                     <div className='close' onClick={() => handleGameAvatarDelete(gameAvatarByPosition(user.gameAvatars, elem.metadata.position).fileId)}></div>
                                                 </div>
                                             )
-
                                         }
                                     })
                                 }
