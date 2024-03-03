@@ -118,12 +118,12 @@ const Navigation = () => {
         >
           <img className={'logo-image'} src={intoTheShelter} alt={''} />
         </div>
-        {user.userSessionId && (
+        {user.userId && (
           <div className={'nav-timeline-container'}>
             <Timeline stages={state.stages} visible={state.isVisible} />
           </div>
         )}
-        {user.userSessionId ? (
+        {user.userId ? (
           <div className={'nav-noty-user-container'}>
             <div className={'nav-noty-dropdown'}>
               <CustomDropdown

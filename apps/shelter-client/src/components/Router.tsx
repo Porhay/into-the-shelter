@@ -39,7 +39,7 @@ const Router = () => {
     const user = useSelector((state: RootState) => state.user);
     return (
         <Routes>
-            {user.userSessionId && authRoutes.map(({ path, Component }) =>
+            {user.userId && authRoutes.map(({ path, Component }) =>
                 <Route path={path} element={<Component />} />
             )}
             {publicRoutes.map(({ path, Component }) =>
