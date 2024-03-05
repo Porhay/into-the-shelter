@@ -3,7 +3,7 @@ import { useState } from "react"
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../libs/Buttons'
 import Webcam from '../libs/Webcam'
-import Chat from '../libs/Chat'
+import Chat from '../components/Chat'
 import { updateBackgroundReq } from '../http/index'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';

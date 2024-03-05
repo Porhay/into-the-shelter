@@ -4,21 +4,20 @@ import notificationsIcon from '../assets/icons/notifications-icon.png';
 import intoTheShelter from '../assets/images/Into the shelter.png';
 
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ROUTES } from '../constants';
-import { Timeline } from '../libs/Timeline';
+import { Timeline } from './Timeline';
 import { Button } from '../libs/Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper, fillGameAvatars } from '../helpers'
+import { cookieHelper, fillGameAvatars, useNavigate} from '../helpers'
 import { getUserReq } from '../http'
 import CustomDropdown from '../libs/CustomDropdown';
 
 interface IState {
   isAuth: boolean;
   stages: string[];
-  isVisible: boolean;
+  isTimelineVisible: boolean;
   isLoginOpened: boolean;
   isAccountOpened: boolean;
   isNotificationsOpened: boolean;
@@ -28,22 +27,24 @@ const Navigation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-    useEffect(() => {
-        const userId = cookieHelper.getCookie('userId')
-        const userSessionId = cookieHelper.getCookie('userSessionId')
-        if (userId) {
-            getUserReq(String(userId)).then((data: any) => {
-                dispatch(updateUser({
-                    userId,
-                    userSessionId,
-                    displayName: data ? data.displayName : 'stranger',
-                    avatar: data ? data.avatar : null,
-                    gameAvatars: fillGameAvatars(data.gameAvatars || [])
-                }));
-            })
-        }
-    }, [dispatch]);
-    const user = useSelector((state: RootState) => state.user);
+  const app = useSelector((state: RootState) => state.app);
+
+  useEffect(() => {
+    const userId = cookieHelper.getCookie('userId')
+    const userSessionId = cookieHelper.getCookie('userSessionId')
+    if (userId) {
+      getUserReq(String(userId)).then((data: any) => {
+        dispatch(updateUser({
+          userId,
+          userSessionId,
+          displayName: data ? data.displayName : 'stranger',
+          avatar: data ? data.avatar : null,
+          gameAvatars: fillGameAvatars(data.gameAvatars || [])
+        }));
+      })
+    }
+  }, [dispatch]);
+  const user = useSelector((state: RootState) => state.user);
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
@@ -51,7 +52,7 @@ const Navigation = () => {
   const [state, setState] = useState({
     isAuth: true,
     stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
-    isVisible: window.location.pathname.split('/').includes('rooms'), // TODO: update via global state
+    isTimelineVisible: false, // TODO: update via global state
     isLoginOpened: false,
     isAccountOpened: false,
     isNotificationsOpened: false,
@@ -110,22 +111,19 @@ const Navigation = () => {
 
   // Navigation
   return (
-    <div className="navigation-wrapper">
-      <div className={'navigation-container'}>
-        <div
-          className={'logo-container'}
-          onClick={() => console.log('Main page')}
-        >
-          <img className={'logo-image'} src={intoTheShelter} alt={''} />
+    <div className='navigation-wrapper'>
+      <div className='navigation-container'>
+        <div className='logo-container' onClick={() => navigate(ROUTES.MAIN)}>
+          <img className='logo-image' src={intoTheShelter} alt={''} />
         </div>
         {user.userId && (
-          <div className={'nav-timeline-container'}>
-            <Timeline stages={state.stages} visible={state.isVisible} />
+          <div className='nav-timeline-container'>
+            <Timeline stages={state.stages} visible={app.showTimeline} />
           </div>
         )}
         {user.userId ? (
-          <div className={'nav-noty-user-container'}>
-            <div className={'nav-noty-dropdown'}>
+          <div className='nav-noty-user-container'>
+            <div className='nav-noty-dropdown'>
               <CustomDropdown
                 onClose={handleCloseByType}
                 type={'notifications'}
@@ -135,13 +133,13 @@ const Navigation = () => {
               >
                 <img
                   src={notificationsIcon}
-                  className={'notification-dropdown-img'}
+                  className='notification-dropdown-img'
                   onClick={() => toggleNotificationsTo(!state.isNotificationsOpened)}
                   alt={''}
                 />
               </CustomDropdown>
             </div>
-            <div className={'nav-user-dropdown'}>
+            <div className='nav-user-dropdown'>
               <CustomDropdown
                 onClose={handleCloseByType}
                 type={'account'}
@@ -151,7 +149,7 @@ const Navigation = () => {
               >
                 <img
                   src={user.avatar || avatarDefault}
-                  className={'profile-dropdown-img'}
+                  className='profile-dropdown-img'
                   alt="profile image"
                   onClick={() => toggleAccountTo(!state.isAccountOpened)}
                 />
@@ -159,7 +157,7 @@ const Navigation = () => {
             </div>
           </div>
         ) : (
-          <div className={'nav-no-user-dropdown'}>
+          <div className='nav-no-user-dropdown'>
             <CustomDropdown
               onClose={handleCloseByType}
               type={'login'}

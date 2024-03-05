@@ -1,6 +1,6 @@
 import '../styles/Main.scss'
 import { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from '../helpers';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from "../redux/store";
 import { ROUTES } from '../constants'
@@ -28,7 +28,7 @@ const MainPage = () => {
     const handleCreateRoom = () => {
         if (state.createInput !== '') {
             navigate(ROUTES.ROOMS + '/' + state.createInput)
-            updateState({createInput: ''});
+            updateState({ createInput: '' });
         }
     }
     const joinRoom = async (roomId: string) => {
@@ -43,7 +43,7 @@ const MainPage = () => {
                     <input
                         value={state.createInput}
                         type='text'
-                        onChange={e => updateState({createInput: e.target.value})}
+                        onChange={e => updateState({ createInput: e.target.value })}
                         placeholder='Write here...'
                     />
                     <button onClick={handleCreateRoom}>NEW ROOM</button>
