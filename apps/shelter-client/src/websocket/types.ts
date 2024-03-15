@@ -42,6 +42,7 @@ export type ServerPayloads = {
     cards: any;
     isSuspended: boolean;
     scores: Record<string, number>;
+    players: any;
   };
 
   [ServerEvents.GameMessage]: {

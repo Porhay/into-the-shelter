@@ -18,6 +18,7 @@ export class Instance {
   public scores: Record<Socket['id'], number> = {};
   public delayBetweenRounds: number = 2;
   private cardsRevealedForCurrentRound: Record<number, Socket['id']> = {};
+  public players: any = [];
 
   constructor(private readonly lobby: Lobby) {
     this.initializeCards();
@@ -111,9 +112,6 @@ export class Instance {
   }
 
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
-    // client.emit(ServerEvents.ChatMessage, data);
-
-    // this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
 

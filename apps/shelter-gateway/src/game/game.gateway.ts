@@ -68,7 +68,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
     this.logger.log('LobbyCreate !');
     const lobby = this.lobbyManager.createLobby(data.mode);
-    lobby.addClient(client);
+
+    lobby.addClient(client, data.player);
 
     return {
       event: ServerEvents.GameMessage,
@@ -84,7 +85,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log('onLobbyJoin');
     console.log(data);
     
-    this.lobbyManager.joinLobby(data.lobbyId, client);
+    this.lobbyManager.joinLobby(data.lobbyId, client, data.player);
   }
 
   @SubscribeMessage(ClientEvents.LobbyLeave)

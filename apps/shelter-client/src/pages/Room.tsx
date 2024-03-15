@@ -1,5 +1,5 @@
 import '../styles/Room.scss'
-import { useEffect, useState } from "react"
+import { Key, useEffect, useState } from "react"
 import { ROUTES } from '../constants';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../components/Buttons'
@@ -24,7 +24,7 @@ interface IState {
     inviteLinkTextBox: string,
     inviteLink: string,
     fileUrl: string,
-    webcamList: number[],
+    webcamList: any[],
     charList: { icon: string, text: string }[];
 }
 const RoomPage = () => {
@@ -36,11 +36,10 @@ const RoomPage = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        
+
         const onChatSendMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = (data) => {
             console.log('cat', data);
         };
-        
 
         const onGameMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = ({ color, message }) => {
             console.log('onGameMessage', message);
@@ -53,6 +52,7 @@ const RoomPage = () => {
                 event: ClientEvents.LobbyJoin,
                 data: {
                     lobbyId: roomId,
+                    player: user
                 },
             });
         }
@@ -61,6 +61,11 @@ const RoomPage = () => {
             console.log('onLobbyState', data);
             const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
             dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
+
+            if (data.players[1]?.avatar) {
+                updateState({ webcamList: [...state.webcamList, data.players[1].avatar] })
+            }
+
         };
 
 
@@ -83,7 +88,7 @@ const RoomPage = () => {
         inviteLinkTextBox: lobby.lobbyId || '',
         inviteLink: lobby.lobbyId || '',
         fileUrl: '',
-        webcamList: [1, 2, 3, 4, 5, 6, 7],
+        webcamList: [1, 2, 3, 4, 5, 6],
         charList: [
             { icon: 'genderIcon', text: 'Чоловік' },
             { icon: 'healthIcon', text: 'Абсолютно здоровий' },
@@ -118,11 +123,13 @@ const RoomPage = () => {
     const WebcamList = () => { // Players webcam list with characteristics
         return (
             <div className="webcam-list">
-                {state.webcamList.map((blockId, index) => {
+                {state.webcamList.map((blockId: any, index: Key | null | undefined) => {
+                    console.log(blockId);
+
                     return (
                         <div className="block-container" key={index}>
                             <div className="camera-block">
-                                <img src={avatarDefault} alt='camera block' />
+                                <img src={typeof blockId === 'number' ? avatarDefault : blockId} alt='camera block' />
                             </div>
                             <div className="chars-row-container">
                                 <div className="chars-row" onClick={() => {

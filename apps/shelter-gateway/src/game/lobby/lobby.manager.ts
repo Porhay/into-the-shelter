@@ -41,9 +41,8 @@ export class LobbyManager {
     return lobby;
   }
 
-  public joinLobby(lobbyId: string, client: AuthenticatedSocket): void {
+  public joinLobby(lobbyId: string, client: AuthenticatedSocket, playerData: any): void {
     const lobby = this.lobbies.get(lobbyId);
-    console.log(212);
     if (!lobby) {
       throw new ServerException(SocketExceptions.LobbyError, 'Lobby not found');
     }
@@ -51,10 +50,10 @@ export class LobbyManager {
     if (lobby.clients.size >= lobby.maxClients) {
       throw new ServerException(SocketExceptions.LobbyError, 'Lobby already full');
     }
-    console.log(213);
-    
 
-    lobby.addClient(client);
+    playerData.id = client.id
+
+    lobby.addClient(client, playerData);
   }
 
   // Periodically clean up lobbies

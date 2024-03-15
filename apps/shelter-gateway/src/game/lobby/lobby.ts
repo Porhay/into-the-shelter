@@ -17,7 +17,7 @@ export class Lobby {
     public readonly maxClients: number,
   ) { }
 
-  public addClient(client: AuthenticatedSocket): void {
+  public addClient(client: AuthenticatedSocket, playerData: any = {}): void {
     this.clients.set(client.id, client);
     client.join(this.id);
     client.data.lobby = this;
@@ -25,6 +25,14 @@ export class Lobby {
     if (this.clients.size >= this.maxClients) {
       this.instance.triggerStart();
     }
+
+    const index = this.instance.players.findIndex((obj: { id: any; }) => obj.id === playerData.id);
+    if (index !== -1) {
+      this.instance.players[index] = playerData;
+    } else {
+      this.instance.players.push(playerData)
+    }
+    this.instance.players = this.instance.players.filter(obj => Object.keys(obj).length > 0)
 
     this.dispatchLobbyState();
   }
@@ -58,6 +66,7 @@ export class Lobby {
       cards: this.instance.cards.map(card => card.toDefinition()),
       isSuspended: this.instance.isSuspended,
       scores: this.instance.scores,
+      players: this.instance.players
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);
