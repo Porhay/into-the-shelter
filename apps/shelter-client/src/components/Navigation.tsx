@@ -2,17 +2,17 @@ import '../styles/Navigation.scss';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import notificationsIcon from '../assets/icons/notifications-icon.png';
 import intoTheShelter from '../assets/images/Into the shelter.png';
-
+import useNavigate from '../hooks/useNavigate'
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ROUTES } from '../constants';
 import { Timeline } from './Timeline';
-import { Button } from '../libs/Buttons';
+import { Button } from './Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper, fillGameAvatars, useNavigate} from '../helpers'
+import { cookieHelper, fillGameAvatars} from '../helpers'
 import { getUserReq } from '../http'
-import CustomDropdown from '../libs/CustomDropdown';
+import CustomDropdown from './CustomDropdown';
 
 interface IState {
   isAuth: boolean;

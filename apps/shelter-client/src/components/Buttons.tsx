@@ -62,9 +62,9 @@ export const Button = (props: any) => {
     }
 
     return (
-        <a className={stylesheet} onClick={props.onClick} href="javascript:;">
+        <a className={stylesheet} onClick={props.onClick}>
             {props.icon ? <Icon icon={props.icon} /> : null}
             {props.text ? <span>{props.text}</span> : null}
         </a>
-    )
+    );
 }

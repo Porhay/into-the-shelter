@@ -1,13 +1,20 @@
 import '../styles/Room.scss'
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { ROUTES } from '../constants';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
-import { Button } from '../libs/Buttons'
-import Webcam from '../libs/Webcam'
+import { Button } from '../components/Buttons'
+import Webcam from '../components/Webcam'
 import Chat from '../components/Chat'
 import { updateBackgroundReq } from '../http/index'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { gameAvatarByPosition } from '../helpers';
+import { gameAvatarByPosition, getQueryParam } from '../helpers';
+import useSocketManager from '../hooks/useSocketManager';
+import { Listener } from '../websocket/SocketManager';
+import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
+import { useNavigate, useParams } from 'react-router-dom';
+import { updateLobby } from '../redux/reducers/lobbySlice';
+
 
 
 interface IState {
@@ -22,6 +29,50 @@ interface IState {
 }
 const RoomPage = () => {
     const user = useSelector((state: RootState) => state.user);
+    const lobby = useSelector((state: RootState) => state.lobby);
+    const { sm } = useSocketManager();
+    const { roomId } = useParams();
+    const navigate = useNavigate()
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        
+        const onChatSendMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = (data) => {
+            console.log('cat', data);
+        };
+        
+
+        const onGameMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = ({ color, message }) => {
+            console.log('onGameMessage', message);
+        };
+
+        if (roomId) {
+            console.log(roomId);
+
+            sm.emit({
+                event: ClientEvents.LobbyJoin,
+                data: {
+                    lobbyId: roomId,
+                },
+            });
+        }
+
+        const onLobbyState: Listener<ServerPayloads[ServerEvents.LobbyState]> = async (data) => {
+            console.log('onLobbyState', data);
+            const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
+            dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
+        };
+
+
+        sm.registerListener(ServerEvents.LobbyState, onLobbyState);
+        sm.registerListener(ServerEvents.GameMessage, onGameMessage);
+        sm.registerListener(ServerEvents.ChatMessage, onChatSendMessage);
+
+        return () => {
+            sm.removeListener(ServerEvents.LobbyState, onLobbyState);
+            sm.removeListener(ServerEvents.GameMessage, onGameMessage);
+        };
+    }, []);
 
     // LOCAL STATE
     const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
@@ -29,8 +80,8 @@ const RoomPage = () => {
         isCameraOn: false,
         isDetailsOpened: false,
         actionTip: 'YOUR TURN',
-        inviteLinkTextBox: 'http://invite-link.com',
-        inviteLink: 'http://invite-link.com',
+        inviteLinkTextBox: lobby.lobbyId || '',
+        inviteLink: lobby.lobbyId || '',
         fileUrl: '',
         webcamList: [1, 2, 3, 4, 5, 6, 7],
         charList: [
@@ -56,9 +107,9 @@ const RoomPage = () => {
     const CharList = () => {  // User's characteristics list
         return (
             <div className="char-list-container">
-                {state.charList.map(char => {
+                {state.charList.map((char, index) => {
                     return (
-                        <Button icon={char.icon} text={char.text} onClick={() => console.log(char)} />
+                        <Button key={index} icon={char.icon} text={char.text} onClick={() => console.log(char)} />
                     )
                 })}
             </div>
@@ -67,9 +118,9 @@ const RoomPage = () => {
     const WebcamList = () => { // Players webcam list with characteristics
         return (
             <div className="webcam-list">
-                {state.webcamList.map(blockId => {
+                {state.webcamList.map((blockId, index) => {
                     return (
-                        <div className="block-container">
+                        <div className="block-container" key={index}>
                             <div className="camera-block">
                                 <img src={avatarDefault} alt='camera block' />
                             </div>
@@ -77,7 +128,7 @@ const RoomPage = () => {
                                 <div className="chars-row" onClick={() => {
                                     updateState({ isDetailsOpened: !state.isDetailsOpened })
                                 }}>
-                                    {state.charList.map(char => <Button icon={char.icon} custom={true} stylesheet="bottom-icon" />)}
+                                    {state.charList.map((char, index) => <Button icon={char.icon} custom={true} stylesheet="bottom-icon" key={index} />)}
                                 </div>
                             </div>
 

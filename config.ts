@@ -36,6 +36,7 @@ const CLIENT_URL: string = isProduction ? process.env.CLIENT_URL || '' : 'http:/
 const ML_URL: string = isProduction ? process.env.ML_URL || '' : 'http://localhost:8008'; // or replace localhost with docker container name (http://shelter-ml:8008)
 
 
+// GENERAL CONFIGS
 export const multerConfig: MulterModuleOptions = {
     storage: diskStorage({
         destination: (req, file, cb) => {
@@ -48,7 +49,10 @@ export const multerConfig: MulterModuleOptions = {
     }),
 };
 
+export const LOBBY_MAX_LIFETIME = 60 * 60 * 1000; // 1h
 
+
+// MODULE CONFINGS
 export default () => ({
     isProduction,
     DATABASE_URL,

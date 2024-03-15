@@ -1,5 +1,5 @@
 import '../styles/Settings.scss';
-import { Button } from '../libs/Buttons';
+import { Button } from '../components/Buttons';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';

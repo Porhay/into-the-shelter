@@ -40,10 +40,10 @@ const Router = () => {
     return (
         <Routes>
             {user.userId && authRoutes.map(({ path, Component }) =>
-                <Route path={path} element={<Component />} />
+                <Route path={path} element={<Component />} key={path} />
             )}
             {publicRoutes.map(({ path, Component }) =>
-                <Route path={path} element={<Component />} />
+                <Route path={path} element={<Component />} key={path} />
             )}
             <Route path='*' element={<WelcomePage />} />
         </Routes>
