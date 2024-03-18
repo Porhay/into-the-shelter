@@ -32,6 +32,7 @@ export enum ServerEvents {
 }
 export type ServerPayloads = {
   [ServerEvents.LobbyState]: {
+    isOrganizator: boolean | undefined;
     lobbyId: string;
     mode: 'solo' | 'duo';
     delayBetweenRounds: number;

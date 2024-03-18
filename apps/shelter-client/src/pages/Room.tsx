@@ -23,6 +23,7 @@ interface IState {
     inviteLinkTextBox: string,
     inviteLink: string,
     webcamList: any[],
+    isOrganizator: boolean,
     charList: { icon: string, text: string }[];
 }
 const RoomPage = () => {
@@ -32,8 +33,28 @@ const RoomPage = () => {
     const { roomId } = useParams();
     const dispatch = useDispatch();
 
-    useEffect(() => {
+    // LOCAL STATE
+    const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
+    const [state, setState] = useState<IState>({
+        isCameraOn: false,
+        isDetailsOpened: false,
+        actionTip: 'YOUR TURN',
+        inviteLinkTextBox: lobby.lobbyId || '',
+        inviteLink: lobby.lobbyId || '',
+        webcamList: [],
+        isOrganizator: false,
+        charList: [
+            { icon: 'genderIcon', text: 'Чоловік' },
+            { icon: 'healthIcon', text: 'Абсолютно здоровий' },
+            { icon: 'hobbyIcon', text: 'Комп. ігри' },
+            { icon: 'jobIcon', text: 'Таксист' },
+            { icon: 'phobiaIcon', text: 'Арахнофобія' },
+            { icon: 'backpackIcon', text: 'Печиво' },
+            { icon: 'additionalInfoIcon', text: 'Вміє пекти печиво' },
+        ]
+    })
 
+    useEffect(() => {
         const onChatSendMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = (data) => {
             console.log('cat', data);
         };
@@ -59,10 +80,11 @@ const RoomPage = () => {
             const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
             dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
 
-            // update action tip
+            // update action tip and isOrganizator
             const maxPlayers = 4 // TODO: get from lobby settings
             const tipStr = `Players: ${data.playersCount}/${maxPlayers}`
-            updateState({ actionTip: tipStr })
+            const isOrganizator = data.players.find((player: { isOrganizator: boolean; }) => player.isOrganizator)?.userId === user.userId
+            updateState({ actionTip: tipStr, isOrganizator: isOrganizator })
 
             // update avatars list
             const players = data.players.filter((player: { userId: string | undefined; }) => player.userId !== user.userId)
@@ -85,26 +107,6 @@ const RoomPage = () => {
             sm.removeListener(ServerEvents.ChatMessage, onChatSendMessage);
         };
     }, []);
-
-    // LOCAL STATE
-    const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
-    const [state, setState] = useState<IState>({
-        isCameraOn: false,
-        isDetailsOpened: false,
-        actionTip: 'YOUR TURN',
-        inviteLinkTextBox: lobby.lobbyId || '',
-        inviteLink: lobby.lobbyId || '',
-        webcamList: [],
-        charList: [
-            { icon: 'genderIcon', text: 'Чоловік' },
-            { icon: 'healthIcon', text: 'Абсолютно здоровий' },
-            { icon: 'hobbyIcon', text: 'Комп. ігри' },
-            { icon: 'jobIcon', text: 'Таксист' },
-            { icon: 'phobiaIcon', text: 'Арахнофобія' },
-            { icon: 'backpackIcon', text: 'Печиво' },
-            { icon: 'additionalInfoIcon', text: 'Вміє пекти печиво' },
-        ]
-    })
 
 
     // COMPONENTS
@@ -161,7 +163,11 @@ const RoomPage = () => {
                 {state.actionTip}
                 <div className="divider"></div>
                 <div>
-                    <button className="start-game-btn" onClick={handleGameStart}>START GAME</button>
+                    {
+                        state.isOrganizator
+                            ? <button className="start-game-btn" onClick={handleGameStart}>START GAME</button>
+                            : <div>Waiting for organizator</div>
+                    }
                 </div>
             </div>
         )

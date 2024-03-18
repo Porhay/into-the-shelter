@@ -29,7 +29,7 @@ export class Lobby {
     let players = this.instance.players
     const index = players.findIndex((obj: { id: any; userId: any }) => obj.id === playerData.id);
     if (index !== -1) {
-      players[index] = playerData;
+      players[index] = {...playerData, isOrganizator: true};
     } else {
       players.push(playerData)
     }
