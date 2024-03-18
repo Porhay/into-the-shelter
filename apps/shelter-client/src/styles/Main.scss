@@ -8,7 +8,8 @@
 
   .all-rooms-container {
     background-color: rgba(0, 0, 0, 0.5);
-    padding: 40px;
+    padding: 60px 100px;
+    width: 28vw;
     font-size: 14px;
 
     hr {
@@ -20,7 +21,7 @@
       /* Modern Browsers */
       color: #fff;
       margin: 6px 0 10px 0;
-
+      width: 100%;
     }
   }
 }
@@ -28,14 +29,15 @@
 
 .create-room-container {
   display: flex;
-  width: 30vw;
   margin: 0 0 10px 0;
-  font-size: 18px;
 
   .explore-text {
-    width: 69%;
+    display: flex;
+    align-items: center;
+    width: 70%;
+    font-size: 16px;
     cursor: default;
-    padding: 8px 10px;
+    padding: 8px 12px;
     color: #ffffffd9;
     border: none;
     border-radius: 4px;
@@ -46,8 +48,8 @@
 
   button {
     width: 30%;
-    font-size: 18px;
-    padding: 8px 10px;
+    font-size: 16px;
+    padding: 8px 4px;
     background-color: #faaa63ca;
     color: #3c1f07d9;
     border: none;
