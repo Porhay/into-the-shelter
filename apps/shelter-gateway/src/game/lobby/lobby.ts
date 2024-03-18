@@ -26,13 +26,16 @@ export class Lobby {
       this.instance.triggerStart();
     }
 
-    const index = this.instance.players.findIndex((obj: { id: any; }) => obj.id === playerData.id);
+    let players = this.instance.players
+    const index = players.findIndex((obj: { id: any; userId: any }) => obj.id === playerData.id);
     if (index !== -1) {
-      this.instance.players[index] = playerData;
+      players[index] = playerData;
     } else {
-      this.instance.players.push(playerData)
+      players.push(playerData)
     }
-    this.instance.players = this.instance.players.filter(obj => Object.keys(obj).length > 0)
+    players = players.filter((obj: {}) => Object.keys(obj).length > 0)
+    players = Array.from(new Map(players.map((obj: { userId: any; }) => [obj.userId, obj])).values()); // remove dublicates
+    this.instance.players = players
 
     this.dispatchLobbyState();
   }

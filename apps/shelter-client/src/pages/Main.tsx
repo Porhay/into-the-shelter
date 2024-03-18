@@ -26,7 +26,7 @@ const MainPage = () => {
         sm.emit({
             event: ClientEvents.LobbyCreate,
             data: {
-                mode: 'duo'
+                maxClients: 4
             },
         });
     }

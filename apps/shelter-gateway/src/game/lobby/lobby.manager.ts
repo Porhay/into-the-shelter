@@ -3,7 +3,6 @@ import { Cron } from '@nestjs/schedule';
 import { LOBBY_MAX_LIFETIME } from 'config';
 
 import { Lobby } from './lobby';
-import { LobbyMode } from './types';
 import { AuthenticatedSocket } from '../types';
 import { ServerException } from '../server.exception';
 import { SocketExceptions } from '../utils/SocketExceptions';
@@ -21,23 +20,9 @@ export class LobbyManager {
     client.data.lobby?.removeClient(client);
   }
 
-  public createLobby(mode: LobbyMode): Lobby {
-    let maxClients = 2;
-
-    switch (mode) {
-      case 'solo':
-        maxClients = 1;
-        break;
-
-      case 'duo':
-        maxClients = 2;
-        break;
-    }
-
+  public createLobby(maxClients: number): Lobby {
     const lobby = new Lobby(this.server, maxClients);
-
     this.lobbies.set(lobby.id, lobby);
-
     return lobby;
   }
 

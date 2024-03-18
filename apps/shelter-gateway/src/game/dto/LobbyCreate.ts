@@ -1,8 +1,8 @@
-import { IsInt, IsString, Max, Min } from 'class-validator';
+import { IsInt, IsNumber, IsString, Max, Min } from 'class-validator';
 
 export class LobbyCreateDto {
-    @IsString()
-    mode: 'solo' | 'duo';
+    @IsNumber() @Max(8) @Min(2)
+    maxClients: number;
 
     player: any;
 }

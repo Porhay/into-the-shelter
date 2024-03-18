@@ -5,7 +5,6 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../components/Buttons'
 import Webcam from '../components/Webcam'
 import Chat from '../components/Chat'
-import { updateBackgroundReq } from '../http/index'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { gameAvatarByPosition } from '../helpers';
@@ -66,10 +65,13 @@ const RoomPage = () => {
             updateState({ actionTip: tipStr })
 
             // update avatars list
-            if (data.players[1]?.avatar) {
-                updateState({ webcamList: [...state.webcamList, data.players[1].avatar] })
+            const players = data.players.filter((player: { userId: string | undefined; }) => player.userId !== user.userId)
+            for (let i = 0; i < players.length; i++) {
+                if (players.length > 1) {
+                    return updateState({ webcamList: [...state.webcamList, players[i]?.avatar] })
+                }
+                updateState({ webcamList: [players[i]?.avatar, ...state.webcamList] })
             }
-
         };
 
 
@@ -92,7 +94,7 @@ const RoomPage = () => {
         actionTip: 'YOUR TURN',
         inviteLinkTextBox: lobby.lobbyId || '',
         inviteLink: lobby.lobbyId || '',
-        webcamList: [1, 2, 3, 4, 5, 6],
+        webcamList: [],
         charList: [
             { icon: 'genderIcon', text: 'Чоловік' },
             { icon: 'healthIcon', text: 'Абсолютно здоровий' },
@@ -127,11 +129,12 @@ const RoomPage = () => {
     const WebcamList = () => { // Players webcam list with characteristics
         return (
             <div className="webcam-list">
-                {state.webcamList.map((blockId: any, index: Key | null | undefined) => {
+                {fillWithNumbers(state.webcamList).map((avatar: any, index: Key | null | undefined) => {
+
                     return (
                         <div className="block-container" key={index}>
                             <div className="camera-block">
-                                <img src={typeof blockId === 'number' ? avatarDefault : blockId} alt='camera block' />
+                                <img src={typeof avatar === 'number' ? avatarDefault : avatar} alt='camera block' />
                             </div>
                             <div className="chars-row-container">
                                 <div className="chars-row" onClick={() => {
@@ -163,6 +166,14 @@ const RoomPage = () => {
                 {state.actionTip}
             </div>
         )
+    }
+
+    // FUNCTIONS
+    const fillWithNumbers = (arr: any[]): any[] => {
+        for (let i = 1 + arr.length; i < 8; i++) {
+            arr.push(i)
+        }
+        return arr
     }
 
 

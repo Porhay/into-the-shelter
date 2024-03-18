@@ -56,18 +56,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     if (!client.data.lobby) {
       throw new ServerException(SocketExceptions.LobbyError, 'You are not in a lobby');
     }
-    // return {
-    //   event: ServerEvents.ChatMessage,
-    //   data: data,
-    // };
-    // client.emit(ServerEvents.ChatMessage, data);
     client.data.lobby.instance.sendChatMessage(data, client);
   }
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
   onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
     this.logger.log('LobbyCreate !');
-    const lobby = this.lobbyManager.createLobby(data.mode);
+    const lobby = this.lobbyManager.createLobby(data.maxClients);
 
     lobby.addClient(client, data.player);
 
