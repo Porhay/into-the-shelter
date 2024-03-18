@@ -10,9 +10,13 @@ import { Timeline } from './Timeline';
 import { Button } from './Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper, fillGameAvatars} from '../helpers'
+import { cookieHelper, fillGameAvatars } from '../helpers'
 import { getUserReq } from '../http'
 import CustomDropdown from './CustomDropdown';
+import useSocketManager from '../hooks/useSocketManager';
+import { Listener } from '../websocket/SocketManager';
+import { ServerEvents, ServerPayloads } from '../websocket/types';
+import { updateLobby } from '../redux/reducers/lobbySlice';
 
 interface IState {
   isAuth: boolean;
@@ -26,10 +30,33 @@ interface IState {
 const Navigation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { sm } = useSocketManager();
 
   const app = useSelector((state: RootState) => state.app);
+  const user = useSelector((state: RootState) => state.user);
+
 
   useEffect(() => {
+    // SOCKETS
+    sm.connect();
+
+    const onLobbyState: Listener<ServerPayloads[ServerEvents.LobbyState]> = async (data) => {
+      const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
+      dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
+      if (window.location.href !== lobbyLink) {
+        navigate(lobbyLink);
+      }
+    };
+
+    const onGameMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = ({ color, message }) => {
+      console.log('onGameMessage', message);
+    };
+
+    sm.registerListener(ServerEvents.LobbyState, onLobbyState);
+    sm.registerListener(ServerEvents.GameMessage, onGameMessage);
+
+
+    // NAVIGATION 
     const userId = cookieHelper.getCookie('userId')
     const userSessionId = cookieHelper.getCookie('userSessionId')
     if (userId) {
@@ -43,8 +70,14 @@ const Navigation = () => {
         }));
       })
     }
+
+    return () => {
+      sm.removeListener(ServerEvents.LobbyState, onLobbyState);
+      sm.removeListener(ServerEvents.GameMessage, onGameMessage);
+    };
+
   }, [dispatch]);
-  const user = useSelector((state: RootState) => state.user);
+
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>

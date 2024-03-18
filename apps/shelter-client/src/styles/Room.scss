@@ -39,8 +39,10 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     justify-content: center;
 
     img {
-        width: 100%; /* make the image fill the width of the parent container */
-        height: 100%; /* make the image fill the height of the parent container */
+        width: 100%;
+        /* make the image fill the width of the parent container */
+        height: 100%;
+        /* make the image fill the height of the parent container */
         object-fit: cover;
         position: absolute;
         top: 50%;
@@ -66,38 +68,44 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
 .webcam-list {
     display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping to the next line */
-    justify-content: space-between; /* Distribute space between the elements */
+    flex-wrap: nowrap;
+    /* Prevent wrapping to the next line */
+    justify-content: space-between;
+    /* Distribute space between the elements */
 
     .block-container {
-        width: 20%; /* Adjust the width as needed (100% / 8 - margin) */
-        box-sizing: border-box; /* Include padding and border in the width calculation */
-        
+        width: 20%;
+        /* Adjust the width as needed (100% / 8 - margin) */
+        box-sizing: border-box;
+        /* Include padding and border in the width calculation */
+
         padding: 2px 0;
         z-index: 2;
         position: relative;
         border: black solid 1px;
-        
+
 
         .camera-block {
             position: relative;
             color: white;
             text-align: center;
             background-color: #fff;
-            
+
             // width: 180px;
             height: 140px;
             display: flex;
             justify-content: center;
 
             img {
-                width: 100%; /* make the image fill the width of the parent container */
-                height: 100%; /* make the image fill the height of the parent container */
+                width: 100%;
+                /* make the image fill the width of the parent container */
+                height: 100%;
+                /* make the image fill the height of the parent container */
                 object-fit: cover;
                 position: absolute;
                 top: 50%;
                 left: 50%;
-                transform: translate(-50%, -50%);  
+                transform: translate(-50%, -50%);
             }
         }
 
@@ -106,7 +114,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             justify-content: center;
         }
 
-        .chars-row{
+        .chars-row {
             position: absolute;
             bottom: 0;
             display: flex;
@@ -123,16 +131,19 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     animation: growDown 300ms ease-in-out forwards;
     transform-origin: top center;
     position: absolute;
-    background-color:rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.6);
     width: 100%;
 }
+
 @keyframes growDown {
     0% {
         transform: scaleY(0)
     }
+
     80% {
         transform: scaleY(1.09)
     }
+
     100% {
         transform: scaleY(1)
     }
@@ -152,7 +163,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
 .action-tip-container {
     position: absolute;
-    cursor: pointer;
+    cursor: default;
     font-size: 24px;
     font-weight: 400;
     top: 50%;

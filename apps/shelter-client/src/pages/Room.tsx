@@ -8,7 +8,7 @@ import Chat from '../components/Chat'
 import { updateBackgroundReq } from '../http/index'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { gameAvatarByPosition, getQueryParam } from '../helpers';
+import { gameAvatarByPosition } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
@@ -23,7 +23,6 @@ interface IState {
     actionTip: string,
     inviteLinkTextBox: string,
     inviteLink: string,
-    fileUrl: string,
     webcamList: any[],
     charList: { icon: string, text: string }[];
 }
@@ -32,7 +31,6 @@ const RoomPage = () => {
     const lobby = useSelector((state: RootState) => state.lobby);
     const { sm } = useSocketManager();
     const { roomId } = useParams();
-    const navigate = useNavigate()
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -46,8 +44,6 @@ const RoomPage = () => {
         };
 
         if (roomId) {
-            console.log(roomId);
-
             sm.emit({
                 event: ClientEvents.LobbyJoin,
                 data: {
@@ -59,9 +55,17 @@ const RoomPage = () => {
 
         const onLobbyState: Listener<ServerPayloads[ServerEvents.LobbyState]> = async (data) => {
             console.log('onLobbyState', data);
+
+            // update invite link
             const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
             dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
 
+            // update action tip
+            const maxPlayers = 4 // TODO: get from lobby settings
+            const tipStr = `Players: ${data.playersCount}/${maxPlayers}`
+            updateState({ actionTip: tipStr })
+
+            // update avatars list
             if (data.players[1]?.avatar) {
                 updateState({ webcamList: [...state.webcamList, data.players[1].avatar] })
             }
@@ -76,6 +80,7 @@ const RoomPage = () => {
         return () => {
             sm.removeListener(ServerEvents.LobbyState, onLobbyState);
             sm.removeListener(ServerEvents.GameMessage, onGameMessage);
+            sm.removeListener(ServerEvents.ChatMessage, onChatSendMessage);
         };
     }, []);
 
@@ -87,7 +92,6 @@ const RoomPage = () => {
         actionTip: 'YOUR TURN',
         inviteLinkTextBox: lobby.lobbyId || '',
         inviteLink: lobby.lobbyId || '',
-        fileUrl: '',
         webcamList: [1, 2, 3, 4, 5, 6],
         charList: [
             { icon: 'genderIcon', text: 'Чоловік' },
@@ -105,7 +109,7 @@ const RoomPage = () => {
     const Avatar = () => { // Avatar. Should be updated while playing...
         return (
             <div className="webcam-avatar">
-                <img src={gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl || avatarDefault} alt='webcam avatar' />
+                <img src={gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl || user.avatar} alt='webcam avatar' />
             </div>
         )
     }
@@ -124,8 +128,6 @@ const RoomPage = () => {
         return (
             <div className="webcam-list">
                 {state.webcamList.map((blockId: any, index: Key | null | undefined) => {
-                    console.log(blockId);
-
                     return (
                         <div className="block-container" key={index}>
                             <div className="camera-block">
@@ -156,15 +158,8 @@ const RoomPage = () => {
         )
     }
     const ActionTipContainer = () => {
-        const _updateBackground = async () => {
-            const data = await updateBackgroundReq(user.userId)
-            if (data) {
-                updateState({ fileUrl: data })
-            }
-        }
-
         return (
-            <div className="action-tip-container" onClick={() => _updateBackground()}>
+            <div className="action-tip-container" >
                 {state.actionTip}
             </div>
         )
