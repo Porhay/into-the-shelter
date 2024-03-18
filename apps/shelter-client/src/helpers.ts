@@ -78,6 +78,19 @@ export const fillGameAvatars = (gameAvatars: any) => {
     return [...arr, ...gameAvatars]
 }
 
+/**
+ * Fills array with numbers just to make it length to be 8 every time.
+ * @param arr 
+ * @returns 
+ */
+export const fillWithNumbers = (arr: any[]): any[] => {        
+    const res = []
+    for (let i = 1; i < 8 - arr.length; i++) {
+        res.push(i)
+    }
+    return [...arr, ...res]
+}
+
 export const getQueryParam = (name: string): string | null => {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name) || null;

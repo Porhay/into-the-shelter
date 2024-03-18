@@ -7,11 +7,11 @@ import Webcam from '../components/Webcam'
 import Chat from '../components/Chat'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { gameAvatarByPosition } from '../helpers';
+import { gameAvatarByPosition, fillWithNumbers } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 
 
@@ -115,17 +115,7 @@ const RoomPage = () => {
             </div>
         )
     }
-    const CharList = () => {  // User's characteristics list
-        return (
-            <div className="char-list-container">
-                {state.charList.map((char, index) => {
-                    return (
-                        <Button key={index} icon={char.icon} text={char.text} onClick={() => console.log(char)} />
-                    )
-                })}
-            </div>
-        )
-    }
+
     const WebcamList = () => { // Players webcam list with characteristics
         return (
             <div className="webcam-list">
@@ -160,20 +150,21 @@ const RoomPage = () => {
             </div>
         )
     }
+
     const ActionTipContainer = () => {
+        const handleGameStart = () => {
+            return 0
+        }
+
         return (
             <div className="action-tip-container" >
                 {state.actionTip}
+                <div className="divider"></div>
+                <div>
+                    <button className="start-game-btn" onClick={handleGameStart}>START GAME</button>
+                </div>
             </div>
         )
-    }
-
-    // FUNCTIONS
-    const fillWithNumbers = (arr: any[]): any[] => {
-        for (let i = 1 + arr.length; i < 8; i++) {
-            arr.push(i)
-        }
-        return arr
     }
 
 
@@ -198,7 +189,13 @@ const RoomPage = () => {
                         </div>
                     </div>
                 </div>
-                <CharList />
+                <div className="char-list-container">
+                    {state.charList.map((char, index) => {
+                        return (
+                            <Button key={index} icon={char.icon} text={char.text} onClick={() => console.log(char)} />
+                        )
+                    })}
+                </div>
             </div>
             <ActionTipContainer />
             <Chat />
