@@ -84,7 +84,7 @@ const Navigation = () => {
     setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState({
     isAuth: true,
-    stages: [{title: 'Stage 1'}, {title: 'Stage 2'}, {title: 'Stage 3'}],
+    stages: [{title: 'Open'}, {title: 'Kick', active: true}, {title: 'Open'}, {title: 'Kick'}],
     isTimelineVisible: false, // TODO: update via global state
     isLoginOpened: false,
     isAccountOpened: false,
