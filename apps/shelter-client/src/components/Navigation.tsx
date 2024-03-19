@@ -20,7 +20,7 @@ import { updateLobby } from '../redux/reducers/lobbySlice';
 
 interface IState {
   isAuth: boolean;
-  stages: string[];
+  stages: any[];
   isTimelineVisible: boolean;
   isLoginOpened: boolean;
   isAccountOpened: boolean;
@@ -84,7 +84,7 @@ const Navigation = () => {
     setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState({
     isAuth: true,
-    stages: ['Stage 1', 'Stage 2', 'Stage 3', 'Stage 4', 'Stage 5', 'Stage 6'],
+    stages: [{title: 'Stage 1'}, {title: 'Stage 2'}, {title: 'Stage 3'}],
     isTimelineVisible: false, // TODO: update via global state
     isLoginOpened: false,
     isAccountOpened: false,

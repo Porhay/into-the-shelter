@@ -7,7 +7,9 @@ export const Timeline = ({ stages, visible }: any) => {
       <div className={isVisible}>
         {stages.map((stage: any, index: number) => (
           <React.Fragment key={index}>
-            <div className="timeline-dot" />
+            <div className="timeline-dot">
+              <div className="timeline-dot-text">{stage.title}</div>
+            </div>
             {index < stages.length - 1 && <div className="timeline-line" />}
           </React.Fragment>
         ))}
