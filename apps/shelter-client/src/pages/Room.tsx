@@ -1,6 +1,5 @@
 import '../styles/Room.scss'
 import { Key, useEffect, useState } from "react"
-import { ROUTES } from '../constants';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../components/Buttons'
 import Webcam from '../components/Webcam'
