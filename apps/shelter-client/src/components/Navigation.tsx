@@ -18,6 +18,8 @@ import { Listener } from '../websocket/SocketManager';
 import { ServerEvents, ServerPayloads } from '../websocket/types';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import { Notification, showNotification } from '../libs/notifications';
+import { updateApp } from '../redux/reducers/appSlice';
+
 
 interface IState {
   isAuth: boolean;
@@ -70,15 +72,18 @@ const Navigation = () => {
     const userId = cookieHelper.getCookie('userId')
     const userSessionId = cookieHelper.getCookie('userSessionId')
     if (userId) {
-      getUserReq(String(userId)).then((data: any) => {
-        dispatch(updateUser({
-          userId,
-          userSessionId,
-          displayName: data ? data.displayName : 'stranger',
-          avatar: data ? data.avatar : null,
-          gameAvatars: fillGameAvatars(data.gameAvatars || [])
-        }));
-      })
+      dispatch(updateApp({ loading: true }))
+      getUserReq(String(userId))
+        .then((data: any) => {
+          dispatch(updateUser({
+            userId,
+            userSessionId,
+            displayName: data ? data.displayName : 'stranger',
+            avatar: data ? data.avatar : null,
+            gameAvatars: fillGameAvatars(data.gameAvatars || [])
+          }));
+        })
+        .finally(() => dispatch(updateApp({ loading: false })))
     }
 
     return () => {
