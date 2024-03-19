@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 import { Cards } from '../utils/Cards';
 import { CardStateDefinition } from '../utils/types';
 
+// TODO: used as example, will be removed soon
 export class CardState {
   constructor(
     public readonly card: Cards,

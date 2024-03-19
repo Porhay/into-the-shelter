@@ -7,13 +7,11 @@ import Webcam from '../components/Webcam'
 import Chat from '../components/Chat'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { gameAvatarByPosition, fillWithNumbers } from '../helpers';
+import { gameAvatarByPosition, fillWithNumbers, getLobbyLink } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
 import { useParams } from 'react-router-dom';
-import { updateLobby } from '../redux/reducers/lobbySlice';
-
 
 
 interface IState {
@@ -39,8 +37,8 @@ const RoomPage = () => {
         isCameraOn: false,
         isDetailsOpened: false,
         actionTip: 'YOUR TURN',
-        inviteLinkTextBox: lobby.lobbyId || '',
-        inviteLink: lobby.lobbyId || '',
+        inviteLinkTextBox: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
+        inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
         webcamList: [],
         isOrganizator: false,
         charList: [
@@ -67,10 +65,6 @@ const RoomPage = () => {
         }
 
         const onLobbyState: Listener<ServerPayloads[ServerEvents.LobbyState]> = async (data) => {
-            // update invite link
-            const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
-            dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
-
             // update action tip and isOrganizator
             const maxPlayers = 4 // TODO: get from lobby settings
             const tipStr = `Players: ${data.playersCount}/${maxPlayers}`
@@ -191,4 +185,4 @@ const RoomPage = () => {
     )
 }
 
-export default RoomPage
+export default RoomPage;

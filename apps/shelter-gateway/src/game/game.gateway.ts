@@ -20,7 +20,6 @@ import { ServerPayloads } from './utils/ServerPayloads';
 
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
-import { RevealCardDto } from './dto/RevealCard';
 import { ChatMessage } from './dto/ChatMessage';
 
 
@@ -88,8 +87,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client.data.lobby?.removeClient(client);
   }
 
+  // TODO: used as example, will be removed soon
   @SubscribeMessage(ClientEvents.GameRevealCard)
-  onRevealCard(client: AuthenticatedSocket, data: RevealCardDto): void {
+  onRevealCard(client: AuthenticatedSocket, data: any): void {
     if (!client.data.lobby) {
       throw new ServerException(SocketExceptions.LobbyError, 'You are not in a lobby');
     }

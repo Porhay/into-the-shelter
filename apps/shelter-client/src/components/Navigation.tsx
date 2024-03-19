@@ -10,7 +10,7 @@ import { Timeline } from './Timeline';
 import { Button } from './Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper, fillGameAvatars } from '../helpers'
+import { cookieHelper, fillGameAvatars, getLobbyLink } from '../helpers'
 import { getUserReq } from '../http'
 import CustomDropdown from './CustomDropdown';
 import useSocketManager from '../hooks/useSocketManager';
@@ -21,7 +21,6 @@ import { updateLobby } from '../redux/reducers/lobbySlice';
 interface IState {
   isAuth: boolean;
   stages: any[];
-  isTimelineVisible: boolean;
   isLoginOpened: boolean;
   isAccountOpened: boolean;
   isNotificationsOpened: boolean;
@@ -35,16 +34,26 @@ const Navigation = () => {
   const app = useSelector((state: RootState) => state.app);
   const user = useSelector((state: RootState) => state.user);
 
+  // LOCAL STATE
+  const updateState = (newState: Partial<IState>): void => setState((prevState) => ({ ...prevState, ...newState }));
+  const [state, setState] = useState({
+    isAuth: true,
+    stages: [{ title: 'Open' }, { title: 'Kick', active: true }, { title: 'Open' }, { title: 'Kick' }],
+    isLoginOpened: false,
+    isAccountOpened: false,
+    isNotificationsOpened: false,
+  });
+
 
   useEffect(() => {
     // SOCKETS
     sm.connect();
 
     const onLobbyState: Listener<ServerPayloads[ServerEvents.LobbyState]> = async (data) => {
-      const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
-      dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
-      if (window.location.href !== lobbyLink) {
-        navigate(lobbyLink);
+      const route = ROUTES.ROOMS + '/' + data.lobbyId
+      dispatch(updateLobby({ lobbyLink: getLobbyLink(data.lobbyId) }));
+      if (window.location.href !== route) {
+        navigate(route);
       }
     };
 
@@ -78,18 +87,6 @@ const Navigation = () => {
 
   }, [dispatch]);
 
-
-  // LOCAL STATE
-  const updateState = (newState: Partial<IState>): void =>
-    setState((prevState) => ({ ...prevState, ...newState }));
-  const [state, setState] = useState({
-    isAuth: true,
-    stages: [{title: 'Open'}, {title: 'Kick', active: true}, {title: 'Open'}, {title: 'Kick'}],
-    isTimelineVisible: false, // TODO: update via global state
-    isLoginOpened: false,
-    isAccountOpened: false,
-    isNotificationsOpened: false,
-  });
 
   // DATASETS
   const displayName: string =

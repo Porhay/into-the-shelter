@@ -1,4 +1,3 @@
-import { v4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import { AuthenticatedSocket } from '../types';
 import { Instance } from '../instance/instance';

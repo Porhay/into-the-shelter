@@ -50,6 +50,7 @@ export class Instance {
     });
   }
 
+  // TODO: used as example, will be removed soon
   public revealCard(cardIndex: number, client: AuthenticatedSocket): void {
     if (this.isSuspended || this.hasFinished || !this.hasStarted) {
       return;
@@ -170,6 +171,7 @@ export class Instance {
     }, 1000 * this.delayBetweenRounds);
   }
 
+  // TODO: used as example, will be removed soon
   private initializeCards(): void {
     // Get only values, not identifiers
     const cards = Object.values(Cards).filter(c => Number.isInteger(c)) as Cards[];

@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface LobbyState {
   lobbyId?: string | null;
+  lobbyLink?: string | null;
 }
 
 const initialState: LobbyState = {
   lobbyId: null,
+  lobbyLink: ''
 };
 
 const lobbySlice = createSlice({

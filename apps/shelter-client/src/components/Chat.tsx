@@ -1,13 +1,10 @@
 import '../styles/Chat.scss'
 import React, { FC, useEffect, useRef, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
-import io from 'socket.io-client';
-import * as config from '../config'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { handleKeyDown } from '../helpers'
 import useSocketManager from '../hooks/useSocketManager';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize } from '@fortawesome/free-solid-svg-icons';
 
@@ -27,14 +24,6 @@ interface Message {
   avatar: string;
   timeSent: string;
 }
-
-// const socket = io(config.gatewayUrl as string, {
-//   autoConnect: true,
-//   path: '/wsapi',
-//   transports: ['websocket'],
-//   withCredentials: true,
-// });
-
 
 
 const Chat: FC = () => {
@@ -56,8 +45,6 @@ const Chat: FC = () => {
 
   useEffect(() => {
     sm.socket.on('server.chat.message', (data: Message) => {
-      console.log('Chat', data);
-
       if (data && data.message) {
         updateState({ messages: [...state.messages, data] });
       }
