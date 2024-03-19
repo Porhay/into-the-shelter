@@ -57,18 +57,26 @@ $camera-color:invert(48%) sepia(13%) saturate(3207%) hue-rotate(180deg) brightne
 .icon-text-button {
     cursor: pointer;
     display: flex;
-    color: white;
-    padding-bottom: 2px;
+    justify-content: flex-start;
     align-items: center;
+    color: white;
+    padding: 2px 5px;
     text-decoration: none;
 
     img {
-        width: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 22px;
+        height: 22px;
         filter: invert(100%);
     }
 
     span {
-        margin-left: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 5px;
     }
 
     &:hover {

@@ -1,92 +1,154 @@
 .chat-container {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   position: fixed;
   bottom: 0;
   right: 0;
-  display: flex;
-  flex-direction: column;
+  min-height: 54vh;
+  max-height: 75%;
   height: 54vh;
+  min-width: 20vh;
+  max-width: 75%;
+  width: 20vh;
   border: rgb(255, 255, 255, 0.2) solid 1px;
   background-color: rgba(0, 0, 0, 0.4);
-
   border-radius: 4px;
   margin: 4px;
-}
 
-.messages-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 12px 6px 6px;
-  width: 16vw;
-  scroll-behavior: smooth;
-}
-
-.message {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  margin-bottom: 6px;
-
-  .message-icon {
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 60px;
-    width: 30px;
-    height: 30px;
-    margin: 0 5px 0 0;
-    cursor: pointer;
-  }
-
-  .message-container {
-    width: 100%;
-    display: block;
-    align-items: center;
-    background-color: rgb(255, 255, 255);
-    min-height: 26px;
-    padding: 3px 5px;
-    border-radius: 4px;
-    overflow-wrap: break-word;
-    word-break: break-all;
-  }
-
-  p {
-    margin: 0;
-  }
-
-  .message-sender {
-    color: rgb(242, 122, 122);
-    font-size: 14px;
-  }
-
-  .message-data {
+  .resize-handle {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    top: 0;
+
+    .resize-handle-icon {
+      cursor: nwse-resize;
+      margin: 2px;
+      color: #c2c2c2;
+      font-size: 14px;
+    }
   }
 
-  .message-time {
-    align-self: center;
-    color: #848484;
-    font-size: 10px;
+  .messages-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    margin-bottom: 10px;
+
+    .message-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 5px;
+
+      .message {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        width: 95%;
+        max-width: 95%;
+        margin: 5px 0 3px 10px;
+
+        .message-icon {
+          border: 1px solid rgba(0, 0, 0, 0.3);
+          border-radius: 60px;
+          width: 30px;
+          height: 30px;
+          margin: 0 5px 0 0;
+          cursor: pointer;
+        }
+
+        .message-container {
+          width: 100%;
+          display: block;
+          align-items: center;
+          background-color: rgb(255, 255, 255);
+          min-height: 26px;
+          padding: 3px 5px;
+          border-radius: 4px;
+          overflow-wrap: break-word;
+          word-break: break-all;
+
+          .message-data {
+            display: flex;
+            justify-content: space-between;
+
+            .message-sender {
+              color: rgb(242, 122, 122);
+              font-size: 14px;
+            }
+
+            .message-time {
+              align-self: center;
+              color: #848484;
+              font-size: 10px;
+            }
+          }
+
+          .message-text {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            word-break: break-word;
+          }
+        }
+      }
+    }
+  }
+
+  .input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+    margin-bottom: 10px;
+
+    input {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   }
 }
 
-.input-container {
-  display: flex;
-  padding: 10px 12px 10px 10px;
+.messages-container::-webkit-scrollbar {
+  width: 12px;
+  background-color: transparent;
+}
 
-  input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-right: 8px;
-  }
+.messages-container::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
 
-  button {
-    padding: 8px 16px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+.messages-container::-webkit-scrollbar-button {
+  display: none;
 }
