@@ -12,4 +12,9 @@ export const ROUTES = {
     GOOGLE_LOGIN: config.accountsUrl + '/api/auth/google/login'
 }
 
-
+export const NOTIF_TYPE = {
+    SUCCESS: 'success',
+    WARN: 'warn',
+    ERROR: 'error',
+    INFO: 'info'
+}

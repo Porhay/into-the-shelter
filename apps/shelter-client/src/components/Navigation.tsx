@@ -5,7 +5,7 @@ import intoTheShelter from '../assets/images/Into the shelter.png';
 import useNavigate from '../hooks/useNavigate'
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ROUTES } from '../constants';
+import { NOTIF_TYPE, ROUTES } from '../constants';
 import { Timeline } from './Timeline';
 import { Button } from './Buttons';
 import { RootState } from '../redux/store';
@@ -17,6 +17,7 @@ import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ServerEvents, ServerPayloads } from '../websocket/types';
 import { updateLobby } from '../redux/reducers/lobbySlice';
+import { Notification, showNotification } from '../libs/notifications';
 
 interface IState {
   isAuth: boolean;
@@ -58,7 +59,7 @@ const Navigation = () => {
     };
 
     const onGameMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = ({ color, message }) => {
-      console.log('onGameMessage', message);
+      showNotification(NOTIF_TYPE.INFO, message)
     };
 
     sm.registerListener(ServerEvents.LobbyState, onLobbyState);
@@ -206,6 +207,7 @@ const Navigation = () => {
           </div>
         )}
       </div>
+      <Notification />
     </div>
   );
 };

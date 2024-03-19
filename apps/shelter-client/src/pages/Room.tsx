@@ -11,6 +11,8 @@ import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
 import { useParams } from 'react-router-dom';
+import { showNotification } from '../libs/notifications';
+import { NOTIF_TYPE } from '../constants';
 
 
 interface IState {
@@ -156,6 +158,7 @@ const RoomPage = () => {
                 <div className="link-camera-wrapper">
                     <div className="invite-link-container" onClick={() => {
                         navigator.clipboard.writeText(state.inviteLink)
+                        showNotification(NOTIF_TYPE.SUCCESS, 'Copied to clipboard!')
                         updateState({ inviteLinkTextBox: 'Copied!' })
                         setTimeout(() => updateState({ inviteLinkTextBox: state.inviteLink }), 1000)
                     }}>
