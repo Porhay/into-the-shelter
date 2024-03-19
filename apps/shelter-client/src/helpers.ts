@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { ROUTES } from './constants';
 
 class CookieHelper {
     saveCookie(key: string, value: string): void {
@@ -76,4 +77,26 @@ export const fillGameAvatars = (gameAvatars: any) => {
         arr.push({ downloadUrl: 'default', metadata: { position: 0 }, fileId: 0 })
     }
     return [...arr, ...gameAvatars]
+}
+
+/**
+ * Fills array with numbers just to make it length to be 8 every time.
+ * @param arr 
+ * @returns 
+ */
+export const fillWithNumbers = (arr: any[]): any[] => {
+    const res = []
+    for (let i = 1; i < 8 - arr.length; i++) {
+        res.push(i)
+    }
+    return [...arr, ...res]
+}
+
+export const getQueryParam = (name: string): string | null => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name) || null;
+};
+
+export const getLobbyLink = (roomId: string = '') => {
+    return `${window.location.host}${ROUTES.ROOMS + '/' + roomId}`
 }

@@ -1,0 +1,8 @@
+import { IsInt, IsNumber, IsString, Max, Min } from 'class-validator';
+
+export class LobbyCreateDto {
+    @IsNumber() @Max(8) @Min(2)
+    maxClients: number;
+
+    player: any;
+}

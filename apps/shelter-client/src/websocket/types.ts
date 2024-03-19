@@ -1,0 +1,61 @@
+
+export enum SocketExceptions {
+  UnexpectedError = 'exception.unexpected_error',
+  UnexpectedPayload = 'exception.unexpected_payload',
+  LobbyError = 'exception.lobby.error',
+  GameError = 'exception.game.error',
+}
+export type ServerExceptionResponse = {
+  exception: SocketExceptions;
+  message?: string | object;
+};
+
+export enum Events {
+  Ping = 'client.ping',
+  LobbyCreate = 'client.lobby.create',
+  LobbyJoin = 'client.lobby.join',
+  LobbyLeave = 'client.lobby.leave',
+  GameRevealCard = 'client.game.reveal_card',
+
+  Pong = 'server.pong',
+  LobbyState = 'server.lobby.state',
+  GameMessage = 'server.game.message',
+}
+
+
+
+export enum ServerEvents {
+  Pong = 'server.pong',
+  ChatMessage = 'server.chat.message',
+  LobbyState = 'server.lobby.state',
+  GameMessage = 'server.game.message',
+}
+export type ServerPayloads = {
+  [ServerEvents.LobbyState]: {
+    isOrganizator: boolean | undefined;
+    lobbyId: string;
+    mode: 'solo' | 'duo';
+    delayBetweenRounds: number;
+    hasStarted: boolean;
+    hasFinished: boolean;
+    currentRound: number;
+    playersCount: number;
+    cards: any;
+    isSuspended: boolean;
+    scores: Record<string, number>;
+    players: any;
+  };
+
+  [ServerEvents.GameMessage]: {
+    message: string;
+    color?: 'green' | 'red' | 'blue' | 'orange';
+  };
+};
+
+export enum ClientEvents {
+  Ping = 'client.ping',
+  LobbyCreate = 'client.lobby.create',
+  LobbyJoin = 'client.lobby.join',
+  LobbyLeave = 'client.lobby.leave',
+  GameRevealCard = 'client.game.reveal_card',
+}

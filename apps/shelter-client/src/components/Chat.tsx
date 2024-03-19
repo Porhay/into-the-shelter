@@ -1,11 +1,10 @@
 import '../styles/Chat.scss'
 import React, { FC, useEffect, useRef, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
-import io from 'socket.io-client';
-import * as config from '../config'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { handleKeyDown } from '../helpers'
+import useSocketManager from '../hooks/useSocketManager';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize } from '@fortawesome/free-solid-svg-icons';
 
@@ -26,9 +25,9 @@ interface Message {
   timeSent: string;
 }
 
-const socket = io(config.gatewayUrl);
 
 const Chat: FC = () => {
+  const { sm } = useSocketManager();
   const user = useSelector((state: RootState) => state.user);
   const chatRef = useRef<HTMLDivElement>(null)
   const messageTextRef = useRef<HTMLDivElement>(null)
@@ -45,7 +44,7 @@ const Chat: FC = () => {
   });
 
   useEffect(() => {
-    socket.on('message', (data: Message) => {
+    sm.socket.on('server.chat.message', (data: Message) => {
       if (data && data.message) {
         updateState({ messages: [...state.messages, data] });
       }
@@ -61,7 +60,12 @@ const Chat: FC = () => {
     if (state.newMessage.trim() !== '') {
       const date = new Date()
       const dateStr = `${date.getHours()}:${date.getMinutes()}`
-      socket.emit('message', { sender: user.displayName, message: state.newMessage, avatar: user.avatar, timeSent: dateStr });
+      sm.socket.emit('client.chat.message', {
+        sender: user.displayName,
+        message: state.newMessage,
+        avatar: user.avatar,
+        timeSent: dateStr
+      })
       updateState({ newMessage: '' });
     }
   };

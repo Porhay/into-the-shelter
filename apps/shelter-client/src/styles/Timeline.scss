@@ -2,23 +2,39 @@
     display: flex;
     align-items: center;
     flex: 8;
-    padding: 0 20px;
+    padding: 0 50px;
 }
-  
+
 .timeline-dot {
     width: 10px;
     height: 10px;
-    background-color: #ffffff;
+    background-color: #ffffff00;
     border-radius: 50%;
     position: relative;
     z-index: 1;
+
+    .timeline-dot-text {
+        position: relative;
+        color: #ffffff40;
+        font-size: 20px;
+        font-weight: 500;
+        white-space: nowrap;
+        top: -8px;
+        left: -18px;
+    }
+
+    .active {
+        color: #ffffff;
+    }
+
 }
-  
+
 .timeline-line {
     flex: 1;
     height: 2px;
-    background-color: #ffffff;
-    margin: 0 5px; /* Adjust the space between dots and lines */
+    background-color: #ffffff40;
+    margin: 0 40px;
+    /* Adjust the space between dots and lines */
     z-index: 0;
 }
 

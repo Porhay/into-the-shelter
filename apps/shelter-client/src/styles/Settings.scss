@@ -10,7 +10,7 @@ $image-border: 1px solid rgb(255, 255, 255, 0.2);;
     grid-template-columns: 50vw;
     justify-items: center;
     color: #ffffff;
-    margin: 14vh 0 0 0;
+    margin: 5vh 0;
     padding: 0;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 30px 0;
@@ -204,6 +204,10 @@ $image-border: 1px solid rgb(255, 255, 255, 0.2);;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+
+        :hover {
+            background-color: #ccc;
+        }
     }
 
     .avatar-mini {
