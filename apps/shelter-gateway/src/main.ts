@@ -12,7 +12,6 @@ async function bootstrap() {
 
   app.enableCors();
   app.setGlobalPrefix('api');
-  // app.useWebSocketAdapter(new IoAdapter(app));
   app.useWebSocketAdapter(new GameIoAdapter(app));
 
   const port = config.get('GATEWAY_PORT')

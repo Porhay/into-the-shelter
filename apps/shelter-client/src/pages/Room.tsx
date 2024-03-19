@@ -55,14 +55,7 @@ const RoomPage = () => {
     })
 
     useEffect(() => {
-        const onChatSendMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = (data) => {
-            console.log('cat', data);
-        };
-
-        const onGameMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = ({ color, message }) => {
-            console.log('onGameMessage', message);
-        };
-
+        // Join to existed lobby
         if (roomId) {
             sm.emit({
                 event: ClientEvents.LobbyJoin,
@@ -74,8 +67,6 @@ const RoomPage = () => {
         }
 
         const onLobbyState: Listener<ServerPayloads[ServerEvents.LobbyState]> = async (data) => {
-            console.log('onLobbyState', data);
-
             // update invite link
             const lobbyLink = ROUTES.ROOMS + '/' + data.lobbyId
             dispatch(updateLobby({ lobbyId: `${window.location.host}${lobbyLink}` }));
@@ -95,17 +86,8 @@ const RoomPage = () => {
                 updateState({ webcamList: [players[i]?.avatar, ...state.webcamList] })
             }
         };
-
-
         sm.registerListener(ServerEvents.LobbyState, onLobbyState);
-        sm.registerListener(ServerEvents.GameMessage, onGameMessage);
-        sm.registerListener(ServerEvents.ChatMessage, onChatSendMessage);
-
-        return () => {
-            sm.removeListener(ServerEvents.LobbyState, onLobbyState);
-            sm.removeListener(ServerEvents.GameMessage, onGameMessage);
-            sm.removeListener(ServerEvents.ChatMessage, onChatSendMessage);
-        };
+        return () => { sm.removeListener(ServerEvents.LobbyState, onLobbyState) };
     }, []);
 
 

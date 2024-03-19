@@ -1,6 +1,4 @@
-import { useDispatch } from 'react-redux';
 import { io, Socket } from 'socket.io-client';
-import { updateSockets } from '../redux/reducers/appSlice';
 import { ServerExceptionResponse, ServerEvents, ClientEvents} from './types';
 import * as config from '../config'
 
