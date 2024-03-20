@@ -96,18 +96,24 @@ const RoomPage = () => {
                 console.log('data.players:', data.players);
 
                 // update characteristics
-                const currentPlayer = data.players.find((player: { userId: string | undefined }) => player.userId === user.userId);
+                const currentPlayer = data.players.find(
+                    (player: { userId: string | undefined }) =>
+                        player.userId === user.userId,
+                );
                 if (currentPlayer.charList) {
-                    const newCharList = state.charList
-                    newCharList.forEach(playerChar => {
+                    const newCharList = state.charList;
+                    newCharList.forEach((playerChar) => {
                         // Find the matching characteristic by type
-                        const match = currentPlayer.charList.find((char: { type: string; }) => char.type === playerChar.type);
+                        const match = currentPlayer.charList.find(
+                            (char: { type: string }) =>
+                                char.type === playerChar.type,
+                        );
                         if (match) {
                             // Update the text
                             playerChar.text = match.text;
                         }
                     });
-                    updateState({ charList: newCharList })
+                    updateState({ charList: newCharList });
                 }
             }
 

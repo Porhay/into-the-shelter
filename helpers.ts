@@ -14,8 +14,6 @@ export const generateCharList = (): any[] => {
   } catch (error) {
     console.log(`ERROR: ${error}`)
   }
-  console.log(jsonData);
-
 
   const getRandomChar = (data: any, type: string) => {
     if (type === 'gender') {
