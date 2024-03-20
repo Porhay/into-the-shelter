@@ -1,9 +1,9 @@
-import '../styles/Loader.scss'
-import { Triangle } from 'react-loader-spinner'
+import '../styles/Loader.scss';
+import { Triangle } from 'react-loader-spinner';
 
 const Loader = () => {
     return (
-        <div className='loader-container'>
+        <div className="loader-container">
             <Triangle
                 visible={true}
                 height="80"
@@ -14,8 +14,6 @@ const Loader = () => {
                 wrapperClass=""
             />
         </div>
-    )
-}
+    );
+};
 export default Loader;
-
-

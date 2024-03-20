@@ -8,6 +8,7 @@ import { Cards } from '../utils/Cards';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
+import { generateCharList } from 'helpers'
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -29,12 +30,21 @@ export class Instance {
       return;
     }
 
-    this.hasStarted = true;
+    // TODO: FIX Exception show handler
+    // if (this.lobby.clients.size < this.lobby.maxClients) {
+    //   throw new ServerException(SocketExceptions.LobbyError, 'Card index invalid');
+    // }
 
+    this.hasStarted = true;
+    this.lobby.instance.players.map(player => {
+      player.charList = generateCharList()
+    });
+    this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
       color: 'blue',
       message: 'Game started !',
     });
+
   }
 
   public triggerFinish(): void {

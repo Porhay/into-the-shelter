@@ -1,19 +1,19 @@
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { NOTIF_TYPE } from '../constants'
+import { NOTIF_TYPE } from '../constants';
 
 export const showNotification = (type: string, text: string) => {
     const options: any = {
-        position: "bottom-center",
+        position: 'bottom-center',
         autoClose: 1000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: false,
         draggable: true,
         progress: undefined,
-        theme: "dark",
+        theme: 'dark',
         transition: Bounce,
-    }
+    };
 
     switch (type) {
         case NOTIF_TYPE.SUCCESS:
@@ -31,7 +31,7 @@ export const showNotification = (type: string, text: string) => {
         default:
             break;
     }
-}
+};
 
 export const Notification = () => {
     return (
@@ -47,5 +47,5 @@ export const Notification = () => {
             pauseOnHover={false}
             theme="dark"
         />
-    )
-}
+    );
+};

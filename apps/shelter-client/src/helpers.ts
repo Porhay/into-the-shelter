@@ -38,59 +38,72 @@ class CookieHelper {
 }
 export const cookieHelper = new CookieHelper();
 
-
 /**
  * Return deshes instead of input string.
  * Example: halo -> ----
  */
 export const deshCount = (string: string) => {
-    const length: number = string.split('').length
-    const dashArr: string[] = []
+    const length: number = string.split('').length;
+    const dashArr: string[] = [];
     for (let i = 0; i < length; i++) {
-        dashArr.push('-')
+        dashArr.push('-');
     }
-    return dashArr.join('')
-}
+    return dashArr.join('');
+};
 
-export const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, func: Function) => {
+export const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    func: Function,
+) => {
     if (e.key === 'Enter') {
-        func()
+        func();
     }
-}
+};
 
 export const gameAvatarByPosition = (gameAvatars: any, position: number) => {
     try {
-        const avatarObj = gameAvatars?.find((elem: { metadata: { position: number; }; }) => elem.metadata.position === position) || null
-        return avatarObj
+        const avatarObj =
+            gameAvatars?.find(
+                (elem: { metadata: { position: number } }) =>
+                    elem.metadata.position === position,
+            ) || null;
+        return avatarObj;
     } catch {
-        return null
+        return null;
     }
-}
+};
 
 export const fillGameAvatars = (gameAvatars: any) => {
     // filter before use
-    gameAvatars = gameAvatars.filter((avatarObj: { downloadUrl: string; }) => avatarObj.downloadUrl !== 'default')
+    gameAvatars = gameAvatars.filter(
+        (avatarObj: { downloadUrl: string }) =>
+            avatarObj.downloadUrl !== 'default',
+    );
 
-    const arr = []
-    const index = gameAvatars.length === 0 ? 3 : 4
+    const arr = [];
+    const index = gameAvatars.length === 0 ? 3 : 4;
     for (let i = 0; i < index - gameAvatars.length; i++) {
-        arr.push({ downloadUrl: 'default', metadata: { position: 0 }, fileId: 0 })
+        arr.push({
+            downloadUrl: 'default',
+            metadata: { position: 0 },
+            fileId: 0,
+        });
     }
-    return [...arr, ...gameAvatars]
-}
+    return [...arr, ...gameAvatars];
+};
 
 /**
  * Fills array with numbers just to make it length to be 8 every time.
- * @param arr 
- * @returns 
+ * @param arr
+ * @returns
  */
 export const fillWithNumbers = (arr: any[]): any[] => {
-    const res = []
+    const res = [];
     for (let i = 1; i < 8 - arr.length; i++) {
-        res.push(i)
+        res.push(i);
     }
-    return [...arr, ...res]
-}
+    return [...arr, ...res];
+};
 
 export const getQueryParam = (name: string): string | null => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -98,5 +111,5 @@ export const getQueryParam = (name: string): string | null => {
 };
 
 export const getLobbyLink = (roomId: string = '') => {
-    return `${window.location.host}${ROUTES.ROOMS + '/' + roomId}`
-}
+    return `${window.location.host}${ROUTES.ROOMS + '/' + roomId}`;
+};

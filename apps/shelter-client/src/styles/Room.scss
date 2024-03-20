@@ -169,13 +169,15 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     font-size: 24px;
     font-weight: 400;
     top: 50%;
-    left: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     color: #fff;
     align-items: center;
 
     .divider {
         height: 1px;
         width: 110%;
+        transform: translate(-5%, 0%);
         margin: 4px 0 0 0;
         border-bottom: 1px dashed #fff;
     }
