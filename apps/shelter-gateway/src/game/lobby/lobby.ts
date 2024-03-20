@@ -21,10 +21,6 @@ export class Lobby {
     client.join(this.id);
     client.data.lobby = this;
 
-    if (this.clients.size >= this.maxClients) {
-      this.instance.triggerStart();
-    }
-
     let players = this.instance.players
     const index = players.findIndex((obj: { id: any; userId: any }) => obj.id === playerData.id);
     if (index !== -1) {

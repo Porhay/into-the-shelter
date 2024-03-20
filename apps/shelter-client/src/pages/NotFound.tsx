@@ -1,15 +1,13 @@
-import '../styles/NotFound.scss'
+import '../styles/NotFound.scss';
 
 const NotFoundPage = () => {
-    const description: string = 'Not Found'
+    const description: string = 'Not Found';
 
     return (
         <div className="not-found-page-container">
-            <pre>
-                {description}
-            </pre>
+            <pre>{description}</pre>
         </div>
-    )
-}
+    );
+};
 
 export default NotFoundPage;

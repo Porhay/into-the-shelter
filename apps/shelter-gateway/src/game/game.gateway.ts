@@ -51,7 +51,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('client.chat.message')
   onChatMessage(client: AuthenticatedSocket, data: ChatMessage) {
-    this.logger.log(`server.chat.message ! ${JSON.stringify(data)}`);
     if (!client.data.lobby) {
       throw new ServerException(SocketExceptions.LobbyError, 'You are not in a lobby');
     }
@@ -60,7 +59,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
   onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
-    this.logger.log('LobbyCreate !');
     const lobby = this.lobbyManager.createLobby(data.maxClients);
 
     lobby.addClient(client, data.player);
@@ -76,15 +74,17 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage(ClientEvents.LobbyJoin)
   onLobbyJoin(client: AuthenticatedSocket, data: LobbyJoinDto): void {
-    this.logger.log('onLobbyJoin');
-    console.log(data);
-    
     this.lobbyManager.joinLobby(data.lobbyId, client, data.player);
   }
 
   @SubscribeMessage(ClientEvents.LobbyLeave)
   onLobbyLeave(client: AuthenticatedSocket): void {
     client.data.lobby?.removeClient(client);
+  }
+
+  @SubscribeMessage(ClientEvents.GameStart)
+  onGameStart(client: AuthenticatedSocket, data: any): void {    
+    client.data.lobby.instance.triggerStart(data, client);
   }
 
   // TODO: used as example, will be removed soon

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import { cookieHelper } from '../helpers'
-import '../styles/Welcome.scss'
-
+import { cookieHelper } from '../helpers';
+import '../styles/Welcome.scss';
 
 const WelcomePage = () => {
     const description: string =
@@ -11,7 +10,7 @@ const WelcomePage = () => {
         `Every discussion all the players should deside who should leave them\n` +
         `and die beyound the shelter.\n\n` +
         `Only half will survive!\n` +
-        `- or not :D`
+        `- or not :D`;
 
     useEffect(() => {
         // TODO: Rework in secure way
@@ -23,8 +22,16 @@ const WelcomePage = () => {
         const userId = _getQueryParam('userId');
         const userSessionId = _getQueryParam('userSessionId');
         if (userId && userSessionId) {
-            cookieHelper.setCookieWithMaxAge('userId', userId, 30 * 24 * 60 * 60); // 30 days
-            cookieHelper.setCookieWithMaxAge('userSessionId', userSessionId, 30 * 24 * 60 * 60);
+            cookieHelper.setCookieWithMaxAge(
+                'userId',
+                userId,
+                30 * 24 * 60 * 60,
+            ); // 30 days
+            cookieHelper.setCookieWithMaxAge(
+                'userSessionId',
+                userSessionId,
+                30 * 24 * 60 * 60,
+            );
         }
 
         // remove parameters from URL
@@ -34,11 +41,9 @@ const WelcomePage = () => {
 
     return (
         <div className="welcome-page-container">
-            <pre>
-                {description}
-            </pre>
+            <pre>{description}</pre>
         </div>
-    )
-}
+    );
+};
 
 export default WelcomePage;

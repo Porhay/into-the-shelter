@@ -1,4 +1,4 @@
-import * as config from './config'
+import * as config from './config';
 
 export const ROUTES = {
     /* Pages */
@@ -9,12 +9,12 @@ export const ROUTES = {
     PROFILE: '/profile',
 
     /* All other */
-    GOOGLE_LOGIN: config.accountsUrl + '/api/auth/google/login'
-}
+    GOOGLE_LOGIN: config.accountsUrl + '/api/auth/google/login',
+};
 
 export const NOTIF_TYPE = {
     SUCCESS: 'success',
     WARN: 'warn',
     ERROR: 'error',
-    INFO: 'info'
-}
+    INFO: 'info',
+};
