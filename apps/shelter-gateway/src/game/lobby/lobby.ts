@@ -22,7 +22,7 @@ export class Lobby {
     client.data.lobby = this;
 
     let players = this.instance.players
-    const index = players.findIndex((obj: { id: any; userId: any }) => obj.id === playerData.id);
+    const index = players.findIndex((obj: { socketId: any }) => obj.socketId === playerData.id);
     if (index !== -1) {
       players[index] = {...playerData};
     } else {

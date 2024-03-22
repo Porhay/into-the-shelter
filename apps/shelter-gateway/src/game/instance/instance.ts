@@ -126,6 +126,22 @@ export class Instance {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
 
+  public revealCharacteristic(charType: number, client: AuthenticatedSocket): void {
+    if (this.hasFinished || !this.hasStarted) {
+      return;
+    }
+
+    client.emit<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
+      color: 'blue',
+      message: `You revealed characteristic: ${charType}`,
+    });
+
+    const playerIndex = this.players.findIndex(player => player.socketId === client.id)
+    console.log(this.players[playerIndex]);
+
+    this.lobby.dispatchLobbyState();
+  }
+
   private transitionToNextRound(): void {
     this.isSuspended = true;
 

@@ -36,7 +36,7 @@ export class LobbyManager {
       throw new ServerException(SocketExceptions.LobbyError, 'Lobby already full');
     }
 
-    playerData.id = client.id
+    playerData.socketId = client.id
 
     lobby.addClient(client, playerData);
   }

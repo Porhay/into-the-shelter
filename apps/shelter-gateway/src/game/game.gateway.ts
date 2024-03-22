@@ -61,6 +61,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
     const lobby = this.lobbyManager.createLobby(data.maxClients);
 
+    // data.player.socketId = client.id  // Cannot set properties of undefined (setting 'socketId')
     lobby.addClient(client, data.player);
 
     return {
