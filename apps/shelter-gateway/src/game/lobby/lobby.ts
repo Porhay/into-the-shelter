@@ -26,7 +26,7 @@ export class Lobby {
     if (index !== -1) {
       players[index] = {...playerData, isOrganizator: true};
     } else {
-      players.push(playerData)
+      players.push({...playerData, isOrganizator: true}) // TODO: FIX !!!
     }
     players = players.filter((obj: {}) => Object.keys(obj).length > 0)
     players = Array.from(new Map(players.map((obj: { userId: any; }) => [obj.userId, obj])).values()); // remove dublicates
