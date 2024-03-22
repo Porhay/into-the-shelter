@@ -10,7 +10,7 @@ import { Timeline } from './Timeline';
 import { Button } from './Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper, fillGameAvatars, getLobbyLink } from '../helpers';
+import { cookieHelper, fillGameAvatars, getLobbyLink, normalizePlayers } from '../helpers';
 import { getUserReq } from '../http';
 import CustomDropdown from './CustomDropdown';
 import useSocketManager from '../hooks/useSocketManager';
@@ -34,6 +34,7 @@ const Navigation = () => {
     const { sm } = useSocketManager();
 
     const app = useSelector((state: RootState) => state.app);
+    const lobby = useSelector((state: RootState) => state.lobby);
     const user = useSelector((state: RootState) => state.user);
 
     // LOCAL STATE
@@ -71,10 +72,10 @@ const Navigation = () => {
             if (window.location.href !== route) {
                 navigate(route);
             }
-            
-            // update gamers data
-            dispatch(updateLobby({players: data.players}));
-            
+
+            // // update players data
+            // const players = normalizePlayers(data.players)
+            // dispatch(updateLobby({ players: players }));
         };
 
         const onGameMessage: Listener<

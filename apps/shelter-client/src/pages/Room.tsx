@@ -10,13 +10,14 @@ import {
     gameAvatarByPosition,
     fillWithNumbers,
     getLobbyLink,
+    normalizePlayers,
 } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
 import { useParams } from 'react-router-dom';
 import { showNotification } from '../libs/notifications';
-import { NOTIF_TYPE } from '../constants';
+import { CHAR_LIST, NOTIF_TYPE } from '../constants';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 
 interface IState {
@@ -27,7 +28,6 @@ interface IState {
     inviteLink: string;
     isOrganizator: boolean;
     charList: { type: string; icon: string; text: string }[];
-    oponentsCharLists: { type: string; icon: string; text: string }[];
 }
 const RoomPage = () => {
     const user = useSelector((state: RootState) => state.user);
@@ -49,15 +49,6 @@ const RoomPage = () => {
         isOrganizator: false,
         charList: [
             // current player's characteristics
-            { type: 'gender', icon: 'genderIcon', text: ' ' },
-            { type: 'health', icon: 'healthIcon', text: ' ' },
-            { type: 'hobby', icon: 'hobbyIcon', text: ' ' },
-            { type: 'job', icon: 'jobIcon', text: ' ' },
-            { type: 'phobia', icon: 'phobiaIcon', text: ' ' },
-            { type: 'backpack', icon: 'backpackIcon', text: ' ' },
-            { type: 'fact', icon: 'additionalInfoIcon', text: ' ' },
-        ],
-        oponentsCharLists: [
             { type: 'gender', icon: 'genderIcon', text: ' ' },
             { type: 'health', icon: 'healthIcon', text: ' ' },
             { type: 'hobby', icon: 'hobbyIcon', text: ' ' },
@@ -98,6 +89,9 @@ const RoomPage = () => {
                     isOrganizator: isOrganizator,
                 });
                 console.log('data.players:', data.players);
+                // update players data
+                const players = normalizePlayers(data.players)
+                dispatch(updateLobby({ players: players }));
 
                 // update characteristics
                 const currentPlayer = data.players.find(
@@ -149,63 +143,64 @@ const RoomPage = () => {
             <div className="webcam-list">
                 {fillWithNumbers(lobby.players
                     .filter((player: { userId: string | undefined; }) => player.userId !== user.userId))
-                    .map(
-                        (player: any, index: Key | null | undefined) => {
-                            return (
-                                <div className="block-container" key={index}>
-                                    <div className="camera-block">
-                                        <img
-                                            src={
-                                                typeof player === 'number'
-                                                    ? avatarDefault
-                                                    : player.avatar
-                                            }
-                                            alt="camera block"
-                                        />
-                                    </div>
-                                    <div className="chars-row-container">
-                                        <div
-                                            className="chars-row"
-                                            onClick={() => {
-                                                updateState({
-                                                    isDetailsOpened:
-                                                        !state.isDetailsOpened,
-                                                });
-                                            }}
-                                        >
-                                            {state.charList.map((char, index) => (
-                                                <Button
-                                                    icon={char.icon}
-                                                    custom={true}
-                                                    stylesheet="bottom-icon"
-                                                    key={index}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {state.isDetailsOpened ? (
-                                        <div className="chars-block-down">
-                                            <div className="char-list-container">
-                                                {state.oponentsCharLists
-                                                    .map((char, index) => {
-                                                        return (
-                                                            <Button
-                                                                key={index}
-                                                                icon={char.icon}
-                                                                text={char.text}
-                                                                onClick={() =>
-                                                                    console.log(char)
-                                                                }
-                                                            />
-                                                        );
-                                                    })}
-                                            </div>
-                                        </div>
-                                    ) : null}
+                    .map((player: any, index: Key | null | undefined) => {
+                        const charList = typeof player === 'number' ? CHAR_LIST : player.charList
+                        return (
+                            <div className="block-container" key={index}>
+                                <div className="camera-block">
+                                    <img
+                                        src={
+                                            typeof player === 'number'
+                                                ? avatarDefault
+                                                : player.avatar
+                                        }
+                                        alt="camera block"
+                                    />
                                 </div>
-                            );
-                        },
+                                <div className="chars-row-container">
+                                    <div
+                                        className="chars-row"
+                                        onClick={() => {
+                                            updateState({
+                                                isDetailsOpened:
+                                                    !state.isDetailsOpened,
+                                            });
+                                        }}
+                                    >
+                                        {state.charList.map((char, index) => (
+                                            <Button
+                                                icon={char.icon}
+                                                custom={true}
+                                                stylesheet="bottom-icon"
+                                                key={index}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {state.isDetailsOpened ? (
+                                    <div className="chars-block-down">
+                                        <div className="char-list-container">
+                                            {
+                                                charList.map((char: { icon: any; text: any; }, index: any) => {
+                                                    return (
+                                                        <Button
+                                                            key={index}
+                                                            icon={char.icon}
+                                                            text={char.text}
+                                                            onClick={() =>
+                                                                console.log(char)
+                                                            }
+                                                        />
+                                                    );
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                ) : null}
+                            </div>
+                        );
+                    },
                     )}
             </div>
         );

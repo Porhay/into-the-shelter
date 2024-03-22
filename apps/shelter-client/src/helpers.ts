@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { ROUTES } from './constants';
+import { CHAR_LIST, ROUTES } from './constants';
 
 class CookieHelper {
     saveCookie(key: string, value: string): void {
@@ -112,4 +112,27 @@ export const getQueryParam = (name: string): string | null => {
 
 export const getLobbyLink = (roomId: string = '') => {
     return `${window.location.host}${ROUTES.ROOMS + '/' + roomId}`;
+};
+
+
+/**
+ * Currently it takes player object and updates its charList propery
+ * with according icons for every type in that charList
+ * @param players 
+ * @returns 
+ */
+export const normalizePlayers = (players: any) => {
+    for (const player of players) {
+        const listWithIcons: { type: string; icon: string; text: string; }[] = [];
+        if (player.charList) {
+            player.charList.forEach((playerList: { type: string; text: string; }) => {
+                const match = CHAR_LIST.find((defaultList) => defaultList.type === playerList.type);
+                if (match) {
+                    listWithIcons.push({ ...match, text: playerList.text });
+                }
+            });
+        }
+        player.charList = listWithIcons;
+    }
+    return players;
 };
