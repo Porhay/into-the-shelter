@@ -71,6 +71,10 @@ const Navigation = () => {
             if (window.location.href !== route) {
                 navigate(route);
             }
+            
+            // update gamers data
+            dispatch(updateLobby({players: data.players}));
+            
         };
 
         const onGameMessage: Listener<
