@@ -1,4 +1,4 @@
-import { DatabaseModule, FirebaseModule } from '@app/common'
+import { DatabaseModule, FirebaseModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { Module } from '@nestjs/common';
@@ -22,9 +22,9 @@ import config from 'config';
       load: [config],
       isGlobal: true,
     }),
-    PassportModule.register({ session: true })
+    PassportModule.register({ session: true }),
   ],
   controllers: [AuthController, UsersController],
   providers: [AuthService, UsersService],
 })
-export class AccountsModule { }
+export class AccountsModule {}

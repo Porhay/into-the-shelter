@@ -9,7 +9,7 @@ export class CardState {
     public isRevealed: boolean = false,
     public isLocked: boolean = false,
     public ownerId: Socket['id'] | null = null,
-  ) { }
+  ) {}
 
   public toDefinition(): CardStateDefinition {
     return {

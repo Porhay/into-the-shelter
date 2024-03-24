@@ -8,7 +8,7 @@ import { Cards } from '../utils/Cards';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
-import { generateCharList } from 'helpers'
+import { generateCharList } from 'helpers';
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -36,15 +36,17 @@ export class Instance {
     // }
 
     this.hasStarted = true;
-    this.lobby.instance.players.map(player => {
-      player.charList = generateCharList()
+    this.lobby.instance.players.map((player) => {
+      player.charList = generateCharList();
     });
     this.lobby.dispatchLobbyState();
-    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
-      color: 'blue',
-      message: 'Game started !',
-    });
-
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'Game started !',
+      },
+    );
   }
 
   public triggerFinish(): void {
@@ -54,10 +56,13 @@ export class Instance {
 
     this.hasFinished = true;
 
-    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
-      color: 'blue',
-      message: 'Game finished !',
-    });
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'Game finished !',
+      },
+    );
   }
 
   // TODO: used as example, will be removed soon
@@ -82,7 +87,10 @@ export class Instance {
     const cardState = this.cards[cardIndex];
 
     if (!cardState) {
-      throw new ServerException(SocketExceptions.GameError, 'Card index invalid');
+      throw new ServerException(
+        SocketExceptions.GameError,
+        'Card index invalid',
+      );
     }
 
     // If card is already revealed then stop now, no need to reveal it again
@@ -96,13 +104,18 @@ export class Instance {
     // this.cardsRevealedForCurrentRound.push(cardIndex);
     this.cardsRevealedForCurrentRound[cardIndex] = cardState.ownerId;
 
-    client.emit<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
-      color: 'blue',
-      message: 'You revealed card',
-    });
+    client.emit<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'You revealed card',
+      },
+    );
 
     // If everyone played (revealed 2 cards) then go to next round
-    const everyonePlayed = Object.values(this.cardsRevealedForCurrentRound).length === this.lobby.clients.size * 2;
+    const everyonePlayed =
+      Object.values(this.cardsRevealedForCurrentRound).length ===
+      this.lobby.clients.size * 2;
 
     // If every card have been revealed then go to next round
     let everyCardRevealed = true;
@@ -126,17 +139,25 @@ export class Instance {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
 
-  public revealCharacteristic(charType: number, client: AuthenticatedSocket): void {
+  public revealCharacteristic(
+    charType: number,
+    client: AuthenticatedSocket,
+  ): void {
     if (this.hasFinished || !this.hasStarted) {
       return;
     }
 
-    client.emit<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
-      color: 'blue',
-      message: `You revealed characteristic: ${charType}`,
-    });
+    client.emit<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: `You revealed characteristic: ${charType}`,
+      },
+    );
 
-    const playerIndex = this.players.findIndex(player => player.socketId === client.id)
+    const playerIndex = this.players.findIndex(
+      (player) => player.socketId === client.id,
+    );
     console.log(this.players[playerIndex]);
 
     this.lobby.dispatchLobbyState();
@@ -171,7 +192,8 @@ export class Instance {
           previousCard.isLocked = true;
 
           // Increment player score
-          this.scores[cardState.ownerId!] = (this.scores[cardState.ownerId!] || 0) + 1;
+          this.scores[cardState.ownerId!] =
+            (this.scores[cardState.ownerId!] || 0) + 1;
         }
 
         cardsRevealed.set(cardState.card, cardState);
@@ -200,7 +222,9 @@ export class Instance {
   // TODO: used as example, will be removed soon
   private initializeCards(): void {
     // Get only values, not identifiers
-    const cards = Object.values(Cards).filter(c => Number.isInteger(c)) as Cards[];
+    const cards = Object.values(Cards).filter((c) =>
+      Number.isInteger(c),
+    ) as Cards[];
 
     // Push two time the card into the list, so it makes a pair
     for (const card of cards) {

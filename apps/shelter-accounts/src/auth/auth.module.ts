@@ -5,19 +5,16 @@ import { AuthService } from './auth.service';
 import { SessionSerializer } from './utils/session.serializer';
 import { GoogleStrategy } from './strategies/GoogleStrategy';
 
-
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   controllers: [AuthController],
   providers: [
     GoogleStrategy,
     SessionSerializer,
     {
       provide: 'AUTH_SERVICE',
-      useClass: AuthService
-    }
+      useClass: AuthService,
+    },
   ],
 })
-export class AuthModule { };
+export class AuthModule {}

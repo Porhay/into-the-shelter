@@ -4,5 +4,5 @@ export enum ClientEvents {
   LobbyJoin = 'client.lobby.join',
   LobbyLeave = 'client.lobby.leave',
   GameRevealCard = 'client.game.reveal_card',
-  GameStart = 'client.game.start'
+  GameStart = 'client.game.start',
 }

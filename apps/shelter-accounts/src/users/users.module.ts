@@ -6,6 +6,6 @@ import { DatabaseModule, FirebaseModule } from '@app/common';
 @Module({
   imports: [DatabaseModule, FirebaseModule],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

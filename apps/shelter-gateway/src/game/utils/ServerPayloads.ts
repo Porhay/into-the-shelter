@@ -13,7 +13,7 @@ export type ServerPayloads = {
     cards: CardStateDefinition[];
     isSuspended: boolean;
     scores: Record<string, number>;
-    players: any
+    players: any;
   };
 
   [ServerEvents.GameMessage]: {

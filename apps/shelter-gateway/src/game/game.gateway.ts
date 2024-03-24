@@ -22,12 +22,13 @@ import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
 
-
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
-export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   private readonly logger: Logger = new Logger(GameGateway.name);
-  constructor(private readonly lobbyManager: LobbyManager) { }
+  constructor(private readonly lobbyManager: LobbyManager) {}
 
   afterInit(server: Server): any {
     this.lobbyManager.server = server; // Pass server instance to managers
@@ -40,7 +41,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.lobbyManager.terminateSocket(client); // Handle termination of socket
   }
 
-
   @SubscribeMessage(ClientEvents.Ping)
   onPing(client: AuthenticatedSocket): void {
     this.logger.log('Ping Pong !');
@@ -52,13 +52,19 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('client.chat.message')
   onChatMessage(client: AuthenticatedSocket, data: ChatMessage) {
     if (!client.data.lobby) {
-      throw new ServerException(SocketExceptions.LobbyError, 'You are not in a lobby');
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'You are not in a lobby',
+      );
     }
     client.data.lobby.instance.sendChatMessage(data, client);
   }
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
-  onLobbyCreate(client: AuthenticatedSocket, data: LobbyCreateDto): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
+  onLobbyCreate(
+    client: AuthenticatedSocket,
+    data: LobbyCreateDto,
+  ): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
     const lobby = this.lobbyManager.createLobby(data.maxClients);
 
     // data.player.socketId = client.id  // Cannot set properties of undefined (setting 'socketId')
@@ -84,7 +90,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage(ClientEvents.GameStart)
-  onGameStart(client: AuthenticatedSocket, data: any): void {    
+  onGameStart(client: AuthenticatedSocket, data: any): void {
     client.data.lobby.instance.triggerStart(data, client);
   }
 
@@ -92,7 +98,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage(ClientEvents.GameRevealCard)
   onRevealCard(client: AuthenticatedSocket, data: any): void {
     if (!client.data.lobby) {
-      throw new ServerException(SocketExceptions.LobbyError, 'You are not in a lobby');
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'You are not in a lobby',
+      );
     }
 
     client.data.lobby.instance.revealCard(data.cardIndex, client);

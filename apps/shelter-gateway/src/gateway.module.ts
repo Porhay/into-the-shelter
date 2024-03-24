@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule, FirebaseModule } from '@app/common'
+import { DatabaseModule, FirebaseModule } from '@app/common';
 import { StatusModule } from './status/status.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { GameGateway } from './game/game.gateway';
 import { GameModule } from './game/game.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LobbyManager } from './game/lobby/lobby.manager';
-import config from 'config'
+import config from 'config';
 
 @Module({
   imports: [
@@ -24,12 +24,7 @@ import config from 'config'
       isGlobal: true,
     }),
   ],
-  controllers: [
-
-  ],
-  providers: [
-    GameGateway,
-    LobbyManager
-  ],
+  controllers: [],
+  providers: [GameGateway, LobbyManager],
 })
-export class GatewayModule { }
+export class GatewayModule {}

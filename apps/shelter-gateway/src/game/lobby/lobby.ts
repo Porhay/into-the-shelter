@@ -3,34 +3,43 @@ import { AuthenticatedSocket } from '../types';
 import { Instance } from '../instance/instance';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
-import { generateSixSymbolHash } from 'helpers'
+import { generateSixSymbolHash } from 'helpers';
 
 export class Lobby {
   public readonly id: string = generateSixSymbolHash();
   public readonly createdAt: Date = new Date();
-  public readonly clients: Map<Socket['id'], AuthenticatedSocket> = new Map<Socket['id'], AuthenticatedSocket>();
+  public readonly clients: Map<Socket['id'], AuthenticatedSocket> = new Map<
+    Socket['id'],
+    AuthenticatedSocket
+  >();
   public readonly instance: Instance = new Instance(this);
 
   constructor(
     private readonly server: Server,
     public readonly maxClients: number,
-  ) { }
+  ) {}
 
   public addClient(client: AuthenticatedSocket, playerData: any = {}): void {
     this.clients.set(client.id, client);
     client.join(this.id);
     client.data.lobby = this;
 
-    let players = this.instance.players
-    const index = players.findIndex((obj: { socketId: any }) => obj.socketId === playerData.id);
+    let players = this.instance.players;
+    const index = players.findIndex(
+      (obj: { socketId: any }) => obj.socketId === playerData.id,
+    );
     if (index !== -1) {
-      players[index] = {...playerData};
+      players[index] = { ...playerData };
     } else {
-      players.push({...playerData, isOrganizator: true}) // TODO: FIX !!!
+      players.push({ ...playerData, isOrganizator: true }); // TODO: FIX !!!
     }
-    players = players.filter((obj: {}) => Object.keys(obj).length > 1)
-    players = Array.from(new Map(players.map((obj: { userId: any; }) => [obj.userId, obj])).values()); // remove dublicates
-    this.instance.players = players
+    players = players.filter((obj: object) => Object.keys(obj).length > 1);
+    players = Array.from(
+      new Map(
+        players.map((obj: { userId: any }) => [obj.userId, obj]),
+      ).values(),
+    ); // remove dublicates
+    this.instance.players = players;
 
     this.dispatchLobbyState();
   }
@@ -44,10 +53,13 @@ export class Lobby {
     this.instance.triggerFinish();
 
     // Alert the remaining player that client left lobby
-    this.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
-      color: 'blue',
-      message: 'Opponent left lobby',
-    });
+    this.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'Opponent left lobby',
+      },
+    );
 
     this.dispatchLobbyState();
   }
@@ -61,10 +73,10 @@ export class Lobby {
       hasFinished: this.instance.hasFinished,
       currentRound: this.instance.currentRound,
       playersCount: this.clients.size,
-      cards: this.instance.cards.map(card => card.toDefinition()),
+      cards: this.instance.cards.map((card) => card.toDefinition()),
       isSuspended: this.instance.isSuspended,
       scores: this.instance.scores,
-      players: this.instance.players
+      players: this.instance.players,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

@@ -221,7 +221,7 @@ const Navigation = () => {
                                 <img
                                     src={user.avatar || avatarDefault}
                                     className="profile-dropdown-img"
-                                    alt="profile image"
+                                    alt="profile"
                                     onClick={() =>
                                         toggleAccountTo(!state.isAccountOpened)
                                     }
