@@ -1,6 +1,6 @@
 // import baseConfig from '../../.eslintrc.js';
 
-export default {
+module.exports = {
   // ...baseConfig,
   root: false,
 };
