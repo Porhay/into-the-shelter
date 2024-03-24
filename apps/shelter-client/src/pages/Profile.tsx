@@ -1,7 +1,7 @@
 import '../styles/Profile.scss';
 
 const ProfilePage = () => {
-    const description: string = 'Profile page';
+    const description = 'Profile page';
 
     return (
         <div className="profile-page-container">

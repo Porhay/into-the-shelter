@@ -22,20 +22,24 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
   },
-  // overrides: [
-  //   {
-  //     files: ['apps/shelter-gateway/**/*.{ts,tsx,js,jsx}'],
-  //     rules: {
-  //       // Specific ESLint rules or overrides for shelter-gateway
-  //       '@typescript-eslint/no-explicit-any': 'error', // Example rule
-  //     },
-  //   },
-  //   {
-  //     files: ['apps/shelter-accounts/**/*.{ts,tsx,js,jsx}'],
-  //     rules: {
-  //       // Specific ESLint rules or overrides for shelter-accounts
-  //       '@typescript-eslint/explicit-function-return-type': 'warn', // Example rule
-  //     },
-  //   },
-  // ],
+  overrides: [
+    {
+      files: ['apps/shelter-gateway/**/*.{ts,tsx,js,jsx}'],
+      rules: {
+        // '@typescript-eslint/no-explicit-any': 'warn',
+      },
+    },
+    {
+      files: ['apps/shelter-accounts/**/*.{ts,tsx,js,jsx}'],
+      rules: {
+        // '@typescript-eslint/explicit-function-return-type': 'warn',
+      },
+    },
+    {
+      files: ['apps/shelter-client/**/*.{ts,tsx,js,jsx}'],
+      rules: {
+        "@typescript-eslint/no-explicit-any": "off"
+      },
+    },
+  ],
 };

@@ -4,41 +4,54 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { firebaseConfig } from 'config';
 
-
 admin.initializeApp({
   credential: admin.credential.cert(firebaseConfig as admin.ServiceAccount),
   storageBucket: firebaseConfig.storageBucket,
 });
 
-
 @Injectable()
 export class FirebaseService {
-  constructor() { }
+  constructor() {}
 
   private bucket = admin.storage().bucket();
 
-  async getSignedUrlByFilename(filename: string, expireIn?: number): Promise<string> {
+  async getSignedUrlByFilename(
+    filename: string,
+    expireIn?: number,
+  ): Promise<string> {
     try {
       const fileRef = this.bucket.file(filename);
       const currentDate = new Date();
 
       if (expireIn) {
-        const expirationDate = new Date(currentDate.setDate(currentDate.getDate() + expireIn)); // Set expiration to <expireIn> day from now
-        const [url] = await fileRef.getSignedUrl({ action: 'read', expires: expirationDate });
+        const expirationDate = new Date(
+          currentDate.setDate(currentDate.getDate() + expireIn),
+        ); // Set expiration to <expireIn> day from now
+        const [url] = await fileRef.getSignedUrl({
+          action: 'read',
+          expires: expirationDate,
+        });
         return url;
       }
 
-      const expirationDate = new Date(currentDate.setFullYear(currentDate.getFullYear() + 10)); // Set the expiration to 10 years from now
-      const [url] = await fileRef.getSignedUrl({ action: 'read', expires: expirationDate });
+      const expirationDate = new Date(
+        currentDate.setFullYear(currentDate.getFullYear() + 10),
+      ); // Set the expiration to 10 years from now
+      const [url] = await fileRef.getSignedUrl({
+        action: 'read',
+        expires: expirationDate,
+      });
       return url;
-
     } catch (error) {
       console.error('Error generating signed URL:', error);
       throw error;
     }
   }
 
-  async singleUpload(file: { filename: string; mimetype: string }): Promise<string | null> {
+  async singleUpload(file: {
+    filename: string;
+    mimetype: string;
+  }): Promise<string | null> {
     try {
       const { filename, mimetype } = file;
       const IMAGES_FOLDER = 'data/images';
@@ -54,8 +67,11 @@ export class FirebaseService {
       const downloadUrl = await this.getSignedUrlByFilename(filename);
       console.log(downloadUrl);
 
-      fs.unlink(localFilePath, (err) => err ? console.error('Error deleting local file:', err) :
-        console.log('Local file deleted successfully.'))
+      fs.unlink(localFilePath, (err) =>
+        err
+          ? console.error('Error deleting local file:', err)
+          : console.log('Local file deleted successfully.'),
+      );
 
       return downloadUrl;
     } catch (error) {

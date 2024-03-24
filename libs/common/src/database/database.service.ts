@@ -6,7 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class DatabaseService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   //  -----------
   //  USERS TABLE
@@ -20,8 +20,9 @@ export class DatabaseService {
 
   async updateUser(userId: string, data: updateUserRequest) {
     return await this.prisma.users.update({
-      where: { id: userId }, data: data
-    })
+      where: { id: userId },
+      data: data,
+    });
   }
 
   async deleteUser(userId: string) {
@@ -64,7 +65,6 @@ export class DatabaseService {
     return user || null;
   }
 
-
   //  -----------
   //  FILES TABLE
   //  -----------
@@ -95,9 +95,11 @@ export class DatabaseService {
   }
 
   async getFilesByUserId(userId: string, type: string = null) {
-    const files = await this.prisma.files.findMany({ where: { userId: userId, type: type } });
+    const files = await this.prisma.files.findMany({
+      where: { userId: userId, type: type },
+    });
     if (!files) {
-      return null
+      return null;
     }
     return files;
   }

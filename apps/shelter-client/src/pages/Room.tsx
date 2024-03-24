@@ -83,14 +83,18 @@ const RoomPage = () => {
                 // update action tip and isOrganizator
                 const maxPlayers = 4; // TODO: get from lobby settings
                 const tipStr = `Players: ${data.playersCount}/${maxPlayers}`;
-                const isOrganizator = data.players.find((player: { isOrganizator: boolean }) => player.isOrganizator)?.userId === user.userId;
+                const isOrganizator =
+                    data.players.find(
+                        (player: { isOrganizator: boolean }) =>
+                            player.isOrganizator,
+                    )?.userId === user.userId;
                 updateState({
                     actionTip: tipStr,
                     isOrganizator: isOrganizator,
                 });
                 console.log('data.players:', data.players);
                 // update players data
-                const players = normalizePlayers(data.players)
+                const players = normalizePlayers(data.players);
                 dispatch(updateLobby({ players: players }));
 
                 // update characteristics
@@ -141,67 +145,75 @@ const RoomPage = () => {
         // Players webcam list with characteristics
         return (
             <div className="webcam-list">
-                {fillWithNumbers(lobby.players
-                    .filter((player: { userId: string | undefined; }) => player.userId !== user.userId))
-                    .map((player: any, index: Key | null | undefined) => {
-                        const charList = typeof player === 'number' ? CHAR_LIST : player.charList
-                        return (
-                            <div className="block-container" key={index}>
-                                <div className="camera-block">
-                                    <img
-                                        src={
-                                            typeof player === 'number'
-                                                ? avatarDefault
-                                                : player.avatar
-                                        }
-                                        alt="camera block"
-                                    />
-                                </div>
-                                <div className="chars-row-container">
-                                    <div
-                                        className="chars-row"
-                                        onClick={() => {
-                                            updateState({
-                                                isDetailsOpened:
-                                                    !state.isDetailsOpened,
-                                            });
-                                        }}
-                                    >
-                                        {state.charList.map((char, index) => (
-                                            <Button
-                                                icon={char.icon}
-                                                custom={true}
-                                                stylesheet="bottom-icon"
-                                                key={index}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {state.isDetailsOpened ? (
-                                    <div className="chars-block-down">
-                                        <div className="char-list-container">
-                                            {
-                                                charList.map((char: { icon: any; text: any; }, index: any) => {
-                                                    return (
-                                                        <Button
-                                                            key={index}
-                                                            icon={char.icon}
-                                                            text={char.text}
-                                                            onClick={() =>
-                                                                console.log(char)
-                                                            }
-                                                        />
-                                                    );
-                                                })
-                                            }
-                                        </div>
-                                    </div>
-                                ) : null}
+                {fillWithNumbers(
+                    lobby.players.filter(
+                        (player: { userId: string | undefined }) =>
+                            player.userId !== user.userId,
+                    ),
+                ).map((player: any, index: Key | null | undefined) => {
+                    const charList =
+                        typeof player === 'number'
+                            ? CHAR_LIST
+                            : player.charList;
+                    return (
+                        <div className="block-container" key={index}>
+                            <div className="camera-block">
+                                <img
+                                    src={
+                                        typeof player === 'number'
+                                            ? avatarDefault
+                                            : player.avatar
+                                    }
+                                    alt="camera block"
+                                />
                             </div>
-                        );
-                    },
-                    )}
+                            <div className="chars-row-container">
+                                <div
+                                    className="chars-row"
+                                    onClick={() => {
+                                        updateState({
+                                            isDetailsOpened:
+                                                !state.isDetailsOpened,
+                                        });
+                                    }}
+                                >
+                                    {state.charList.map((char, index) => (
+                                        <Button
+                                            icon={char.icon}
+                                            custom={true}
+                                            stylesheet="bottom-icon"
+                                            key={index}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            {state.isDetailsOpened ? (
+                                <div className="chars-block-down">
+                                    <div className="char-list-container">
+                                        {charList.map(
+                                            (
+                                                char: { icon: any; text: any },
+                                                index: any,
+                                            ) => {
+                                                return (
+                                                    <Button
+                                                        key={index}
+                                                        icon={char.icon}
+                                                        text={char.text}
+                                                        onClick={() =>
+                                                            console.log(char)
+                                                        }
+                                                    />
+                                                );
+                                            },
+                                        )}
+                                    </div>
+                                </div>
+                            ) : null}
+                        </div>
+                    );
+                })}
             </div>
         );
     };
