@@ -43,7 +43,8 @@ const RoomPage = () => {
         isDetailsOpened: false,
         actionTip: 'YOUR TURN',
         inviteLinkTextBox:
-            lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
+            // lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
+            'http://into-the-shelter:3000/rooms/DA67CD',
         inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
         webcamList: [],
         isOrganizator: false,
