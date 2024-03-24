@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GameGateway } from './game.gateway';
+// import { GameGateway } from './game.gateway';
 import { LobbyManager } from './lobby/lobby.manager';
 
 @Module({
@@ -8,4 +8,4 @@ import { LobbyManager } from './lobby/lobby.manager';
     LobbyManager,
   ],
 })
-export class GameModule { }
+export class GameModule {}
