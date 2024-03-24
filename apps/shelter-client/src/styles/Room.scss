@@ -6,17 +6,17 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 }
 
 .invite-link-container {
-    background-color: #fff;
-    border: rgb(0, 0, 0) solid 4px;
-    border-radius: 4px;
+    background-color: #ffc28cca;
+    font-family: 'Roboto Condensed';
+    font-weight: 400;
     margin-bottom: 3px;
     cursor: pointer;
 }
 
 .webcam-container {
-    border: rgb(0, 0, 0) solid 4px;
-    border-radius: 4px;
     color: #fff;
+    margin-bottom: 4px;
+    width: 280px;
 }
 
 .webcam-btn {
@@ -32,7 +32,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 }
 
 .webcam-avatar {
-    width: 260px;
+    width: 280px;
     height: 200px;
     background-color: rgb(0, 0, 0);
     display: flex;
@@ -91,7 +91,6 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             text-align: center;
             background-color: #fff;
 
-            // width: 180px;
             height: 140px;
             display: flex;
             justify-content: center;

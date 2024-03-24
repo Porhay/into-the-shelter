@@ -58,8 +58,10 @@ const Chat: FC = () => {
     // FUNCTIONS
     const handleSendMessage = () => {
         if (state.newMessage.trim() !== '') {
-            const date = new Date();
-            const dateStr = `${date.getHours()}:${date.getMinutes()}`;
+            const date = new Date()
+            const hour = date.getHours().toString().padStart(2, '0')
+            const minute = date.getMinutes().toString().padStart(2, '0')
+            const dateStr = `${hour}:${minute}`;
             sm.socket.emit('client.chat.message', {
                 sender: user.displayName,
                 message: state.newMessage,
