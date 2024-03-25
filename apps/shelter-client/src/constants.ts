@@ -27,4 +27,4 @@ export const CHAR_LIST = [
     { type: 'phobia', icon: 'phobiaIcon', text: ' ' },
     { type: 'backpack', icon: 'backpackIcon', text: ' ' },
     { type: 'fact', icon: 'additionalInfoIcon', text: ' ' },
-]
+];

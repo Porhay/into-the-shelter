@@ -37,7 +37,7 @@ RUN mkdir -p /usr/src/shelter-gateway/data/images
 RUN npm install --production
 
 # Exposing the port your app runs on
-EXPOSE 8001
+EXPOSE 8000
 
 # Starting the application
 CMD ["node", "dist/apps/shelter-gateway/main"]

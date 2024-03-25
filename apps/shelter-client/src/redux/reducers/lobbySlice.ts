@@ -5,7 +5,7 @@ export interface LobbyState {
     lobbyLink?: string | null;
     hasStarted?: boolean | null;
     hasFinished?: boolean | null;
-    players?: any
+    players?: any;
 }
 
 const initialState: LobbyState = {
@@ -13,7 +13,7 @@ const initialState: LobbyState = {
     lobbyLink: '',
     hasStarted: false,
     hasFinished: false,
-    players: []
+    players: [],
 };
 
 const lobbySlice = createSlice({

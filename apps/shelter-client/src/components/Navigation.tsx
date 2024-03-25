@@ -10,7 +10,7 @@ import { Timeline } from './Timeline';
 import { Button } from './Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
-import { cookieHelper, fillGameAvatars, getLobbyLink, normalizePlayers } from '../helpers';
+import { cookieHelper, fillGameAvatars, getLobbyLink } from '../helpers';
 import { getUserReq } from '../http';
 import CustomDropdown from './CustomDropdown';
 import useSocketManager from '../hooks/useSocketManager';

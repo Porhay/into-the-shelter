@@ -51,9 +51,12 @@ export const deshCount = (string: string) => {
     return dashArr.join('');
 };
 
+interface KeyboardHandlerFunction {
+    (): void;
+}
 export const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    func: Function,
+    func: KeyboardHandlerFunction,
 ) => {
     if (e.key === 'Enter') {
         func();
@@ -114,25 +117,28 @@ export const getLobbyLink = (roomId: string = '') => {
     return `${window.location.host}${ROUTES.ROOMS + '/' + roomId}`;
 };
 
-
 /**
  * Currently it takes player object and updates its charList propery
  * with according icons for every type in that charList
- * @param players 
- * @returns 
+ * @param players
+ * @returns
  */
 export const normalizePlayers = (players: any) => {
     for (const player of players) {
-        const listWithIcons: { type: string; icon: string; text: string; }[] = [];
+        const iconsList: { type: string; icon: string; text: string }[] = [];
         if (player.charList) {
-            player.charList.forEach((playerList: { type: string; text: string; }) => {
-                const match = CHAR_LIST.find((defaultList) => defaultList.type === playerList.type);
-                if (match) {
-                    listWithIcons.push({ ...match, text: playerList.text });
-                }
-            });
+            player.charList.forEach(
+                (playerList: { type: string; text: string }) => {
+                    const match = CHAR_LIST.find(
+                        (defaultList) => defaultList.type === playerList.type,
+                    );
+                    if (match) {
+                        iconsList.push({ ...match, text: playerList.text });
+                    }
+                },
+            );
         }
-        player.charList = listWithIcons;
+        player.charList = iconsList;
     }
     return players;
 };
