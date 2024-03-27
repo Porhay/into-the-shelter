@@ -19,12 +19,12 @@ export const NOTIF_TYPE = {
     INFO: 'info',
 };
 
-export const CHAR_LIST = [
-    { type: 'gender', icon: 'genderIcon', text: ' ' },
-    { type: 'health', icon: 'healthIcon', text: ' ' },
-    { type: 'hobby', icon: 'hobbyIcon', text: ' ' },
-    { type: 'job', icon: 'jobIcon', text: ' ' },
-    { type: 'phobia', icon: 'phobiaIcon', text: ' ' },
-    { type: 'backpack', icon: 'backpackIcon', text: ' ' },
-    { type: 'fact', icon: 'additionalInfoIcon', text: ' ' },
+export const CHAR_TYPES = [
+    'gender',
+    'health',
+    'hobby',
+    'job',
+    'phobia',
+    'backpack',
+    'fact',
 ];

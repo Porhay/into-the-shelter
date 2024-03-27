@@ -1,5 +1,12 @@
 import Cookies from 'js-cookie';
-import { CHAR_LIST, ROUTES } from './constants';
+import { ROUTES, CHAR_TYPES } from './constants';
+
+export type charListType = {
+    type: string;
+    icon: string;
+    text: string;
+    isRevealed: boolean;
+}[];
 
 class CookieHelper {
     saveCookie(key: string, value: string): void {
@@ -117,6 +124,29 @@ export const getLobbyLink = (roomId: string = '') => {
     return `${window.location.host}${ROUTES.ROOMS + '/' + roomId}`;
 };
 
+export class Char {
+    constructor(public readonly type: string) {}
+
+    public icon: string = `${this.type}Icon`;
+    public text: string = ' ';
+    public isRevealed: boolean = false;
+}
+
+/**
+ * Defines standart characteristics list
+ * @returns [
+        { type: 'gender', icon: 'genderIcon', text: ' ', isRevealed: false },
+        { type: 'health', icon: 'healthIcon', text: ' ', isRevealed: false },
+        { type: 'hobby', icon: 'hobbyIcon', text: ' ', isRevealed: false },
+        { type: 'job', icon: 'jobIcon', text: ' ', isRevealed: false },
+        { type: 'phobia', icon: 'phobiaIcon', text: ' ', isRevealed: false },
+        { type: 'backpack', icon: 'backpackIcon', text: ' ', isRevealed: false },
+        { type: 'fact', icon: 'additionalInfoIcon', text: ' ', isRevealed: false },
+    ]
+ */
+export const defineCharsList = (): any =>
+    CHAR_TYPES.map((type) => new Char(type));
+
 /**
  * Currently it takes player object and updates its charList propery
  * with according icons for every type in that charList
@@ -126,18 +156,17 @@ export const getLobbyLink = (roomId: string = '') => {
 export const normalizePlayers = (players: any) => {
     for (const player of players) {
         const iconsList: { type: string; icon: string; text: string }[] = [];
-        if (player.charList) {
-            player.charList.forEach(
-                (playerList: { type: string; text: string }) => {
-                    const match = CHAR_LIST.find(
-                        (defaultList) => defaultList.type === playerList.type,
-                    );
-                    if (match) {
-                        iconsList.push({ ...match, text: playerList.text });
-                    }
-                },
-            );
-        }
+        player.charList?.forEach(
+            (playerList: { type: string; text: string }) => {
+                const match = defineCharsList().find(
+                    (defaultList: { type: string }) =>
+                        defaultList.type === playerList.type,
+                );
+                if (match) {
+                    iconsList.push({ ...match, text: playerList.text });
+                }
+            },
+        );
         player.charList = iconsList;
     }
     return players;

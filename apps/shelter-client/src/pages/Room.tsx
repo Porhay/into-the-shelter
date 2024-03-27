@@ -11,13 +11,15 @@ import {
     fillWithNumbers,
     getLobbyLink,
     normalizePlayers,
+    defineCharsList,
+    charListType,
 } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
 import { useParams } from 'react-router-dom';
 import { showNotification } from '../libs/notifications';
-import { CHAR_LIST, NOTIF_TYPE } from '../constants';
+import { NOTIF_TYPE } from '../constants';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 
 interface IState {
@@ -27,7 +29,7 @@ interface IState {
     inviteLinkTextBox: string;
     inviteLink: string;
     isOrganizator: boolean;
-    charList: { type: string; icon: string; text: string }[];
+    charList: charListType;
 }
 const RoomPage = () => {
     const user = useSelector((state: RootState) => state.user);
@@ -47,16 +49,7 @@ const RoomPage = () => {
             lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
         inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
         isOrganizator: false,
-        charList: [
-            // current player's characteristics
-            { type: 'gender', icon: 'genderIcon', text: ' ' },
-            { type: 'health', icon: 'healthIcon', text: ' ' },
-            { type: 'hobby', icon: 'hobbyIcon', text: ' ' },
-            { type: 'job', icon: 'jobIcon', text: ' ' },
-            { type: 'phobia', icon: 'phobiaIcon', text: ' ' },
-            { type: 'backpack', icon: 'backpackIcon', text: ' ' },
-            { type: 'fact', icon: 'additionalInfoIcon', text: ' ' },
-        ],
+        charList: defineCharsList(),
     });
 
     useEffect(() => {
@@ -92,7 +85,6 @@ const RoomPage = () => {
                     actionTip: tipStr,
                     isOrganizator: isOrganizator,
                 });
-                console.log('data.players:', data.players);
                 // update players data
                 const players = normalizePlayers(data.players);
                 dispatch(updateLobby({ players: players }));
@@ -141,7 +133,7 @@ const RoomPage = () => {
         );
     };
 
-    const WebcamList = () => {
+    const OponentsList = () => {
         // Players webcam list with characteristics
         return (
             <div className="webcam-list">
@@ -150,10 +142,10 @@ const RoomPage = () => {
                         (player: { userId: string | undefined }) =>
                             player.userId !== user.userId,
                     ),
-                ).map((player: any, index: Key | null | undefined) => {
+                ).map((player: any, index: Key) => {
                     const charList =
                         typeof player === 'number'
-                            ? CHAR_LIST
+                            ? defineCharsList()
                             : player.charList;
                     return (
                         <div className="block-container" key={index}>
@@ -254,7 +246,7 @@ const RoomPage = () => {
 
     return (
         <div className="room-page-container">
-            <WebcamList />
+            <OponentsList />
             <div className="camera-list-wrapper">
                 <div className="link-camera-wrapper">
                     <div

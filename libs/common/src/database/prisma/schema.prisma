@@ -54,3 +54,23 @@ model notifications {
   
   @@map(name: "notifications")
 }
+
+model lobbies {
+  id          String   @id @default(uuid())
+  
+  settings    String
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @map(name: "updated_at")
+  
+  @@map(name: "lobbies")
+}
+
+model chatMessages {
+  id          String   @id @default(uuid())
+  lobbyId     String
+  data        String   
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @map(name: "updated_at")
+  
+  @@map(name: "chat_messages")
+}
