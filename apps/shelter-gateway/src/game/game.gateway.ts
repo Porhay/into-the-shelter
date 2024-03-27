@@ -32,7 +32,7 @@ export class GameGateway
   constructor(
     private readonly lobbyManager: LobbyManager,
     private readonly databaseService: DatabaseService,
-    ) {}
+  ) {}
 
   afterInit(server: Server): any {
     this.lobbyManager.server = server; // Pass server instance to managers

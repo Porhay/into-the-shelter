@@ -72,10 +72,6 @@ const Navigation = () => {
       if (window.location.href !== route) {
         navigate(route);
       }
-
-      // // update players data
-      // const players = normalizePlayers(data.players)
-      // dispatch(updateLobby({ players: players }));
     };
 
     const onGameMessage: Listener<ServerPayloads[ServerEvents.GameMessage]> = ({

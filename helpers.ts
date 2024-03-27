@@ -26,13 +26,41 @@ export const generateCharList = (): any[] => {
   };
 
   const charList = [
-    { type: 'gender', text: getRandomChar(jsonData, 'gender') },
-    { type: 'health', text: getRandomChar(jsonData, 'health') },
-    { type: 'hobby', text: getRandomChar(jsonData, 'hobby') },
-    { type: 'job', text: getRandomChar(jsonData, 'job') },
-    { type: 'phobia', text: getRandomChar(jsonData, 'phobia') },
-    { type: 'backpack', text: getRandomChar(jsonData, 'backpack') },
-    { type: 'fact', text: getRandomChar(jsonData, 'fact') },
+    {
+      type: 'gender',
+      text: getRandomChar(jsonData, 'gender'),
+      icon: 'genderIcon',
+    },
+    {
+      type: 'health',
+      text: getRandomChar(jsonData, 'health'),
+      icon: 'healthIcon',
+    },
+    {
+      type: 'hobby',
+      text: getRandomChar(jsonData, 'hobby'),
+      icon: 'hobbyIcon',
+    },
+    {
+      type: 'job',
+      text: getRandomChar(jsonData, 'job'),
+      icon: 'jobIcon',
+    },
+    {
+      type: 'phobia',
+      text: getRandomChar(jsonData, 'phobia'),
+      icon: 'phobiaIcon',
+    },
+    {
+      type: 'backpack',
+      text: getRandomChar(jsonData, 'backpack'),
+      icon: 'backpackIcon',
+    },
+    {
+      type: 'fact',
+      text: getRandomChar(jsonData, 'fact'),
+      icon: 'factIcon',
+    },
   ];
 
   return charList;

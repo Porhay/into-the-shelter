@@ -67,8 +67,7 @@ export class Lobby {
   public dispatchLobbyState(): void {
     const payload: ServerPayloads[ServerEvents.LobbyState] = {
       lobbyId: this.id,
-      mode: this.maxClients === 1 ? 'solo' : 'duo',
-      delayBetweenRounds: this.instance.delayBetweenRounds,
+      maxClients: this.maxClients,
       hasStarted: this.instance.hasStarted,
       hasFinished: this.instance.hasFinished,
       currentRound: this.instance.currentRound,
@@ -77,6 +76,7 @@ export class Lobby {
       isSuspended: this.instance.isSuspended,
       scores: this.instance.scores,
       players: this.instance.players,
+      characteristics: this.instance.characteristics,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

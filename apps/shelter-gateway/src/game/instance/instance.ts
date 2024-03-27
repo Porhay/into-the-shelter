@@ -20,6 +20,7 @@ export class Instance {
   public delayBetweenRounds: number = 2;
   private cardsRevealedForCurrentRound: Record<number, Socket['id']> = {};
   public players: any = [];
+  public characteristics: any = {};
 
   constructor(private readonly lobby: Lobby) {
     this.initializeCards();
@@ -30,21 +31,18 @@ export class Instance {
       return;
     }
 
-    // TODO: FIX Exception show handler
-    // if (this.lobby.clients.size < this.lobby.maxClients) {
-    //   throw new ServerException(SocketExceptions.LobbyError, 'Card index invalid');
-    // }
-
     this.hasStarted = true;
     this.lobby.instance.players.map((player) => {
-      player.charList = generateCharList();
+      const newChars = generateCharList();
+      this.characteristics[player.userId] = newChars;
     });
+
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {
         color: 'blue',
-        message: 'Game started !',
+        message: 'Game started!',
       },
     );
   }

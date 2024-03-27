@@ -13,6 +13,7 @@ import {
   normalizePlayers,
   defineCharsList,
   charListType,
+  EMPTY_CHAR_LIST,
 } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
@@ -29,7 +30,7 @@ interface IState {
   inviteLinkTextBox: string;
   inviteLink: string;
   isOrganizator: boolean;
-  charList: charListType;
+  userCharList: charListType;
 }
 
 type charType = {
@@ -56,7 +57,7 @@ const RoomPage = () => {
     inviteLinkTextBox: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
-    charList: defineCharsList(),
+    userCharList: defineCharsList(),
   });
 
   useEffect(() => {
@@ -79,6 +80,14 @@ const RoomPage = () => {
     const onLobbyState: Listener<
       ServerPayloads[ServerEvents.LobbyState]
     > = async (data) => {
+      // update players data
+      dispatch(
+        updateLobby({
+          players: data.players,
+          characteristics: data.characteristics,
+        }),
+      );
+
       if (!lobby.hasStarted) {
         // update action tip and isOrganizator
         const maxPlayers = 4; // TODO: get from lobby settings
@@ -91,31 +100,16 @@ const RoomPage = () => {
           actionTip: tipStr,
           isOrganizator: isOrganizator,
         });
-        // update players data
-        const players = normalizePlayers(data.players);
-        dispatch(updateLobby({ players: players }));
+      } else {
+        console.log('STARTED:', data);
 
         // update characteristics
         const currentPlayer = data.players.find(
-          (player: { userId: string | undefined }) =>
-            player.userId === user.userId,
+          (player: { userId: string }) => player.userId === user.userId,
         );
-        if (currentPlayer.charList) {
-          const newCharList = state.charList;
-          newCharList.forEach((playerChar) => {
-            // Find the matching characteristic by type
-            const match = currentPlayer.charList.find(
-              (char: { type: string }) => char.type === playerChar.type,
-            );
-            if (match) {
-              // Update the text
-              playerChar.text = match.text;
-            }
-          });
-          updateState({ charList: newCharList });
-        }
-      } else {
-        console.log('game started: true event');
+        updateState({
+          userCharList: data.characteristics[currentPlayer.userId],
+        });
       }
     };
     sm.registerListener(ServerEvents.LobbyState, onLobbyState);
@@ -162,7 +156,9 @@ const RoomPage = () => {
           ),
         ).map((player: any, index: Key) => {
           const charList =
-            typeof player === 'number' ? defineCharsList() : player.charList;
+            typeof player === 'number'
+              ? defineCharsList()
+              : lobby.characteristics[player.userId] || defineCharsList();
           return (
             <div className="block-container" key={index}>
               <div className="camera-block">
@@ -182,7 +178,7 @@ const RoomPage = () => {
                     });
                   }}
                 >
-                  {state.charList.map((char, index) => (
+                  {charList.map((char: charType, index: any) => (
                     <Button
                       icon={char.icon}
                       custom={true}
@@ -286,7 +282,7 @@ const RoomPage = () => {
           </div>
         </div>
         <div className="char-list-container">
-          {state.charList.map((char, index) => {
+          {state.userCharList.map((char, index) => {
             return (
               <Button
                 key={index}

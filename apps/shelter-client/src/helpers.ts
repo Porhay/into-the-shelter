@@ -146,6 +146,8 @@ export class Char {
 export const defineCharsList = (): any =>
   CHAR_TYPES.map((type) => new Char(type));
 
+export const EMPTY_CHAR_LIST = defineCharsList();
+
 /**
  * Currently it takes player object and updates its charList propery
  * with according icons for every type in that charList
