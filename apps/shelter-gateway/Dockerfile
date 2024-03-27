@@ -29,6 +29,7 @@ COPY --from=builder /usr/src/shelter-gateway/package*.json ./
 COPY --from=builder /usr/src/shelter-gateway/libs/common/src/database/prisma/schema.prisma ./libs/common/src/database/prisma/
 COPY --from=builder /usr/src/shelter-gateway/libs/common/src/database/prisma/generated ./libs/common/src/database/prisma/generated
 
+COPY --from=builder /usr/src/shelter-gateway/characteristics.json ./characteristics.json
 RUN mkdir -p /usr/src/shelter-gateway/data/images
 
 # Installing only production dependencies (if any additional ones are needed)
@@ -36,7 +37,7 @@ RUN mkdir -p /usr/src/shelter-gateway/data/images
 RUN npm install --production
 
 # Exposing the port your app runs on
-EXPOSE 8001
+EXPOSE 8000
 
 # Starting the application
 CMD ["node", "dist/apps/shelter-gateway/main"]

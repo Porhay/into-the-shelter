@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { IoAdapter } from '@nestjs/platform-socket.io';
 import { GameIoAdapter } from './websocket/game-io.adapter';
 import { GatewayModule } from './gateway.module';
 import { ConfigService } from '@nestjs/config';
@@ -14,9 +13,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useWebSocketAdapter(new GameIoAdapter(app));
 
-  const port = config.get('GATEWAY_PORT')
+  const port = config.get('GATEWAY_PORT');
   await app.listen(port, () => {
-    logger.log(`Server is started on port: ${port}`)
+    logger.log(`Server is started on port: ${port}`);
   });
 }
 bootstrap();

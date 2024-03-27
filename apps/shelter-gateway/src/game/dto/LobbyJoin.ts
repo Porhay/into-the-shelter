@@ -1,8 +1,8 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
 export class LobbyJoinDto {
-    @IsString()
-    lobbyId: string;
+  @IsString()
+  lobbyId: string;
 
-    player: any
+  player: any;
 }

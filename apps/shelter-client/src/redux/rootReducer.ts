@@ -4,9 +4,9 @@ import appReducer from './reducers/appSlice';
 import lobbyReducer from './reducers/lobbySlice';
 
 const rootReducer = combineReducers({
-    user: userReducer,
-    app: appReducer,
-    lobby: lobbyReducer,
+  user: userReducer,
+  app: appReducer,
+  lobby: lobbyReducer,
 });
 
 export default rootReducer;

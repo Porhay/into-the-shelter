@@ -7,15 +7,15 @@ import { RootState } from './redux/store';
 import Loader from './libs/loader';
 
 function App() {
-    const app = useSelector((state: RootState) => state.app);
-    return (
-        <div className="App">
-            <BrowserRouter>
-                <Navigation />
-                {app.loading ? <Loader /> : <Router />}
-            </BrowserRouter>
-        </div>
-    );
+  const app = useSelector((state: RootState) => state.app);
+  return (
+    <div className="App">
+      <BrowserRouter>
+        <Navigation />
+        {app.loading ? <Loader /> : <Router />}
+      </BrowserRouter>
+    </div>
+  );
 }
 
 export default App;

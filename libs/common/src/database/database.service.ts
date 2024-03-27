@@ -3,10 +3,13 @@ import { PrismaService } from './prisma/prisma.service';
 import { updateUserRequest } from 'apps/shelter-accounts/src/users/dto/updateUser.request';
 import { CreateFileDto } from './dto/create-file.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CreateLobbyDto } from './dto/create-lobby.dto';
+import { CreateLobbyContestantDto } from './dto/create-lobby-contestant.dto';
+import { CreateChatMessageDto } from './dto/create-chat-message.dto';
 
 @Injectable()
 export class DatabaseService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   //  -----------
   //  USERS TABLE
@@ -20,8 +23,9 @@ export class DatabaseService {
 
   async updateUser(userId: string, data: updateUserRequest) {
     return await this.prisma.users.update({
-      where: { id: userId }, data: data
-    })
+      where: { id: userId },
+      data: data,
+    });
   }
 
   async deleteUser(userId: string) {
@@ -64,7 +68,6 @@ export class DatabaseService {
     return user || null;
   }
 
-
   //  -----------
   //  FILES TABLE
   //  -----------
@@ -95,10 +98,121 @@ export class DatabaseService {
   }
 
   async getFilesByUserId(userId: string, type: string = null) {
-    const files = await this.prisma.files.findMany({ where: { userId: userId, type: type } });
+    const files = await this.prisma.files.findMany({
+      where: { userId: userId, type: type },
+    });
     if (!files) {
-      return null
+      return null;
     }
     return files;
+  }
+
+  //  -----------
+  //  LOBBIES TABLE
+  //  -----------
+
+  async createLobby(lobby: CreateLobbyDto) {
+    return this.prisma.lobbies.create({
+      data: lobby,
+    });
+  }
+
+  async deleteLobby(lobbyId: string) {
+    const lobby = await this.prisma.lobbies.findUnique({
+      where: { id: lobbyId },
+    });
+    if (!lobby) {
+      throw new Error(`Lobby with ID ${lobbyId} not found`);
+    }
+
+    return this.prisma.lobbies.delete({
+      where: { id: lobbyId },
+    });
+  }
+
+  async getLobbyById(lobbyId: string) {
+    const lobby = await this.prisma.lobbies.findUnique({
+      where: { id: lobbyId },
+    });
+    if (!lobby) {
+      throw new Error(`Lobby with ID ${lobbyId} not found`);
+    }
+    return lobby;
+  }
+
+  //  -----------
+  //  LOBBY_CONTESTANTS TABLE
+  //  -----------
+
+  async createLobbyConstantent(lobbyContestant: CreateLobbyContestantDto) {
+    return this.prisma.lobbyContestants.create({
+      data: lobbyContestant,
+    });
+  }
+
+  async deleteLobbyConstantent(contestantId: string) {
+    const contestant = await this.prisma.lobbyContestants.findUnique({
+      where: { id: contestantId },
+    });
+    if (!contestant) {
+      throw new Error(`Contestant with ID ${contestantId} not found`);
+    }
+
+    return this.prisma.lobbyContestants.delete({
+      where: { id: contestantId },
+    });
+  }
+
+  async getLobbyConstantentById(contestantId: string) {
+    const contestant = await this.prisma.lobbyContestants.findUnique({
+      where: { id: contestantId },
+    });
+    if (!contestant) {
+      throw new Error(`Contestant with ID ${contestantId} not found`);
+    }
+    return contestant;
+  }
+
+  //  -----------
+  //  CHAR_MESSAGES TABLE
+  //  -----------
+
+  async createChatMessage(message: CreateChatMessageDto) {
+    return this.prisma.chatMessages.create({
+      data: message,
+    });
+  }
+
+  async deleteChatMessage(messageId: string) {
+    const message = await this.prisma.chatMessages.findUnique({
+      where: { id: messageId },
+    });
+    if (!message) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
+
+    return this.prisma.chatMessages.delete({
+      where: { id: messageId },
+    });
+  }
+
+  async deleteChatMessagesByLobbyId(lobbyId: string) {
+    const messages = await this.prisma.chatMessages.findMany({
+      where: { userId: lobbyId },
+    });
+    if (!messages || messages.length === 0) {
+      return null;
+    }
+    return messages;
+  }
+
+  async getChatMessageById(messageId: string) {
+    const message = await this.prisma.chatMessages.findUnique({
+      where: { id: messageId },
+    });
+    if (!message) {
+      throw new Error(`Message with ID ${messageId} not found`);
+    }
+    return message;
   }
 }

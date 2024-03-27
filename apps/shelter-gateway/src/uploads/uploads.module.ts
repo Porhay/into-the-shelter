@@ -5,7 +5,6 @@ import { multerConfig } from 'config';
 import { UploadsService } from './uploads.service';
 import { DatabaseModule, FirebaseModule } from '@app/common';
 
-
 @Module({
   imports: [
     MulterModule.register(multerConfig),
@@ -13,6 +12,6 @@ import { DatabaseModule, FirebaseModule } from '@app/common';
     DatabaseModule,
   ],
   controllers: [UploadsController],
-  providers: [UploadsService]
+  providers: [UploadsService],
 })
 export class UploadsModule {}

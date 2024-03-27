@@ -9,10 +9,12 @@ import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
 
-
 export class LobbyManager {
   public server: Server;
-  private readonly lobbies: Map<Lobby['id'], Lobby> = new Map<Lobby['id'], Lobby>();
+  private readonly lobbies: Map<Lobby['id'], Lobby> = new Map<
+    Lobby['id'],
+    Lobby
+  >();
   public initializeSocket(client: AuthenticatedSocket): void {
     client.data.lobby = null;
   }
@@ -26,17 +28,24 @@ export class LobbyManager {
     return lobby;
   }
 
-  public joinLobby(lobbyId: string, client: AuthenticatedSocket, playerData: any): void {
+  public joinLobby(
+    lobbyId: string,
+    client: AuthenticatedSocket,
+    playerData: any,
+  ): void {
     const lobby = this.lobbies.get(lobbyId);
     if (!lobby) {
       throw new ServerException(SocketExceptions.LobbyError, 'Lobby not found');
     }
 
     if (lobby.clients.size >= lobby.maxClients) {
-      throw new ServerException(SocketExceptions.LobbyError, 'Lobby already full');
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'Lobby already full',
+      );
     }
 
-    playerData.id = client.id
+    playerData.socketId = client.id;
 
     lobby.addClient(client, playerData);
   }
@@ -45,15 +54,19 @@ export class LobbyManager {
   @Cron('*/5 * * * *')
   private lobbiesCleaner(): void {
     for (const [lobbyId, lobby] of this.lobbies) {
-      const now = (new Date()).getTime();
+      console.log(lobbyId);
+      const now = new Date().getTime();
       const lobbyCreatedAt = lobby.createdAt.getTime();
       const lobbyLifetime = now - lobbyCreatedAt;
 
       if (lobbyLifetime > LOBBY_MAX_LIFETIME) {
-        lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(ServerEvents.GameMessage, {
-          color: 'blue',
-          message: 'Game timed out',
-        });
+        lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+          ServerEvents.GameMessage,
+          {
+            color: 'blue',
+            message: 'Game timed out',
+          },
+        );
 
         lobby.instance.triggerFinish();
 

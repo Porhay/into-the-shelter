@@ -6,11 +6,11 @@ export const SocketManagerContext = createContext<SocketManager>(socketManager);
 
 type ProviderProps = { children: React.ReactNode };
 export function SocketManagerProvider({
-    children,
+  children,
 }: ProviderProps): JSX.Element {
-    return (
-        <SocketManagerContext.Provider value={socketManager}>
-            {children}
-        </SocketManagerContext.Provider>
-    );
+  return (
+    <SocketManagerContext.Provider value={socketManager}>
+      {children}
+    </SocketManagerContext.Provider>
+  );
 }

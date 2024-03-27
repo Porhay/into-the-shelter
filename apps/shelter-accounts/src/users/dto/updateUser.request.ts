@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class updateUserRequest {
   @IsString()
   displayName?: string;
 
-  @IsString() 
+  @IsString()
   avatar?: string;
 }

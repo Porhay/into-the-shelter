@@ -1,5 +1,4 @@
-export enum SocketExceptions
-{
+export enum SocketExceptions {
   // General
   UnexpectedError = 'exception.unexpected_error',
   UnexpectedPayload = 'exception.unexpected_payload',

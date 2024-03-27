@@ -16,7 +16,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 .webcam-container {
     color: #fff;
     margin-bottom: 4px;
-    width: 280px;
+    width: 290px;
 }
 
 .webcam-btn {
@@ -32,7 +32,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 }
 
 .webcam-avatar {
-    width: 280px;
+    width: 290px;
     height: 200px;
     background-color: rgb(0, 0, 0);
     display: flex;
@@ -56,6 +56,9 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     flex-direction: column;
     padding: 4px;
     margin-left: 3px;
+    font-family: 'Roboto Condensed';
+    font-weight: 500;
+    // text-shadow: 0 2px 0 #ffffff;
 }
 
 .camera-list-wrapper {
@@ -94,6 +97,22 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             height: 140px;
             display: flex;
             justify-content: center;
+
+            .nickname-block {
+                margin: 0;
+                padding: 0 0 0 3%;
+                font-family: 'Roboto Condensed';
+                position: absolute;
+                width: 100%;
+                top: 0;
+                left: 0;
+                text-align: start; // or center
+                font-weight: 500;
+                background-color: #1f1f1f46;
+                z-index: 1;
+                height: auto;
+                color: #fff;
+            }
 
             img {
                 width: 100%;
@@ -152,7 +171,6 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     img {
         height: 20px;
         padding: 2px;
-        filter: $sunset-color;
     }
 
     img:hover {
@@ -161,6 +179,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 }
 
 .action-tip-container {
+    font-family: 'Roboto Condensed';
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -199,4 +218,31 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             transform: scale(1.1);
         }
     }
+}
+
+.char-button-wrapper {
+
+}
+
+.default-char-style {
+    &:hover {
+        filter: invert(100%);
+    }
+    filter: invert(100%);
+}
+
+.isRevealed {
+    &:hover {
+        filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg) brightness(102%) contrast(101%);
+    }
+
+    filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg) brightness(102%) contrast(101%);
+}
+
+.isNotRevealed {
+    &:hover {
+        filter: $sunset-color;
+    }
+
+    filter: $sunset-color;
 }
