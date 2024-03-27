@@ -31,6 +31,14 @@ interface IState {
   isOrganizator: boolean;
   charList: charListType;
 }
+
+type charType = {
+  type: string;
+  icon: string;
+  text: string;
+  isRevealed: boolean;
+};
+
 const RoomPage = () => {
   const user = useSelector((state: RootState) => state.user);
   const lobby = useSelector((state: RootState) => state.lobby);
@@ -106,6 +114,8 @@ const RoomPage = () => {
           });
           updateState({ charList: newCharList });
         }
+      } else {
+        console.log('game started: true event');
       }
     };
     sm.registerListener(ServerEvents.LobbyState, onLobbyState);
@@ -113,6 +123,17 @@ const RoomPage = () => {
       sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
   }, [lobby.hasStarted]);
+
+  // FUNCTIONS
+  const handleCharRevial = (char: charType) => {
+    sm.emit({
+      event: ClientEvents.GameRevealChar,
+      data: {
+        char: char,
+      },
+    });
+    return;
+  };
 
   // COMPONENTS
   const Avatar = () => {
@@ -175,25 +196,16 @@ const RoomPage = () => {
               {state.isDetailsOpened ? (
                 <div className="chars-block-down">
                   <div className="char-list-container">
-                    {charList.map(
-                      (
-                        char: {
-                          type: any;
-                          icon: any;
-                          text: any;
-                        },
-                        index: any,
-                      ) => {
-                        return (
-                          <Button
-                            key={index}
-                            icon={char.icon}
-                            text={char.text}
-                            onClick={() => console.log(char)}
-                          />
-                        );
-                      },
-                    )}
+                    {charList.map((char: charType, index: any) => {
+                      return (
+                        <Button
+                          key={index}
+                          icon={char.icon}
+                          text={char.text}
+                          onClick={() => console.log(char)}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               ) : null}
@@ -280,9 +292,7 @@ const RoomPage = () => {
                 key={index}
                 icon={char.icon}
                 text={char.text}
-                onClick={() => {
-                  console.log(char);
-                }}
+                onClick={() => handleCharRevial(char)}
               />
             );
           })}

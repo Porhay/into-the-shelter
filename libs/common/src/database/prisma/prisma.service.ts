@@ -9,6 +9,9 @@ export class PrismaService {
 
   users = prisma.users;
   files = prisma.files;
+  lobbies = prisma.lobbies;
+  lobbyContestants = prisma.lobbyContestants;
+  chatMessages = prisma.chatMessages;
 
   async disconnect() {
     await prisma.$disconnect();

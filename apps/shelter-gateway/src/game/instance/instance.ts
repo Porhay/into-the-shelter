@@ -65,6 +65,23 @@ export class Instance {
     );
   }
 
+  public revealChar(data: number, client: AuthenticatedSocket): void {
+    if (!this.hasStarted) {
+      return;
+    }
+
+    // update in lobbies
+
+    this.lobby.dispatchLobbyState();
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'Characteristic is opened!',
+      },
+    );
+  }
+
   // TODO: used as example, will be removed soon
   public revealCard(cardIndex: number, client: AuthenticatedSocket): void {
     if (this.isSuspended || this.hasFinished || !this.hasStarted) {

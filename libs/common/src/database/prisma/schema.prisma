@@ -38,7 +38,7 @@ model files {
   metadata  String?
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @default(now()) @map(name: "updated_at")
-  
+
   @@map(name: "files")
 }
 
@@ -51,26 +51,38 @@ model notifications {
   seen        Boolean  @default(false)
   createdAt   DateTime @default(now()) @map(name: "created_at")
   updatedAt   DateTime @default(now()) @map(name: "updated_at")
-  
+
   @@map(name: "notifications")
 }
 
 model lobbies {
-  id          String   @id @default(uuid())
-  
-  settings    String
-  createdAt   DateTime @default(now()) @map(name: "created_at")
-  updatedAt   DateTime @default(now()) @map(name: "updated_at")
-  
+  id              String   @id @default(uuid())
+  organizatorId   String
+  settings        String
+  createdAt       DateTime @default(now()) @map(name: "created_at")
+  updatedAt       DateTime @default(now()) @map(name: "updated_at")
+
   @@map(name: "lobbies")
+}
+
+model lobbyContestants {
+  id                String   @id @default(uuid())
+  userId            String
+  lobbyId           String
+  characteristics   String
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @map(name: "updated_at")
+
+  @@map(name: "lobby_contestants")
 }
 
 model chatMessages {
   id          String   @id @default(uuid())
+  userId      String
   lobbyId     String
   data        String   
   createdAt   DateTime @default(now()) @map(name: "created_at")
   updatedAt   DateTime @default(now()) @map(name: "updated_at")
-  
+
   @@map(name: "chat_messages")
 }

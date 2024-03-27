@@ -21,6 +21,7 @@ import { ServerPayloads } from './utils/ServerPayloads';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
+import { DatabaseService } from '@app/common';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -28,7 +29,10 @@ export class GameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger: Logger = new Logger(GameGateway.name);
-  constructor(private readonly lobbyManager: LobbyManager) {}
+  constructor(
+    private readonly lobbyManager: LobbyManager,
+    private readonly databaseService: DatabaseService,
+    ) {}
 
   afterInit(server: Server): any {
     this.lobbyManager.server = server; // Pass server instance to managers
@@ -92,6 +96,18 @@ export class GameGateway
   @SubscribeMessage(ClientEvents.GameStart)
   onGameStart(client: AuthenticatedSocket, data: any): void {
     client.data.lobby.instance.triggerStart(data, client);
+  }
+
+  @SubscribeMessage(ClientEvents.GameRevealChar)
+  onRevealChar(client: AuthenticatedSocket, data: any): void {
+    if (!client.data.lobby) {
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'You are not in a lobby',
+      );
+    }
+
+    client.data.lobby.instance.revealChar(data, client);
   }
 
   // TODO: used as example, will be removed soon
