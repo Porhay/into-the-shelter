@@ -10,10 +10,8 @@ import {
   gameAvatarByPosition,
   fillWithNumbers,
   getLobbyLink,
-  normalizePlayers,
   defineCharsList,
   charListType,
-  EMPTY_CHAR_LIST,
 } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
@@ -162,6 +160,7 @@ const RoomPage = () => {
           return (
             <div className="block-container" key={index}>
               <div className="camera-block">
+                <p className="nickname-block">{player.displayName || ''}</p>
                 <img
                   src={
                     typeof player === 'number' ? avatarDefault : player.avatar

@@ -15,7 +15,7 @@ export const generateCharList = (): any[] => {
     console.log(`ERROR: ${error}`);
   }
 
-  const getRandomChar = (data: any, type: string) => {
+  const _getRandomChar = (data: any, type: string) => {
     if (type === 'gender') {
       const reandomIndex = Math.floor(Math.random() * 2);
       return ['Чоловік', 'Жінка'][reandomIndex];
@@ -28,38 +28,45 @@ export const generateCharList = (): any[] => {
   const charList = [
     {
       type: 'gender',
-      text: getRandomChar(jsonData, 'gender'),
+      text: _getRandomChar(jsonData, 'gender'),
       icon: 'genderIcon',
+      isRevealed: false,
     },
     {
       type: 'health',
-      text: getRandomChar(jsonData, 'health'),
+      text: _getRandomChar(jsonData, 'health'),
       icon: 'healthIcon',
+      isRevealed: false,
     },
     {
       type: 'hobby',
-      text: getRandomChar(jsonData, 'hobby'),
+      text: _getRandomChar(jsonData, 'hobby'),
       icon: 'hobbyIcon',
+      isRevealed: false,
     },
     {
       type: 'job',
-      text: getRandomChar(jsonData, 'job'),
+      text: _getRandomChar(jsonData, 'job'),
       icon: 'jobIcon',
+      isRevealed: false,
     },
     {
       type: 'phobia',
-      text: getRandomChar(jsonData, 'phobia'),
+      text: _getRandomChar(jsonData, 'phobia'),
       icon: 'phobiaIcon',
+      isRevealed: false,
     },
     {
       type: 'backpack',
-      text: getRandomChar(jsonData, 'backpack'),
+      text: _getRandomChar(jsonData, 'backpack'),
       icon: 'backpackIcon',
+      isRevealed: false,
     },
     {
       type: 'fact',
-      text: getRandomChar(jsonData, 'fact'),
+      text: _getRandomChar(jsonData, 'fact'),
       icon: 'factIcon',
+      isRevealed: false,
     },
   ];
 
