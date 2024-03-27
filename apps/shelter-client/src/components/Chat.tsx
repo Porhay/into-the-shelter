@@ -9,185 +9,165 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize } from '@fortawesome/free-solid-svg-icons';
 
 interface IState {
-    messages: Message[];
-    newMessage: string;
-    isResizing: boolean;
-    chatHeight: number;
-    chatWidth: number;
-    startX?: number;
-    startY?: number;
+  messages: Message[];
+  newMessage: string;
+  isResizing: boolean;
+  chatHeight: number;
+  chatWidth: number;
+  startX?: number;
+  startY?: number;
 }
 
 interface Message {
-    sender: string;
-    message: string;
-    avatar: string;
-    timeSent: string;
+  sender: string;
+  message: string;
+  avatar: string;
+  timeSent: string;
 }
 
 const Chat: FC = () => {
-    const { sm } = useSocketManager();
-    const user = useSelector((state: RootState) => state.user);
-    const chatRef = useRef<HTMLDivElement>(null);
-    const messageTextRef = useRef<HTMLDivElement>(null);
-    const resizeRef = useRef<HTMLDivElement>(null);
+  const { sm } = useSocketManager();
+  const user = useSelector((state: RootState) => state.user);
+  const chatRef = useRef<HTMLDivElement>(null);
+  const messageTextRef = useRef<HTMLDivElement>(null);
+  const resizeRef = useRef<HTMLDivElement>(null);
 
-    // LOCAL STATE
-    const updateState = (newState: Partial<IState>): void =>
-        setState((prevState) => ({ ...prevState, ...newState }));
-    const [state, setState] = useState<IState>({
-        messages: [],
-        newMessage: '',
-        isResizing: false,
-        chatHeight: 54,
-        chatWidth: 20,
+  // LOCAL STATE
+  const updateState = (newState: Partial<IState>): void =>
+    setState((prevState) => ({ ...prevState, ...newState }));
+  const [state, setState] = useState<IState>({
+    messages: [],
+    newMessage: '',
+    isResizing: false,
+    chatHeight: 54,
+    chatWidth: 20,
+  });
+
+  useEffect(() => {
+    sm.socket.on('server.chat.message', (data: Message) => {
+      if (data && data.message) {
+        updateState({ messages: [...state.messages, data] });
+      }
     });
 
-    useEffect(() => {
-        sm.socket.on('server.chat.message', (data: Message) => {
-            if (data && data.message) {
-                updateState({ messages: [...state.messages, data] });
-            }
-        });
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [state.messages]);
 
-        if (chatRef.current) {
-            chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  // FUNCTIONS
+  const handleSendMessage = () => {
+    if (state.newMessage.trim() !== '') {
+      const date = new Date();
+      const hour = date.getHours().toString().padStart(2, '0');
+      const minute = date.getMinutes().toString().padStart(2, '0');
+      const dateStr = `${hour}:${minute}`;
+      sm.socket.emit('client.chat.message', {
+        sender: user.displayName,
+        message: state.newMessage,
+        avatar: user.avatar,
+        timeSent: dateStr,
+      });
+      updateState({ newMessage: '' });
+    }
+  };
+
+  const startResizing = (mouseDownEvent: React.MouseEvent<HTMLDivElement>) => {
+    updateState({
+      isResizing: true,
+      startX: mouseDownEvent.clientX,
+      startY: mouseDownEvent.clientY,
+    });
+    mouseDownEvent.preventDefault();
+  };
+
+  const resize = (mouseMoveEvent: MouseEvent) => {
+    if (state.isResizing && chatRef.current) {
+      if (state.startX && state.startY) {
+        const newWidth =
+          state.chatWidth -
+          ((mouseMoveEvent.clientX - state.startX) / window.innerWidth) * 100;
+        const newHeight =
+          state.chatHeight -
+          ((mouseMoveEvent.clientY - state.startY) / window.innerHeight) * 100;
+
+        if (newHeight > 20 && newHeight < 80) {
+          setState((prevState) => ({
+            ...prevState,
+            chatHeight: newHeight,
+          }));
         }
-    }, [state.messages]);
 
-    // FUNCTIONS
-    const handleSendMessage = () => {
-        if (state.newMessage.trim() !== '') {
-            const date = new Date();
-            const hour = date.getHours().toString().padStart(2, '0');
-            const minute = date.getMinutes().toString().padStart(2, '0');
-            const dateStr = `${hour}:${minute}`;
-            sm.socket.emit('client.chat.message', {
-                sender: user.displayName,
-                message: state.newMessage,
-                avatar: user.avatar,
-                timeSent: dateStr,
-            });
-            updateState({ newMessage: '' });
+        if (newWidth > 20 && newWidth < 80) {
+          setState((prevState) => ({
+            ...prevState,
+            chatWidth: newWidth,
+          }));
         }
+      }
+    }
+  };
+
+  const stopResizing = () => {
+    updateState({ isResizing: false });
+  };
+
+  useEffect(() => {
+    window.addEventListener('mousemove', resize);
+    window.addEventListener('mouseup', stopResizing);
+    return () => {
+      window.removeEventListener('mousemove', resize);
+      window.removeEventListener('mouseup', stopResizing);
     };
+  }, [state.isResizing]);
 
-    const startResizing = (
-        mouseDownEvent: React.MouseEvent<HTMLDivElement>,
-    ) => {
-        updateState({
-            isResizing: true,
-            startX: mouseDownEvent.clientX,
-            startY: mouseDownEvent.clientY,
-        });
-        mouseDownEvent.preventDefault();
-    };
-
-    const resize = (mouseMoveEvent: MouseEvent) => {
-        if (state.isResizing && chatRef.current) {
-            if (state.startX && state.startY) {
-                const newWidth =
-                    state.chatWidth -
-                    ((mouseMoveEvent.clientX - state.startX) /
-                        window.innerWidth) *
-                        100;
-                const newHeight =
-                    state.chatHeight -
-                    ((mouseMoveEvent.clientY - state.startY) /
-                        window.innerHeight) *
-                        100;
-
-                if (newHeight > 20 && newHeight < 80) {
-                    setState((prevState) => ({
-                        ...prevState,
-                        chatHeight: newHeight,
-                    }));
-                }
-
-                if (newWidth > 20 && newWidth < 80) {
-                    setState((prevState) => ({
-                        ...prevState,
-                        chatWidth: newWidth,
-                    }));
-                }
-            }
-        }
-    };
-
-    const stopResizing = () => {
-        updateState({ isResizing: false });
-    };
-
-    useEffect(() => {
-        window.addEventListener('mousemove', resize);
-        window.addEventListener('mouseup', stopResizing);
-        return () => {
-            window.removeEventListener('mousemove', resize);
-            window.removeEventListener('mouseup', stopResizing);
-        };
-    }, [state.isResizing]);
-
-    return (
-        <div
-            className="chat-container"
-            style={{
-                height: `${state.chatHeight}vh`,
-                width: `${state.chatWidth}vw`,
-            }}
-        >
-            <div
-                className="resize-handle"
-                onMouseDown={startResizing}
-                ref={resizeRef}
-            >
-                <FontAwesomeIcon
-                    className={'resize-handle-icon'}
-                    icon={faMaximize}
-                />
+  return (
+    <div
+      className="chat-container"
+      style={{
+        height: `${state.chatHeight}vh`,
+        width: `${state.chatWidth}vw`,
+      }}
+    >
+      <div
+        className="resize-handle"
+        onMouseDown={startResizing}
+        ref={resizeRef}
+      >
+        <FontAwesomeIcon className={'resize-handle-icon'} icon={faMaximize} />
+      </div>
+      <div className="messages-container" ref={chatRef}>
+        {state.messages.map((message, index) => (
+          <div className="message-wrapper" key={index}>
+            <div className={'message'}>
+              <img
+                src={message.avatar || userAvatar}
+                className="message-icon"
+                alt="user avatar"
+              />
+              <div ref={messageTextRef} className="message-container">
+                <div className="message-data">
+                  <div className="message-sender">{message.sender}</div>
+                  <div className="message-time">{message.timeSent}</div>
+                </div>
+                <div className="message-text">{message.message}</div>
+              </div>
             </div>
-            <div className="messages-container" ref={chatRef}>
-                {state.messages.map((message, index) => (
-                    <div className="message-wrapper" key={index}>
-                        <div className={'message'}>
-                            <img
-                                src={message.avatar || userAvatar}
-                                className="message-icon"
-                                alt="user avatar"
-                            />
-                            <div
-                                ref={messageTextRef}
-                                className="message-container"
-                            >
-                                <div className="message-data">
-                                    <div className="message-sender">
-                                        {message.sender}
-                                    </div>
-                                    <div className="message-time">
-                                        {message.timeSent}
-                                    </div>
-                                </div>
-                                <div className="message-text">
-                                    {message.message}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="input-container">
-                <input
-                    type="text"
-                    placeholder="Type your message..."
-                    value={state.newMessage}
-                    onChange={(e) =>
-                        updateState({ newMessage: e.target.value })
-                    }
-                    onKeyDown={(e) => handleKeyDown(e, handleSendMessage)}
-                />
-                <button onClick={handleSendMessage}>Send</button>
-            </div>
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+      <div className="input-container">
+        <input
+          type="text"
+          placeholder="Type your message..."
+          value={state.newMessage}
+          onChange={(e) => updateState({ newMessage: e.target.value })}
+          onKeyDown={(e) => handleKeyDown(e, handleSendMessage)}
+        />
+        <button onClick={handleSendMessage}>Send</button>
+      </div>
+    </div>
+  );
 };
 
 export default Chat;
