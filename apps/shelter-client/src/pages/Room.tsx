@@ -121,6 +121,7 @@ const RoomPage = () => {
     sm.emit({
       event: ClientEvents.GameRevealChar,
       data: {
+        userId: user.userId,
         char: char,
       },
     });
@@ -128,20 +129,6 @@ const RoomPage = () => {
   };
 
   // COMPONENTS
-  const Avatar = () => {
-    // Avatar. Should be updated while playing...
-    return (
-      <div className="webcam-avatar">
-        <img
-          src={
-            gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl ||
-            user.avatar
-          }
-          alt="webcam avatar"
-        />
-      </div>
-    );
-  };
 
   const OponentsList = () => {
     // Players webcam list with characteristics
@@ -178,12 +165,16 @@ const RoomPage = () => {
                   }}
                 >
                   {charList.map((char: charType, index: any) => (
-                    <Button
-                      icon={char.icon}
-                      custom={true}
-                      stylesheet="bottom-icon"
-                      key={index}
-                    />
+                    <div
+                      className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
+                    >
+                      <Button
+                        key={index}
+                        icon={char.icon}
+                        custom={true}
+                        stylesheet="bottom-icon"
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -193,12 +184,15 @@ const RoomPage = () => {
                   <div className="char-list-container">
                     {charList.map((char: charType, index: any) => {
                       return (
-                        <Button
-                          key={index}
-                          icon={char.icon}
-                          text={char.text}
-                          onClick={() => console.log(char)}
-                        />
+                        <div
+                          className={`${char.isRevealed ? 'isRevealed' : 'default-char-style'}`}
+                        >
+                          <Button
+                            key={index}
+                            icon={char.icon}
+                            text={char.isRevealed ? char.text : 'Not revealed'}
+                          />
+                        </div>
                       );
                     })}
                   </div>
@@ -276,19 +270,35 @@ const RoomPage = () => {
               />
             </div>
             <div className="webcam">
-              {state.isCameraOn ? <Webcam /> : <Avatar />}
+              {state.isCameraOn ? (
+                <Webcam />
+              ) : (
+                <div className="webcam-avatar">
+                  <img
+                    src={
+                      gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl ||
+                      user.avatar
+                    }
+                    alt="webcam avatar"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div className="char-list-container">
           {state.userCharList.map((char, index) => {
             return (
-              <Button
-                key={index}
-                icon={char.icon}
-                text={char.text}
-                onClick={() => handleCharRevial(char)}
-              />
+              <div
+                className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
+              >
+                <Button
+                  key={index}
+                  icon={char.icon}
+                  text={char.text}
+                  onClick={() => handleCharRevial(char)}
+                />
+              </div>
             );
           })}
         </div>

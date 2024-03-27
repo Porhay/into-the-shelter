@@ -57,6 +57,8 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     padding: 4px;
     margin-left: 3px;
     font-family: 'Roboto Condensed';
+    font-weight: 500;
+    // text-shadow: 0 2px 0 #ffffff;
 }
 
 .camera-list-wrapper {
@@ -169,7 +171,6 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     img {
         height: 20px;
         padding: 2px;
-        filter: $sunset-color;
     }
 
     img:hover {
@@ -217,4 +218,31 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             transform: scale(1.1);
         }
     }
+}
+
+.char-button-wrapper {
+
+}
+
+.default-char-style {
+    &:hover {
+        filter: invert(100%);
+    }
+    filter: invert(100%);
+}
+
+.isRevealed {
+    &:hover {
+        filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg) brightness(102%) contrast(101%);
+    }
+
+    filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg) brightness(102%) contrast(101%);
+}
+
+.isNotRevealed {
+    &:hover {
+        filter: $sunset-color;
+    }
+
+    filter: $sunset-color;
 }

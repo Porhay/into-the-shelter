@@ -63,12 +63,18 @@ export class Instance {
     );
   }
 
-  public revealChar(data: number, client: AuthenticatedSocket): void {
+  public revealChar(data: any, client: AuthenticatedSocket): void {
+    const { char, userId } = data;
     if (!this.hasStarted) {
       return;
     }
 
     // update in lobbies
+    const uCharList = this.characteristics[userId];
+    uCharList.find(
+      (curChar: { type: any }) => curChar.type === char.type,
+    ).isRevealed = true;
+    this.characteristics[userId] = uCharList;
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(

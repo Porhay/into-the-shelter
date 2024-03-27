@@ -33,7 +33,7 @@ const Icon = (props: any) => {
       return <img src={phobiaIcon} alt={alt} />;
     case 'backpackIcon':
       return <img src={backpackIcon} alt={alt} />;
-    case 'additionalInfoIcon':
+    case 'factIcon':
       return <img src={additionalInfoIcon} alt={alt} />;
     case 'enterIcon':
       return <img src={enterIcon} alt={alt} />;
