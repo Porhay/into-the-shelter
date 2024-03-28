@@ -258,28 +258,29 @@ const RoomPage = () => {
       <OponentsList />
       <div className="camera-list-wrapper">
         <div className="siwc-wrapper">
-          <div className="lobby-settings-container">
-            <div className="settings-is-private">
-              <div className="is-private-text">
-                <h3>Private room</h3>
-                <p>Private rooms can be accessed using the room URL only</p>
-              </div>
-              <div className="is-private-btn">
-                <Toggle
-                  defaultChecked={state.isPrivateLobby}
-                  icons={false}
-                  onChange={() => {
-                    updateState({ isPrivateLobby: !state.isPrivateLobby });
-                    handleSettingsUpdate({
-                      key: roomId,
-                      isPrivate: !state.isPrivateLobby,
-                    });
-                  }}
-                />
+          {state.isOrganizator && !lobby.hasStarted ? (
+            <div className="lobby-settings-container">
+              <div className="settings-is-private">
+                <div className="is-private-text">
+                  <h3>Private room</h3>
+                  <p>Private rooms can be accessed using the room URL only</p>
+                </div>
+                <div className="is-private-btn">
+                  <Toggle
+                    defaultChecked={state.isPrivateLobby}
+                    icons={false}
+                    onChange={() => {
+                      updateState({ isPrivateLobby: !state.isPrivateLobby });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        isPrivate: !state.isPrivateLobby,
+                      });
+                    }}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-
+          ) : null}
           <div className="invite-webcam-char-wrapper">
             <div className="invite-webcam-wrapper">
               <div

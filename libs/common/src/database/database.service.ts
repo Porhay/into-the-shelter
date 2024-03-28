@@ -188,7 +188,6 @@ export class DatabaseService {
 
   async getAllPublicLobbis() {
     const lobbies = await this.prisma.lobbies.findMany();
-    console.log(lobbies);
     const res = lobbies.filter(
       (lobby) => JSON.parse(lobby.settings).isPrivate === false,
     );
