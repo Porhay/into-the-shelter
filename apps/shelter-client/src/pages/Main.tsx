@@ -5,6 +5,9 @@ import { ClientEvents } from '../websocket/types';
 import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
 import { getAllPublicLobbies } from '../http/index';
+import { formatCreatedAt } from '../helpers';
+import { ROUTES } from '../constants';
+import useNavigate from '../hooks/useNavigate';
 
 interface IState {
   createInput: string;
@@ -12,6 +15,7 @@ interface IState {
 }
 
 const MainPage = () => {
+  const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user);
   const { sm } = useSocketManager();
 
@@ -40,7 +44,17 @@ const MainPage = () => {
 
   const handleSetPublicLobbies = async () => {
     const roomList = await getAllPublicLobbies(user.userId);
-    updateState({ roomList: roomList });
+
+    // Sort the array in descending order based on the createdAt
+    const sortedRoomList: any[] = roomList.sort(
+      (a: any, b: any) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    // Get only the first 4 items (TODO: add pagination in future)
+    const newestRooms = sortedRoomList.slice(0, 4);
+
+    updateState({ roomList: newestRooms });
   };
 
   return (
@@ -55,8 +69,19 @@ const MainPage = () => {
         <div className="rooms-list">
           {state.roomList.map((room, index) => {
             return (
-              <div className="room-item" key={index}>
-                <div className="room-text">{room.name}</div>
+              <div
+                className="room-item"
+                key={index}
+                onClick={() => {
+                  // navigate to current room
+                  const route = ROUTES.ROOMS + '/' + room.key;
+                  navigate(route);
+                }}
+              >
+                <div className="room-text">{room.key}</div>
+                <div className="room-text">
+                  {formatCreatedAt(room.createdAt)}
+                </div>
               </div>
             );
           })}
