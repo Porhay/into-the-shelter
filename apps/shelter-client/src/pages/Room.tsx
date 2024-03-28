@@ -133,7 +133,6 @@ const RoomPage = () => {
   };
 
   // COMPONENTS
-
   const OponentsList = () => {
     // Players webcam list with characteristics
     return (

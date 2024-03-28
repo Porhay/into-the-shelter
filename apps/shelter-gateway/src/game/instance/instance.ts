@@ -26,10 +26,10 @@ export class Instance {
     this.initializeCards();
   }
 
-  public triggerStart(
-    data: { isPrivate: boolean; maxClients: number },
+  public async triggerStart(
+    data: { isPrivate: boolean; maxClients: number; organizatorId: string },
     client: AuthenticatedSocket,
-  ): void {
+  ): Promise<void> {
     if (this.hasStarted) {
       return;
     }
@@ -45,6 +45,10 @@ export class Instance {
     });
 
     this.lobby.dispatchLobbyState();
+
+    // settings: { maxClients: data.maxClients, isPrivate: data.isPrivate },
+    // await this.databaseService.updateLobby(context);
+
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {

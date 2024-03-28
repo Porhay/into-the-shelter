@@ -112,8 +112,12 @@ export class DatabaseService {
   //  -----------
 
   async createLobby(lobby: CreateLobbyDto) {
+    const data = {
+      organizatorId: lobby.organizatorId,
+      settings: JSON.stringify(lobby.settings),
+    };
     return this.prisma.lobbies.create({
-      data: lobby,
+      data: data,
     });
   }
 
@@ -137,6 +141,7 @@ export class DatabaseService {
     if (!lobby) {
       throw new Error(`Lobby with ID ${lobbyId} not found`);
     }
+    lobby.settings = JSON.parse(lobby.settings);
     return lobby;
   }
 
