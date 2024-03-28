@@ -132,6 +132,19 @@ const RoomPage = () => {
     return;
   };
 
+  interface settingsUpdate {
+    key?: string | null;
+    isPrivate?: boolean;
+    maxClients?: number;
+  }
+  const handleSettingsUpdate = (data: settingsUpdate) => {
+    sm.emit({
+      event: ClientEvents.LobbyUpdate,
+      data: data,
+    });
+    return;
+  };
+
   // COMPONENTS
   const OponentsList = () => {
     // Players webcam list with characteristics
@@ -257,6 +270,10 @@ const RoomPage = () => {
                   icons={false}
                   onChange={() => {
                     updateState({ isPrivateLobby: !state.isPrivateLobby });
+                    handleSettingsUpdate({
+                      key: roomId,
+                      isPrivate: !state.isPrivateLobby,
+                    });
                   }}
                 />
               </div>

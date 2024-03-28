@@ -22,6 +22,7 @@ import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
 import { DatabaseService } from '@app/common';
+import { boolean, number } from 'joi';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -78,6 +79,7 @@ export class GameGateway
 
     // store lobby in database
     const context = {
+      key: lobby.id,
       organizatorId: data.organizatorId,
       settings: { maxClients: data.maxClients, isPrivate: true },
     };
@@ -88,6 +90,32 @@ export class GameGateway
       data: {
         color: 'green',
         message: 'Lobby created',
+      },
+    };
+  }
+
+  @SubscribeMessage(ClientEvents.LobbyUpdate)
+  async onLobbyUpdate(client: AuthenticatedSocket, data: any): Promise<any> {
+    let isPrivate, maxClients;
+    if (data.isPrivate !== null || data.isPrivate !== undefined) {
+      client.data.lobby.instance.isPrivate = data.isPrivate;
+      isPrivate = data.isPrivate;
+    }
+    if (data.maxClients !== null || data.maxClients !== undefined) {
+      client.data.lobby.instance.maxClients = data.maxClients;
+      maxClients = data.maxClients;
+    }
+
+    // store lobby in database
+    await this.databaseService.updateLobbyByKey(data.key, {
+      settings: { isPrivate, maxClients },
+    });
+
+    return {
+      event: ServerEvents.GameMessage,
+      data: {
+        color: 'green',
+        message: 'Lobby updated',
       },
     };
   }
