@@ -1,22 +1,63 @@
 $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightness(98%) contrast(93%);
 
-.link-camera-wrapper {
+.siwc-wrapper {
+    margin: 0 0 2px 6px;
     display: flex;
     flex-direction: column;
+    width: 290px;
+
+    .lobby-settings-container {
+        background-color: #ffc28cca;
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        cursor: pointer;
+        margin: 0 0 10px 0;
+
+        .settings-is-private {
+            display: flex;
+
+            .is-private-text {
+                flex: 80%;
+                h3 {
+                    color: #000000;
+                    font-size: 20px;
+                }
+
+                p {
+                    color: #000000;
+                    font-size: 14px;
+                }
+            }
+
+            .is-private-btn {
+                margin: 0 10px;
+                flex: 20%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+        }
+    }
+
+    .invite-link-container {
+        background-color: #ffc28cca;
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        margin-bottom: 3px;
+        cursor: pointer;
+    }
 }
 
-.invite-link-container {
-    background-color: #ffc28cca;
-    font-family: 'Roboto Condensed';
-    font-weight: 400;
-    margin-bottom: 3px;
-    cursor: pointer;
+.invite-webcam-char-wrapper {
+    display: flex;
 }
 
 .webcam-container {
+    display: flex;
     color: #fff;
     margin-bottom: 4px;
-    width: 290px;
+
 }
 
 .webcam-btn {
@@ -220,14 +261,13 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     }
 }
 
-.char-button-wrapper {
-
-}
+.char-button-wrapper {}
 
 .default-char-style {
     &:hover {
         filter: invert(100%);
     }
+
     filter: invert(100%);
 }
 

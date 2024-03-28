@@ -26,10 +26,17 @@ export class Instance {
     this.initializeCards();
   }
 
-  public triggerStart(): void {
+  public triggerStart(
+    data: { isPrivate: boolean; maxClients: number },
+    client: AuthenticatedSocket,
+  ): void {
     if (this.hasStarted) {
       return;
     }
+
+    // update lobby's settings
+    this.lobby.isPrivate = data.isPrivate;
+    // TODO: update in db
 
     this.hasStarted = true;
     this.lobby.instance.players.map((player) => {
