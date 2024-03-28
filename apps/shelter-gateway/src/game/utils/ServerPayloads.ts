@@ -14,6 +14,7 @@ export type ServerPayloads = {
     scores: Record<string, number>;
     players: any;
     characteristics: any;
+    isPrivate: boolean;
   };
 
   [ServerEvents.GameMessage]: {

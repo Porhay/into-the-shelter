@@ -26,10 +26,17 @@ export class Instance {
     this.initializeCards();
   }
 
-  public triggerStart(): void {
+  public async triggerStart(
+    data: { isPrivate: boolean; maxClients: number; organizatorId: string },
+    client: AuthenticatedSocket,
+  ): Promise<void> {
     if (this.hasStarted) {
       return;
     }
+
+    // update lobby's settings
+    this.lobby.isPrivate = data.isPrivate;
+    // TODO: update in db
 
     this.hasStarted = true;
     this.lobby.instance.players.map((player) => {
@@ -38,6 +45,10 @@ export class Instance {
     });
 
     this.lobby.dispatchLobbyState();
+
+    // settings: { maxClients: data.maxClients, isPrivate: data.isPrivate },
+    // await this.databaseService.updateLobby(context);
+
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {
@@ -69,12 +80,14 @@ export class Instance {
       return;
     }
 
-    // update in lobbies
+    // update user's characteristic
     const uCharList = this.characteristics[userId];
     uCharList.find(
       (curChar: { type: any }) => curChar.type === char.type,
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
+
+    // TODO: update in lobbies
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(

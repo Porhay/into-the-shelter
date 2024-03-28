@@ -22,6 +22,7 @@ import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
 import { DatabaseService } from '@app/common';
+import { boolean, number } from 'joi';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -65,20 +66,56 @@ export class GameGateway
   }
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
-  onLobbyCreate(
+  async onLobbyCreate(
     client: AuthenticatedSocket,
     data: LobbyCreateDto,
-  ): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
+  ): Promise<
+    WsResponse<{ message: string; color?: 'green' | 'red' | 'blue' | 'orange' }>
+  > {
     const lobby = this.lobbyManager.createLobby(data.maxClients);
 
     // data.player.socketId = client.id  // Cannot set properties of undefined (setting 'socketId')
-    lobby.addClient(client, data.player);
+    lobby.addClient(client);
+
+    // store lobby in database
+    const context = {
+      key: lobby.id,
+      organizatorId: data.organizatorId,
+      settings: { maxClients: data.maxClients, isPrivate: true },
+    };
+    await this.databaseService.createLobby(context);
 
     return {
       event: ServerEvents.GameMessage,
       data: {
         color: 'green',
         message: 'Lobby created',
+      },
+    };
+  }
+
+  @SubscribeMessage(ClientEvents.LobbyUpdate)
+  async onLobbyUpdate(client: AuthenticatedSocket, data: any): Promise<any> {
+    let isPrivate, maxClients;
+    if (data.isPrivate !== null || data.isPrivate !== undefined) {
+      client.data.lobby.instance.isPrivate = data.isPrivate;
+      isPrivate = data.isPrivate;
+    }
+    if (data.maxClients !== null || data.maxClients !== undefined) {
+      client.data.lobby.instance.maxClients = data.maxClients;
+      maxClients = data.maxClients;
+    }
+
+    // store lobby in database
+    await this.databaseService.updateLobbyByKey(data.key, {
+      settings: { isPrivate, maxClients },
+    });
+
+    return {
+      event: ServerEvents.GameMessage,
+      data: {
+        color: 'green',
+        message: 'Lobby updated',
       },
     };
   }

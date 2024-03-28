@@ -8,8 +8,10 @@ import { ServerException } from '../server.exception';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
+import { DatabaseService } from '@app/common';
 
 export class LobbyManager {
+  constructor(private readonly databaseService: DatabaseService) {}
   public server: Server;
   private readonly lobbies: Map<Lobby['id'], Lobby> = new Map<
     Lobby['id'],

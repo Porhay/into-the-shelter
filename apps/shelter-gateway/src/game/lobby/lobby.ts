@@ -13,6 +13,7 @@ export class Lobby {
     AuthenticatedSocket
   >();
   public readonly instance: Instance = new Instance(this);
+  public isPrivate: boolean = true;
 
   constructor(
     private readonly server: Server,
@@ -77,6 +78,7 @@ export class Lobby {
       scores: this.instance.scores,
       players: this.instance.players,
       characteristics: this.instance.characteristics,
+      isPrivate: this.isPrivate,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

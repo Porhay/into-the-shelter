@@ -112,7 +112,41 @@ export class DatabaseService {
   //  -----------
 
   async createLobby(lobby: CreateLobbyDto) {
+    const data = {
+      key: lobby.key,
+      organizatorId: lobby.organizatorId,
+      settings: JSON.stringify(lobby.settings),
+    };
     return this.prisma.lobbies.create({
+      data: data,
+    });
+  }
+
+  async updateLobbyByKey(key: string, data: any) {
+    const lobbyByKey = await this.getLobbyByKeyOrNull(key);
+    if (!lobbyByKey) {
+      throw new Error(`Lobby with key ${key} not found`);
+    }
+
+    const lobby = await this.getLobbyByIdOrNull(lobbyByKey.id);
+
+    // Merge objects manually
+    const newSettings = {
+      maxClients:
+        data.settings.maxClients !== undefined
+          ? data.settings.maxClients
+          : lobby.settings.maxClients,
+      isPrivate:
+        data.settings.isPrivate !== undefined
+          ? data.settings.isPrivate
+          : lobby.settings.isPrivate,
+    };
+
+    // Update lobby settings with the merged object
+    lobby.settings = JSON.stringify(newSettings);
+
+    return await this.prisma.lobbies.update({
+      where: { id: lobby.id },
       data: lobby,
     });
   }
@@ -130,14 +164,35 @@ export class DatabaseService {
     });
   }
 
-  async getLobbyById(lobbyId: string) {
+  async getLobbyByIdOrNull(lobbyId: string): Promise<any> {
     const lobby = await this.prisma.lobbies.findUnique({
       where: { id: lobbyId },
     });
     if (!lobby) {
-      throw new Error(`Lobby with ID ${lobbyId} not found`);
+      return null;
     }
+    lobby.settings = JSON.parse(lobby.settings);
     return lobby;
+  }
+
+  async getLobbyByKeyOrNull(key: string) {
+    const lobby = await this.prisma.lobbies.findFirst({
+      where: { key: key },
+    });
+    if (!lobby) {
+      return null;
+    }
+    lobby.settings = JSON.parse(lobby.settings);
+    return lobby;
+  }
+
+  async getAllPublicLobbis() {
+    const lobbies = await this.prisma.lobbies.findMany();
+    console.log(lobbies);
+    const res = lobbies.filter(
+      (lobby) => JSON.parse(lobby.settings).isPrivate === false,
+    );
+    return res;
   }
 
   //  -----------

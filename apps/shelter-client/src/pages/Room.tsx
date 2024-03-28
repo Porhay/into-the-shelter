@@ -4,6 +4,8 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../components/Buttons';
 import Webcam from '../components/Webcam';
 import Chat from '../components/Chat';
+import Toggle from 'react-toggle';
+import 'react-toggle/style.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import {
@@ -29,6 +31,7 @@ interface IState {
   inviteLink: string;
   isOrganizator: boolean;
   userCharList: charListType;
+  isPrivateLobby: boolean;
 }
 
 type charType = {
@@ -56,6 +59,7 @@ const RoomPage = () => {
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
     userCharList: defineCharsList(),
+    isPrivateLobby: true,
   });
 
   useEffect(() => {
@@ -128,8 +132,20 @@ const RoomPage = () => {
     return;
   };
 
-  // COMPONENTS
+  interface settingsUpdate {
+    key?: string | null;
+    isPrivate?: boolean;
+    maxClients?: number;
+  }
+  const handleSettingsUpdate = (data: settingsUpdate) => {
+    sm.emit({
+      event: ClientEvents.LobbyUpdate,
+      data: data,
+    });
+    return;
+  };
 
+  // COMPONENTS
   const OponentsList = () => {
     // Players webcam list with characteristics
     return (
@@ -210,7 +226,8 @@ const RoomPage = () => {
       sm.emit({
         event: ClientEvents.GameStart,
         data: {
-          // maxClients: 4
+          maxClients: 4, // TODO: update in future
+          isPrivate: state.isPrivateLobby,
         },
       });
     };
@@ -240,67 +257,93 @@ const RoomPage = () => {
     <div className="room-page-container">
       <OponentsList />
       <div className="camera-list-wrapper">
-        <div className="link-camera-wrapper">
-          <div
-            className="invite-link-container"
-            onClick={() => {
-              navigator.clipboard.writeText(state.inviteLink);
-              showNotification(NOTIF_TYPE.SUCCESS, 'Copied to clipboard!');
-              updateState({ inviteLinkTextBox: 'Copied!' });
-              setTimeout(
-                () =>
-                  updateState({
-                    inviteLinkTextBox: state.inviteLink,
-                  }),
-                1000,
-              );
-            }}
-          >
-            {state.inviteLinkTextBox}
-          </div>
-          <div className="webcam-container">
-            <div className="webcam-btn">
-              <Button
-                icon="videocamIcon"
-                onClick={() =>
-                  updateState({
-                    isCameraOn: !state.isCameraOn,
-                  })
-                }
-              />
-            </div>
-            <div className="webcam">
-              {state.isCameraOn ? (
-                <Webcam />
-              ) : (
-                <div className="webcam-avatar">
-                  <img
-                    src={
-                      gameAvatarByPosition(user.gameAvatars, 1)?.downloadUrl ||
-                      user.avatar
-                    }
-                    alt="webcam avatar"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="char-list-container">
-          {state.userCharList.map((char, index) => {
-            return (
-              <div
-                className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
-              >
-                <Button
-                  key={index}
-                  icon={char.icon}
-                  text={char.text}
-                  onClick={() => handleCharRevial(char)}
+        <div className="siwc-wrapper">
+          <div className="lobby-settings-container">
+            <div className="settings-is-private">
+              <div className="is-private-text">
+                <h3>Private room</h3>
+                <p>Private rooms can be accessed using the room URL only</p>
+              </div>
+              <div className="is-private-btn">
+                <Toggle
+                  defaultChecked={state.isPrivateLobby}
+                  icons={false}
+                  onChange={() => {
+                    updateState({ isPrivateLobby: !state.isPrivateLobby });
+                    handleSettingsUpdate({
+                      key: roomId,
+                      isPrivate: !state.isPrivateLobby,
+                    });
+                  }}
                 />
               </div>
-            );
-          })}
+            </div>
+          </div>
+
+          <div className="invite-webcam-char-wrapper">
+            <div className="invite-webcam-wrapper">
+              <div
+                className="invite-link-container"
+                onClick={() => {
+                  navigator.clipboard.writeText(state.inviteLink);
+                  showNotification(NOTIF_TYPE.SUCCESS, 'Copied to clipboard!');
+                  updateState({ inviteLinkTextBox: 'Copied!' });
+                  setTimeout(
+                    () =>
+                      updateState({
+                        inviteLinkTextBox: state.inviteLink,
+                      }),
+                    1000,
+                  );
+                }}
+              >
+                {state.inviteLinkTextBox}
+              </div>
+              <div className="webcam-container">
+                <div className="webcam-btn">
+                  <Button
+                    icon="videocamIcon"
+                    onClick={() =>
+                      updateState({
+                        isCameraOn: !state.isCameraOn,
+                      })
+                    }
+                  />
+                </div>
+                <div className="webcam">
+                  {state.isCameraOn ? (
+                    <Webcam />
+                  ) : (
+                    <div className="webcam-avatar">
+                      <img
+                        src={
+                          gameAvatarByPosition(user.gameAvatars, 1)
+                            ?.downloadUrl || user.avatar
+                        }
+                        alt="webcam avatar"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="char-list-container">
+              {state.userCharList.map((char, index) => {
+                return (
+                  <div
+                    className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
+                  >
+                    <Button
+                      key={index}
+                      icon={char.icon}
+                      text={char.text}
+                      onClick={() => handleCharRevial(char)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
       <ActionTipContainer />

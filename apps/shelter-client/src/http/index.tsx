@@ -84,3 +84,15 @@ export const deleteFileReq = async (
     console.log(`Error while deleting file, id:${fileId}`, error);
   }
 };
+
+export const getAllPublicLobbies = async (userId: string | undefined) => {
+  try {
+    const res = await gatewayHost.get(`/api/users/${userId}/lobbies/`);
+    return res.data;
+  } catch (error) {
+    console.log(
+      `Error while getting all public lobbies, userId:${userId}`,
+      error,
+    );
+  }
+};

@@ -7,6 +7,8 @@ import { GameGateway } from './game/game.gateway';
 import { GameModule } from './game/game.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LobbyManager } from './game/lobby/lobby.manager';
+import { LobbiesController } from './lobbies/lobbies.controller';
+import { LobbiesModule } from './lobbies/lobbies.module';
 import config from 'config';
 
 @Module({
@@ -14,6 +16,7 @@ import config from 'config';
     StatusModule,
     UploadsModule,
     GameModule,
+    LobbiesModule,
 
     DatabaseModule,
     FirebaseModule,
