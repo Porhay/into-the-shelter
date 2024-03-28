@@ -1,13 +1,14 @@
 import '../styles/Main.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSocketManager from '../hooks/useSocketManager';
 import { ClientEvents } from '../websocket/types';
 import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
+import { getAllPublicLobbies } from '../http/index';
 
 interface IState {
   createInput: string;
-  roomList: { name: string; id: string }[];
+  roomList: any[];
 }
 
 const MainPage = () => {
@@ -19,12 +20,15 @@ const MainPage = () => {
     setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState<IState>({
     createInput: '',
-    roomList: [{ name: 'PUBLIC GAMES WILL BE IMPLEMENTED SOON', id: '1' }],
+    roomList: [],
   });
+
+  useEffect(() => {
+    handleSetPublicLobbies();
+  }, []);
 
   // FUNCTIONS
   const handleCreateRoom = () => {
-    // TODO: add room in db and set here if public
     sm.emit({
       event: ClientEvents.LobbyCreate,
       data: {
@@ -32,6 +36,11 @@ const MainPage = () => {
         organizatorId: user.userId,
       },
     });
+  };
+
+  const handleSetPublicLobbies = async () => {
+    const roomList = await getAllPublicLobbies(user.userId);
+    updateState({ roomList: roomList });
   };
 
   return (

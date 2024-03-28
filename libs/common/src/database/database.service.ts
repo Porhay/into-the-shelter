@@ -130,15 +130,24 @@ export class DatabaseService {
 
     const lobby = await this.getLobbyByIdOrNull(lobbyByKey.id);
 
-    const context = data;
-    context.settings = JSON.stringify({
-      ...lobby.settings, // fix bug with deleting maxClients from settings
-      ...context.settings,
-    });
+    // Merge objects manually
+    const newSettings = {
+      maxClients:
+        data.settings.maxClients !== undefined
+          ? data.settings.maxClients
+          : lobby.settings.maxClients,
+      isPrivate:
+        data.settings.isPrivate !== undefined
+          ? data.settings.isPrivate
+          : lobby.settings.isPrivate,
+    };
+
+    // Update lobby settings with the merged object
+    lobby.settings = JSON.stringify(newSettings);
 
     return await this.prisma.lobbies.update({
       where: { id: lobby.id },
-      data: context,
+      data: lobby,
     });
   }
 
@@ -175,6 +184,15 @@ export class DatabaseService {
     }
     lobby.settings = JSON.parse(lobby.settings);
     return lobby;
+  }
+
+  async getAllPublicLobbis() {
+    const lobbies = await this.prisma.lobbies.findMany();
+    console.log(lobbies);
+    const res = lobbies.filter(
+      (lobby) => JSON.parse(lobby.settings).isPrivate === false,
+    );
+    return res;
   }
 
   //  -----------
