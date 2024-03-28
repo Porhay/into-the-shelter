@@ -69,12 +69,14 @@ export class Instance {
       return;
     }
 
-    // update in lobbies
+    // update user's characteristic
     const uCharList = this.characteristics[userId];
     uCharList.find(
       (curChar: { type: any }) => curChar.type === char.type,
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
+
+    // TODO: update in lobbies
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(

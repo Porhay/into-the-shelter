@@ -1,4 +1,4 @@
 export class CreateLobbyDto {
   organizatorId: string;
-  settings: string; // {maxClients: number}
+  settings: string; // {maxClients: number, isPrivate: boolean}
 }
