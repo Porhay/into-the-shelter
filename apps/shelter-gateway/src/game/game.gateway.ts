@@ -65,14 +65,23 @@ export class GameGateway
   }
 
   @SubscribeMessage(ClientEvents.LobbyCreate)
-  onLobbyCreate(
+  async onLobbyCreate(
     client: AuthenticatedSocket,
     data: LobbyCreateDto,
-  ): WsResponse<ServerPayloads[ServerEvents.GameMessage]> {
+  ): Promise<
+    WsResponse<{ message: string; color?: 'green' | 'red' | 'blue' | 'orange' }>
+  > {
     const lobby = this.lobbyManager.createLobby(data.maxClients);
 
     // data.player.socketId = client.id  // Cannot set properties of undefined (setting 'socketId')
-    lobby.addClient(client, data.player);
+    lobby.addClient(client);
+
+    // store lobby in database
+    const context = {
+      organizatorId: data.organizatorId,
+      settings: { maxClients: data.maxClients, isPrivate: true },
+    };
+    await this.databaseService.createLobby(context);
 
     return {
       event: ServerEvents.GameMessage,

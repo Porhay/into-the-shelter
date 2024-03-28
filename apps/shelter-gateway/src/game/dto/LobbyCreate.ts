@@ -6,5 +6,5 @@ export class LobbyCreateDto {
   @Min(2)
   maxClients: number;
 
-  player: any;
+  organizatorId: string;
 }

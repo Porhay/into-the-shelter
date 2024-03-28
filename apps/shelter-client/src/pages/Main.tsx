@@ -2,6 +2,8 @@ import '../styles/Main.scss';
 import { useState } from 'react';
 import useSocketManager from '../hooks/useSocketManager';
 import { ClientEvents } from '../websocket/types';
+import { RootState } from '../redux/store';
+import { useSelector } from 'react-redux';
 
 interface IState {
   createInput: string;
@@ -9,6 +11,7 @@ interface IState {
 }
 
 const MainPage = () => {
+  const user = useSelector((state: RootState) => state.user);
   const { sm } = useSocketManager();
 
   // LOCAL STATE
@@ -25,7 +28,8 @@ const MainPage = () => {
     sm.emit({
       event: ClientEvents.LobbyCreate,
       data: {
-        maxClients: 4,
+        maxClients: 4, // used as default
+        organizatorId: user.userId,
       },
     });
   };

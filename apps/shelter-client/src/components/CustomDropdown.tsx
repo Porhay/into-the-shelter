@@ -60,7 +60,13 @@ const CustomDropdown: React.FC<DropdownProps> = ({
           )}
           {list.map((item, index) => (
             <div className={'button-wraper'} key={index}>
-              <Button icon={item.icon} text={item.type} onClick={item.action} />
+              <div className="default-btn-style">
+                <Button
+                  icon={item.icon}
+                  text={item.type}
+                  onClick={item.action}
+                />
+              </div>
             </div>
           ))}
         </div>

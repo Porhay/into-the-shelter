@@ -52,11 +52,13 @@
       border-bottom: 1px dashed #fff;
       margin-bottom: 10px;
     }
+
     .notifications-down-text {
       padding: 0 0 4px 0;
       border-bottom: 1px dashed #fff;
       margin-bottom: 10px;
     }
+
     .button-wraper {
       margin-bottom: 2px;
       padding: 0 5px 0 2px;
@@ -64,4 +66,13 @@
 
     }
   }
+}
+
+.default-btn-style {
+  &:hover {
+    filter: invert(50%);
+  }
+
+  color: #000;
+  filter: invert(100%);
 }
