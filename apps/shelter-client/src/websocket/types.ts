@@ -43,6 +43,7 @@ export type ServerPayloads = {
     scores: Record<string, number>;
     players: any;
     characteristics: any;
+    conditions: any;
   };
 
   [ServerEvents.GameMessage]: {

@@ -7,6 +7,7 @@ export interface LobbyState {
   hasFinished?: boolean | null;
   players?: any;
   characteristics?: any;
+  conditions?: any;
 }
 
 const initialState: LobbyState = {
@@ -16,6 +17,7 @@ const initialState: LobbyState = {
   hasFinished: false,
   players: [],
   characteristics: {},
+  conditions: {},
 };
 
 const lobbySlice = createSlice({

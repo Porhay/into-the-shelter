@@ -87,6 +87,7 @@ const RoomPage = () => {
         updateLobby({
           players: data.players,
           characteristics: data.characteristics,
+          conditions: data.conditions,
         }),
       );
 
@@ -258,6 +259,18 @@ const RoomPage = () => {
       <OponentsList />
       <div className="camera-list-wrapper">
         <div className="siwc-wrapper">
+          {lobby.hasStarted ? (
+            <div className="lobby-conditions-container">
+              <div className="shelter-conditions">
+                <h3>Shelter</h3>
+                <p>{lobby.conditions.shelter}</p>
+              </div>
+              <div className="catastrophe-conditions">
+                <h3>Catastrophe</h3>
+                <p>{lobby.conditions.catastrophe}</p>
+              </div>
+            </div>
+          ) : null}
           {state.isOrganizator && !lobby.hasStarted ? (
             <div className="lobby-settings-container">
               <div className="settings-is-private">
