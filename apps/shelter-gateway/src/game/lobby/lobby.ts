@@ -78,6 +78,7 @@ export class Lobby {
       scores: this.instance.scores,
       players: this.instance.players,
       characteristics: this.instance.characteristics,
+      conditions: this.instance.conditions,
       isPrivate: this.isPrivate,
     };
 

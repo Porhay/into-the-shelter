@@ -8,7 +8,7 @@ import { Cards } from '../utils/Cards';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
-import { generateCharList } from 'helpers';
+import { generateFromCharacteristics } from 'helpers';
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -21,6 +21,7 @@ export class Instance {
   private cardsRevealedForCurrentRound: Record<number, Socket['id']> = {};
   public players: any = [];
   public characteristics: any = {};
+  public conditions: any = {};
 
   constructor(private readonly lobby: Lobby) {
     this.initializeCards();
@@ -36,18 +37,15 @@ export class Instance {
 
     // update lobby's settings
     this.lobby.isPrivate = data.isPrivate;
-    // TODO: update in db
 
     this.hasStarted = true;
     this.lobby.instance.players.map((player) => {
-      const newChars = generateCharList();
+      const newChars = generateFromCharacteristics('charList');
       this.characteristics[player.userId] = newChars;
     });
+    this.conditions = generateFromCharacteristics('conditions');
 
     this.lobby.dispatchLobbyState();
-
-    // settings: { maxClients: data.maxClients, isPrivate: data.isPrivate },
-    // await this.databaseService.updateLobby(context);
 
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,

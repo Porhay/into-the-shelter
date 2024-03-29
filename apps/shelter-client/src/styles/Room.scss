@@ -99,6 +99,8 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     margin-left: 3px;
     font-family: 'Roboto Condensed';
     font-weight: 500;
+    width: fit-content;
+    white-space: nowrap;
     // text-shadow: 0 2px 0 #ffffff;
 }
 

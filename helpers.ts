@@ -6,7 +6,9 @@ export const generateSixSymbolHash = (): string => {
   return hash.substring(0, 6).toUpperCase();
 };
 
-export const generateCharList = (): any[] => {
+export const generateFromCharacteristics = (
+  type: 'charList' | 'conditions',
+): any => {
   let jsonData: { [x: string]: any };
   try {
     const data = fs.readFileSync('./characteristics.json', 'utf8');
@@ -24,6 +26,12 @@ export const generateCharList = (): any[] => {
     const randomIndex = Math.floor(Math.random() * charsByType.length);
     return charsByType[randomIndex];
   };
+
+  if (type === 'conditions') {
+    const shelter = _getRandomChar(jsonData, 'shelter');
+    const catastrophe = _getRandomChar(jsonData, 'catastrophe');
+    return { shelter, catastrophe };
+  }
 
   const charList = [
     {
