@@ -18,6 +18,7 @@ export type ServerPayloads = {
     isPrivate: boolean;
     currentStage: number;
     stages: any[];
+    revealPlayerId: string;
   };
 
   [ServerEvents.GameMessage]: {

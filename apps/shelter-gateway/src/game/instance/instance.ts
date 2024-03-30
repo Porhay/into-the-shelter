@@ -86,8 +86,8 @@ export class Instance {
 
     // choose random player to reveal chars
     const startPlayerIndex = getRandomIndex(this.players.length);
-    this.startPlayerId = this.players[startPlayerIndex];
-    this.revealPlayerId = this.players[startPlayerIndex]; // id of player that can reveal it's characteristics
+    this.startPlayerId = this.players[startPlayerIndex].userId;
+    this.revealPlayerId = this.players[startPlayerIndex].userId; // id of player that can reveal it's characteristics
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(

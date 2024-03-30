@@ -82,6 +82,7 @@ export class Lobby {
       isPrivate: this.isPrivate,
       currentStage: this.instance.currentStage,
       stages: this.instance.stages,
+      revealPlayerId: this.instance.revealPlayerId,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

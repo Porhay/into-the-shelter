@@ -46,6 +46,7 @@ export type ServerPayloads = {
     conditions: any;
     currentStage: number;
     stages: any[];
+    revealPlayerId: string;
   };
 
   [ServerEvents.GameMessage]: {

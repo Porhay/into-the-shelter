@@ -74,11 +74,6 @@ const RoomPage = () => {
       });
     }
 
-    if (lobby.hasStarted) {
-      const tipStr = `Open characteristics, remained: ${'2'}`;
-      updateState({ actionTip: tipStr });
-    }
-
     const onLobbyState: Listener<
       ServerPayloads[ServerEvents.LobbyState]
     > = async (data) => {
@@ -110,8 +105,29 @@ const RoomPage = () => {
         const currentPlayer = data.players.find(
           (player: { userId: string }) => player.userId === user.userId,
         );
+
+        // update reminded
+        let tipStr: string = ' ';
+        if (data.revealPlayerId === user.userId) {
+          // eslint-disable-next-line prettier/prettier
+          const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) => 
+          _.isRevealed === true).length;
+          const remained = (
+            data.currentStage * 2 -
+            alreadyRevealedCount
+          ).toString();
+          tipStr = `Open your characteristics, remained: ${remained}`;
+        } else {
+          const revealPlayer = data.players.find(
+            (player: { userId: string }) =>
+              player.userId === data.revealPlayerId,
+          );
+          tipStr = `Wait for ${revealPlayer.displayName} to open his characteristics`;
+        }
+
         updateState({
           userCharList: data.characteristics[currentPlayer.userId],
+          actionTip: tipStr,
         });
       }
     };
