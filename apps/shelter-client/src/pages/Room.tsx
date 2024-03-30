@@ -109,7 +109,7 @@ const RoomPage = () => {
         // update reminded
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
-          // eslint-disable-next-line prettier/prettier
+          // eslint-disable-next-line
           const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) => 
           _.isRevealed === true).length;
           const remained = (
