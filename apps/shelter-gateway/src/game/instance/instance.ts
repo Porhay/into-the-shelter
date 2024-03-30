@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+
 import { Socket } from 'socket.io';
 import { Lobby } from '../lobby/lobby';
 import { CardState } from './cardState';
@@ -8,7 +10,7 @@ import { Cards } from '../utils/Cards';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
-import { generateFromCharacteristics, getRundomIndex } from 'helpers';
+import { generateFromCharacteristics, getRandomIndex } from 'helpers';
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -24,6 +26,11 @@ export class Instance {
   public conditions: any = {};
   public currentStage: number;
   public stages: any[];
+  public startPlayerId: string;
+  public revealPlayerId: string;
+
+  private charsRevealedCount: number = 0;
+  private readonly charOpenLimit: number = 2; // per 1 player on every stage
 
   constructor(private readonly lobby: Lobby) {
     this.initializeCards();
@@ -50,8 +57,26 @@ export class Instance {
     });
     this.conditions = generateFromCharacteristics('conditions');
 
-    // updated stages
-    this.currentStage = 1; // set current game stage as 1 because game is started
+    // set current game stage as 1 because game is started
+    this.currentStage = 1;
+
+    // generate stages
+    // const stages: { title: string; isActive: boolean; index: number }[] = [];
+    // for (let i = 1; i <= Math.floor(this.lobby.clients.size / 2); i++) {
+    //   stages.push(
+    //     { title: 'Open', isActive: false, index: stages.length + 1 },
+    //     { title: 'Kick', isActive: false, index: stages.length + 2 },
+    //   );
+    // }
+    // this.stages = stages;
+
+    // const updateStageIsActive = () => {
+    //   const stages = this.stages.map((s) => {
+    //     s.isActive = s.index === this.currentStage;
+    //   });
+    //   this.stages = stages;
+    // };
+
     this.stages = [
       { title: 'Open', isActive: this.currentStage === 1 },
       { title: 'Kick', isActive: this.currentStage === 2 },
@@ -60,7 +85,9 @@ export class Instance {
     ];
 
     // choose random player to reveal chars
-    const startPlayerIndex = getRundomIndex(this.players.length);
+    const startPlayerIndex = getRandomIndex(this.players.length);
+    this.startPlayerId = this.players[startPlayerIndex];
+    this.revealPlayerId = this.players[startPlayerIndex]; // id of player that can reveal it's characteristics
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -94,14 +121,48 @@ export class Instance {
       return;
     }
 
-    // update user's characteristic
+    if (this.revealPlayerId !== userId) {
+      return;
+    }
+
     const uCharList = this.characteristics[userId];
+
+    // check if user not reveales more chars then limited
+    const uCharsRevealed: number = uCharList.filter(
+      (char: { isRevealed: boolean }) => char.isRevealed === true,
+    ).length;
+    if (uCharsRevealed >= this.currentStage * this.charOpenLimit) {
+      return;
+    }
+
+    // update user's characteristic
     uCharList.find(
       (curChar: { type: any }) => curChar.type === char.type,
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
+    this.charsRevealedCount = this.charsRevealedCount + 1;
 
-    // TODO: update in lobbies
+    /* check if user revealed all possible characteristics and 
+      choose next player that can reveal chars */
+    if (uCharsRevealed === this.currentStage * this.charOpenLimit) {
+      const revealPlayerIndex = this.players.findIndex(
+        (p) => p.userId === this.revealPlayerId,
+      );
+      this.revealPlayerId = this.players[revealPlayerIndex + 1];
+    }
+
+    // transit to the next stage
+    const allRevealsOnCurrentStage = this.charsRevealedCount >=
+      this.currentStage * this.charOpenLimit * this.players.length;
+
+    if (this.revealPlayerId === this.startPlayerId && allRevealsOnCurrentStage) {
+      // game is overed (all players revealed limit of characteristics)
+      if (this.charsRevealedCount >= this.players.length * (this.stages.length / 2) * this.charOpenLimit) {
+        this.triggerFinish();
+        return;
+      }
+      this.currentStage = this.currentStage + 1;
+    }
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(

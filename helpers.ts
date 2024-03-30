@@ -6,7 +6,7 @@ export const generateSixSymbolHash = (): string => {
   return hash.substring(0, 6).toUpperCase();
 };
 
-export const getRundomIndex = (maxIndex: number) => {
+export const getRandomIndex = (maxIndex: number) => {
   return Math.floor(Math.random() * maxIndex);
 };
 
