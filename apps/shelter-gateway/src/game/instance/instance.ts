@@ -8,7 +8,7 @@ import { Cards } from '../utils/Cards';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
-import { generateFromCharacteristics } from 'helpers';
+import { generateFromCharacteristics, getRundomIndex } from 'helpers';
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -22,6 +22,8 @@ export class Instance {
   public players: any = [];
   public characteristics: any = {};
   public conditions: any = {};
+  public currentStage: number;
+  public stages: any[];
 
   constructor(private readonly lobby: Lobby) {
     this.initializeCards();
@@ -37,16 +39,30 @@ export class Instance {
 
     // update lobby's settings
     this.lobby.isPrivate = data.isPrivate;
+    // TODO: this.lobby.maxClients = data.maxClients;
+    // TODO: this.lobby.isTimerOn = data.isTimerOn;
 
+    // set random characteristics
     this.hasStarted = true;
-    this.lobby.instance.players.map((player) => {
+    this.players.map((player) => {
       const newChars = generateFromCharacteristics('charList');
       this.characteristics[player.userId] = newChars;
     });
     this.conditions = generateFromCharacteristics('conditions');
 
-    this.lobby.dispatchLobbyState();
+    // updated stages
+    this.currentStage = 1; // set current game stage as 1 because game is started
+    this.stages = [
+      { title: 'Open', isActive: this.currentStage === 1 },
+      { title: 'Kick', isActive: this.currentStage === 2 },
+      { title: 'Open', isActive: this.currentStage === 3 },
+      { title: 'Kick', isActive: this.currentStage === 4 },
+    ];
 
+    // choose random player to reveal chars
+    const startPlayerIndex = getRundomIndex(this.players.length);
+
+    this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {

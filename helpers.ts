@@ -6,6 +6,10 @@ export const generateSixSymbolHash = (): string => {
   return hash.substring(0, 6).toUpperCase();
 };
 
+export const getRundomIndex = (maxIndex: number) => {
+  return Math.floor(Math.random() * maxIndex);
+};
+
 export const generateFromCharacteristics = (
   type: 'charList' | 'conditions',
 ): any => {

@@ -80,6 +80,8 @@ export class Lobby {
       characteristics: this.instance.characteristics,
       conditions: this.instance.conditions,
       isPrivate: this.isPrivate,
+      currentStage: this.instance.currentStage,
+      stages: this.instance.stages,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

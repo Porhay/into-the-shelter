@@ -7,15 +7,17 @@ export type ServerPayloads = {
     maxClients: number;
     hasStarted: boolean;
     hasFinished: boolean;
-    currentRound: number;
+    currentRound: number; // depricated
     playersCount: number;
-    cards: CardStateDefinition[];
+    cards: CardStateDefinition[]; // depricated
     isSuspended: boolean;
-    scores: Record<string, number>;
+    scores: Record<string, number>; // depricated
     players: any;
     characteristics: any;
     conditions: any;
     isPrivate: boolean;
+    currentStage: number;
+    stages: any[];
   };
 
   [ServerEvents.GameMessage]: {

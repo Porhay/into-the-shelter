@@ -44,6 +44,8 @@ export type ServerPayloads = {
     players: any;
     characteristics: any;
     conditions: any;
+    currentStage: number;
+    stages: any[];
   };
 
   [ServerEvents.GameMessage]: {

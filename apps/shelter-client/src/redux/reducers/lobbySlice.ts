@@ -8,6 +8,8 @@ export interface LobbyState {
   players?: any;
   characteristics?: any;
   conditions?: any;
+  currentStage?: number;
+  stages?: any[];
 }
 
 const initialState: LobbyState = {
@@ -18,6 +20,8 @@ const initialState: LobbyState = {
   players: [],
   characteristics: {},
   conditions: {},
+  currentStage: 1,
+  stages: [],
 };
 
 const lobbySlice = createSlice({
