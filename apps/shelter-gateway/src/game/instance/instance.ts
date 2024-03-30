@@ -128,7 +128,7 @@ export class Instance {
     const uCharList = this.characteristics[userId];
 
     // check if user not reveales more chars then limited
-    const uCharsRevealed: number = uCharList.filter(
+    let uCharsRevealed: number = uCharList.filter(
       (char: { isRevealed: boolean }) => char.isRevealed === true,
     ).length;
     if (uCharsRevealed >= this.currentStage * this.charOpenLimit) {
@@ -141,6 +141,7 @@ export class Instance {
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
     this.charsRevealedCount = this.charsRevealedCount + 1;
+    uCharsRevealed = uCharsRevealed + 1
 
     /* check if user revealed all possible characteristics and 
       choose next player that can reveal chars */
@@ -148,7 +149,7 @@ export class Instance {
       const revealPlayerIndex = this.players.findIndex(
         (p) => p.userId === this.revealPlayerId,
       );
-      this.revealPlayerId = this.players[revealPlayerIndex + 1];
+      this.revealPlayerId = this.players[revealPlayerIndex + 1]?.userId || this.players[0].userId;
     }
 
     // transit to the next stage
