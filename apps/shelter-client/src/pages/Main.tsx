@@ -8,6 +8,8 @@ import { getAllPublicLobbies } from '../http/index';
 import { formatCreatedAt } from '../helpers';
 import { ROUTES } from '../constants';
 import useNavigate from '../hooks/useNavigate';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 
 interface IState {
   createInput: string;
@@ -61,8 +63,16 @@ const MainPage = () => {
     <div className="main-page-container">
       <div className="all-rooms-container">
         <div className="create-room-container">
+          <button
+            className="reload-btn"
+            onClick={() => handleSetPublicLobbies()}
+          >
+            <FontAwesomeIcon className="reload-icon" icon={faRotateRight} />
+          </button>
           <div className="explore-text">EXPLORE GAMES OR CREATE </div>
-          <button onClick={handleCreateRoom}>NEW ROOM</button>
+          <button className="new-room-btn" onClick={handleCreateRoom}>
+            NEW ROOM
+          </button>
         </div>
 
         <hr />
