@@ -148,14 +148,14 @@ const RoomPage = () => {
     });
     return;
   };
-  const handleVoteForKick = (player: any) => {
-    // sm.emit({
-    //   event: ClientEvents.GameRevealChar,
-    //   data: {
-    //     userId: user.userId,
-    //     char: char,
-    //   },
-    // });
+  const handleVoteKick = (player: any) => {
+    sm.emit({
+      event: ClientEvents.GameVoteKick,
+      data: {
+        userId: user.userId, // who votes
+        playerId: player.userId, // vote for
+      },
+    });
     return;
   };
 
@@ -192,7 +192,7 @@ const RoomPage = () => {
               <div className="camera-block">
                 <div
                   className="kick-block"
-                  onClick={() => handleVoteForKick(player)}
+                  onClick={() => handleVoteKick(player)}
                 >
                   Vote
                 </div>

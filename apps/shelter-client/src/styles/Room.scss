@@ -52,6 +52,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
             .is-private-text {
                 flex: 80%;
+
                 h3 {
                     color: #000000;
                     font-size: 20px;
@@ -159,7 +160,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
         padding: 2px 0;
         z-index: 1;
         position: relative;
-        
+
 
         .camera-block {
             display: flex;
@@ -184,7 +185,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 font-family: 'Roboto Condensed';
                 opacity: 0;
                 font-size: 18px;
-                
+
                 &:hover {
                     opacity: 1;
                     background-color: #1f1f1fce;

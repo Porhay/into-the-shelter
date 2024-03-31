@@ -163,6 +163,13 @@ export class Instance {
         return;
       }
       this.currentStage = this.currentStage + 1;
+      this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+        ServerEvents.GameMessage,
+        {
+          color: 'blue',
+          message: `Stage ${this.currentStage} is started!`,
+        },
+      );
     }
 
     this.lobby.dispatchLobbyState();
@@ -171,6 +178,21 @@ export class Instance {
       {
         color: 'blue',
         message: 'Characteristic is opened!',
+      },
+    );
+  }
+
+  public voteKick(data: any, client: AuthenticatedSocket): void {
+    const { userId, playerId } = data;
+
+    const user = this.players.find(player => player.userId === userId)
+
+    this.lobby.dispatchLobbyState();
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: `${user.displayName} is voted!`,
       },
     );
   }

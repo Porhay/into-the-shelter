@@ -64,4 +64,5 @@ export enum ClientEvents {
   GameRevealCard = 'client.game.reveal_card',
   GameStart = 'client.game.start',
   GameRevealChar = 'client.game.reveal_char', // characteristic, i.e: gender, health etc..
+  GameVoteKick = 'client.game.vote_kick',
 }
