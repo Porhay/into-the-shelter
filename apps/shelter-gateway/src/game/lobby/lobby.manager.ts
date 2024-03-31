@@ -1,7 +1,6 @@
 import { Server } from 'socket.io';
 import { Cron } from '@nestjs/schedule';
 import { LOBBY_MAX_LIFETIME } from 'config';
-
 import { Lobby } from './lobby';
 import { AuthenticatedSocket } from '../types';
 import { ServerException } from '../server.exception';
@@ -9,9 +8,13 @@ import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { DatabaseService } from '@app/common';
+import { LobbiesService } from '../../lobbies/lobbies.service';
 
 export class LobbyManager {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly lobbiesService: LobbiesService,
+  ) {}
   public server: Server;
   private readonly lobbies: Map<Lobby['id'], Lobby> = new Map<
     Lobby['id'],
@@ -54,9 +57,8 @@ export class LobbyManager {
 
   // Periodically clean up lobbies
   @Cron('*/5 * * * *')
-  private lobbiesCleaner(): void {
+  private async lobbiesCleaner(): Promise<void> {
     for (const [lobbyId, lobby] of this.lobbies) {
-      console.log(lobbyId);
       const now = new Date().getTime();
       const lobbyCreatedAt = lobby.createdAt.getTime();
       const lobbyLifetime = now - lobbyCreatedAt;
@@ -73,6 +75,9 @@ export class LobbyManager {
         lobby.instance.triggerFinish();
 
         this.lobbies.delete(lobby.id);
+        console.log(lobbyId);
+        const lobbies = await this.lobbiesService.getAllPublicLobbis();
+        console.log(lobbies);
       }
     }
   }
