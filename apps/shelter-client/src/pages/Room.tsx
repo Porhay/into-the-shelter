@@ -54,7 +54,7 @@ const RoomPage = () => {
   const [state, setState] = useState<IState>({
     isCameraOn: false,
     isDetailsOpened: false,
-    actionTip: 'YOUR TURN',
+    actionTip: ' . . . ',
     inviteLinkTextBox: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
@@ -122,7 +122,7 @@ const RoomPage = () => {
             (player: { userId: string }) =>
               player.userId === data.revealPlayerId,
           );
-          tipStr = `Wait for ${revealPlayer.displayName} to open his characteristics`;
+          tipStr = `Waiting for ${revealPlayer.displayName} to open characteristics`;
         }
 
         updateState({
@@ -146,6 +146,16 @@ const RoomPage = () => {
         char: char,
       },
     });
+    return;
+  };
+  const handleVoteForKick = (player: any) => {
+    // sm.emit({
+    //   event: ClientEvents.GameRevealChar,
+    //   data: {
+    //     userId: user.userId,
+    //     char: char,
+    //   },
+    // });
     return;
   };
 
@@ -180,6 +190,12 @@ const RoomPage = () => {
           return (
             <div className="block-container" key={index}>
               <div className="camera-block">
+                <div
+                  className="kick-block"
+                  onClick={() => handleVoteForKick(player)}
+                >
+                  Vote
+                </div>
                 <p className="nickname-block">{player.displayName || ''}</p>
                 <img
                   src={
