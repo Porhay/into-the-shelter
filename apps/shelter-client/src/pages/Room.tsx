@@ -32,6 +32,7 @@ interface IState {
   isOrganizator: boolean;
   userCharList: charListType;
   isPrivateLobby: boolean;
+  voteKickList: any;
 }
 
 type charType = {
@@ -60,6 +61,7 @@ const RoomPage = () => {
     isOrganizator: false,
     userCharList: defineCharsList(),
     isPrivateLobby: true,
+    voteKickList: [],
   });
 
   useEffect(() => {
@@ -77,11 +79,22 @@ const RoomPage = () => {
     const onLobbyState: Listener<
       ServerPayloads[ServerEvents.LobbyState]
     > = async (data) => {
+      // fixes infinity loop, TODO: investigate how to improve
+      if (
+        lobby.hasStarted !== data.hasStarted ||
+        lobby.hasFinished !== data.hasFinished
+      ) {
+        dispatch(
+          updateLobby({
+            hasStarted: data.hasStarted,
+            hasFinished: data.hasFinished,
+          }),
+        );
+      }
+
       // update players data
       dispatch(
         updateLobby({
-          hasStarted: data.hasStarted,
-          hasFinished: data.hasFinished,
           players: data.players,
           characteristics: data.characteristics,
           conditions: data.conditions,
@@ -130,6 +143,9 @@ const RoomPage = () => {
         // update action tip on kick round start
         if (data.currentStage % 2 === 0) {
           tipStr = 'Kick stage! Choose the weakest and vote :D';
+          updateState({
+            voteKickList: data.voteKickList,
+          });
         }
 
         // on finish game
@@ -211,7 +227,16 @@ const RoomPage = () => {
                 >
                   {player.isKicked ? 'Kicked' : 'Vote'}
                 </div>
-                <p className="nickname-block">{player.displayName || ''}</p>
+                <p className="nickname-block">
+                  {player.displayName || ''}
+                  {state.voteKickList.some(
+                    (item: { userId: string | undefined }) =>
+                      item.userId === player.userId,
+                  ) ? (
+                    <p className="vote-block">voted</p>
+                  ) : null}
+                </p>
+
                 <img
                   src={
                     typeof player === 'number' ? avatarDefault : player.avatar

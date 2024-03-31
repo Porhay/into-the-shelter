@@ -198,6 +198,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
             }
 
             .nickname-block {
+                display: flex;
                 margin: 0;
                 padding: 0 0 0 3%;
                 font-family: 'Roboto Condensed';
@@ -211,7 +212,14 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 z-index: 2;
                 height: auto;
                 color: #fff;
+
+                .vote-block {
+                    padding: 0 0 0 3%;
+                    color: #31ff50;
+                }
             }
+
+            
 
             img {
                 width: 100%;
