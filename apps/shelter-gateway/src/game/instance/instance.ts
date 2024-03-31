@@ -391,6 +391,9 @@ export class Instance {
     
     // set active current stage
     const index = this.stages.findIndex((s) => s.index === this.currentStage);
-    this.stages[index].isActive = true
+    console.log(index);
+    if (index !== -1) {
+      this.stages[index].isActive = true
+    }
   }
 }
