@@ -67,28 +67,14 @@ export class Instance {
     this.currentStage = 1;
 
     // generate stages
-    // const stages: { title: string; isActive: boolean; index: number }[] = [];
-    // for (let i = 1; i <= Math.floor(this.lobby.clients.size / 2); i++) {
-    //   stages.push(
-    //     { title: 'Open', isActive: false, index: stages.length + 1 },
-    //     { title: 'Kick', isActive: false, index: stages.length + 2 },
-    //   );
-    // }
-    // this.stages = stages;
-
-    // const updateStageIsActive = () => {
-    //   const stages = this.stages.map((s) => {
-    //     s.isActive = s.index === this.currentStage;
-    //   });
-    //   this.stages = stages;
-    // };
-
-    this.stages = [
-      { title: 'Open', isActive: this.currentStage === 1 },
-      { title: 'Kick', isActive: this.currentStage === 2 },
-      { title: 'Open', isActive: this.currentStage === 3 },
-      { title: 'Kick', isActive: this.currentStage === 4 },
-    ];
+    const stages: { title: string; isActive: boolean; index: number }[] = [];
+    for (let i = 1; i <= Math.floor(this.lobby.clients.size / 2); i++) {
+      stages.push(
+        { title: 'Open', isActive: true, index: stages.length + 1 },
+        { title: 'Kick', isActive: false, index: stages.length + 2 },
+      );
+    }
+    this.stages = stages;
 
     // choose random player to reveal chars
     const startPlayerIndex = getRandomIndex(this.players.length);
@@ -163,12 +149,15 @@ export class Instance {
       this.currentStage * this.charOpenLimit * this.players.length;
 
     if (this.revealPlayerId === this.startPlayerId && allRevealsOnCurrentStage) {
-      // game is overed (all players revealed limit of characteristics)
-      if (this.charsRevealedCount >= this.players.length * (this.stages.length / 2) * this.charOpenLimit) {
+      // game is overed (all players revealed limit of characteristics) + kicked the half
+      if (
+        this.charsRevealedCount >= this.players.length * (this.stages.length / 2) * this.charOpenLimit &&
+        Math.floor(this.players.length / 2) === this.players.filter(_ => _.isKicked).length
+      ) {
         this.triggerFinish();
         return;
       }
-      this.currentStage = this.currentStage + 1;
+      this.transitNextStage()
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
         ServerEvents.GameMessage,
         {
@@ -214,7 +203,6 @@ export class Instance {
         this.players.find(player => player.userId === keysWithHighestValue[0]).isKicked = true;
         kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
-
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
         ServerEvents.GameMessage,
         {
@@ -224,6 +212,7 @@ export class Instance {
       );
 
       this.voteKickList = [] // clear the list after kick
+      this.transitNextStage()
       this.lobby.dispatchLobbyState();
       return;
     }
@@ -388,5 +377,20 @@ export class Instance {
 
     // Shuffle array randomly
     this.cards = this.cards.sort((a, b) => 0.5 - Math.random());
+  }
+
+  private transitNextStage(): void {
+    this.currentStage = this.currentStage + 1;
+
+    // deactivate stages
+    for (let i = 0; i < this.stages.length; i++) {
+      if (this.stages[i].isActive) {
+        this.stages[i].isActive = false;
+      }
+    }    
+    
+    // set active current stage
+    const index = this.stages.findIndex((s) => s.index === this.currentStage);
+    this.stages[index].isActive = true
   }
 }
