@@ -203,15 +203,29 @@ export class Instance {
       const contestantIds = this.voteKickList.map((_: { contestantId: any; }) => _.contestantId);
       const occurrences = countOccurrences(contestantIds);
       const keysWithHighestValue = getKeysWithHighestValue(occurrences);
+
+      let kickedPlayer: any
       if (keysWithHighestValue.length > 1) {
         const randomIndex = getRandomIndex(keysWithHighestValue.length);
         const userIdToKick = keysWithHighestValue[randomIndex];
         this.players.find(player => player.userId === userIdToKick).isKicked = true;
+        kickedPlayer = this.players.find(player => player.userId === userIdToKick)
       } else {
         this.players.find(player => player.userId === keysWithHighestValue[0]).isKicked = true;
+        kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
 
+      this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+        ServerEvents.GameMessage,
+        {
+          color: 'blue',
+          message: `${kickedPlayer.displayName} is kicked!`,
+        },
+      );
+
       this.voteKickList = [] // clear the list after kick
+      this.lobby.dispatchLobbyState();
+      return;
     }
 
     const user = this.players.find(player => player.userId === userId)

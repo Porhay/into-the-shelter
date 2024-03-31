@@ -30,9 +30,9 @@ export class Lobby {
       (obj: { socketId: any }) => obj.socketId === playerData.id,
     );
     if (index !== -1) {
-      players[index] = { ...playerData, isKicked: false };
+      players[index] = { ...playerData };
     } else {
-      players.push({ ...playerData, isOrganizator: true, isKicked: false }); // TODO: FIX !!!
+      players.push({ ...playerData, isOrganizator: true }); // TODO: FIX !!!
     }
     players = players.filter((obj: object) => Object.keys(obj).length > 1);
     players = Array.from(
