@@ -194,10 +194,10 @@ const RoomPage = () => {
             <div className="block-container" key={index}>
               <div className="camera-block">
                 <div
-                  className="kick-block"
+                  className={`kick-block ${player.isKicked ? 'kicked' : ''}`}
                   onClick={() => handleVoteKick(player)}
                 >
-                  Vote
+                  {player.isKicked ? 'Kicked' : 'Vote'}
                 </div>
                 <p className="nickname-block">{player.displayName || ''}</p>
                 <img
