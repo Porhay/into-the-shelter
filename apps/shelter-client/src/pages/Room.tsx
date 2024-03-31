@@ -149,11 +149,14 @@ const RoomPage = () => {
     return;
   };
   const handleVoteKick = (player: any) => {
+    if (typeof player === 'number') {
+      return;
+    }
     sm.emit({
       event: ClientEvents.GameVoteKick,
       data: {
         userId: user.userId, // who votes
-        playerId: player.userId, // vote for
+        contestantId: player.userId, // vote for
       },
     });
     return;

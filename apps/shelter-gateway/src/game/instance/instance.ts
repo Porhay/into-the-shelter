@@ -10,7 +10,12 @@ import { Cards } from '../utils/Cards';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
-import { generateFromCharacteristics, getRandomIndex } from 'helpers';
+import {
+  generateFromCharacteristics,
+  getRandomIndex,
+  countOccurrences,
+  getKeysWithHighestValue,
+} from 'helpers';
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -28,6 +33,7 @@ export class Instance {
   public stages: any[];
   public startPlayerId: string;
   public revealPlayerId: string;
+  public voteKickList: any = [];
 
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
@@ -183,7 +189,30 @@ export class Instance {
   }
 
   public voteKick(data: any, client: AuthenticatedSocket): void {
-    const { userId, playerId } = data;
+    const { userId, contestantId } = data;
+
+    // do not allow to vote several times
+    if (this.voteKickList.find(_ => _.userId === userId)) {
+      return;
+    }
+
+    this.voteKickList = [...this.voteKickList, { userId, contestantId }]
+
+    // calc votes and kick player
+    if (this.voteKickList.length >= this.players.length) {
+      const contestantIds = this.voteKickList.map((_: { contestantId: any; }) => _.contestantId);
+      const occurrences = countOccurrences(contestantIds);
+      const keysWithHighestValue = getKeysWithHighestValue(occurrences);
+      if (keysWithHighestValue.length > 1) {
+        const randomIndex = getRandomIndex(keysWithHighestValue.length);
+        const userIdToKick = keysWithHighestValue[randomIndex];
+        this.players.find(player => player.userId === userIdToKick).isKicked = true;
+      } else {
+        this.players.find(player => player.userId === keysWithHighestValue[0]).isKicked = true;
+      }
+
+      this.voteKickList = [] // clear the list after kick
+    }
 
     const user = this.players.find(player => player.userId === userId)
 
@@ -269,30 +298,6 @@ export class Instance {
 
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
-  }
-
-  public revealCharacteristic(
-    charType: number,
-    client: AuthenticatedSocket,
-  ): void {
-    if (this.hasFinished || !this.hasStarted) {
-      return;
-    }
-
-    client.emit<ServerPayloads[ServerEvents.GameMessage]>(
-      ServerEvents.GameMessage,
-      {
-        color: 'blue',
-        message: `You revealed characteristic: ${charType}`,
-      },
-    );
-
-    const playerIndex = this.players.findIndex(
-      (player) => player.socketId === client.id,
-    );
-    console.log(this.players[playerIndex]);
-
-    this.lobby.dispatchLobbyState();
   }
 
   private transitionToNextRound(): void {

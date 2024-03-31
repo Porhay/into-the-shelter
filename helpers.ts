@@ -84,3 +84,29 @@ export const generateFromCharacteristics = (
 
   return charList;
 };
+
+export const countOccurrences = (arr: string[]) => {
+  const counts = {};
+  arr.forEach((id: string) => {
+    counts[id] = (counts[id] || 0) + 1;
+  });
+  return counts;
+};
+
+export const getKeysWithHighestValue = (obj: object) => {
+  let maxCount = -Infinity;
+  let keysWithMaxCount = [];
+
+  // Find the maximum count
+  for (const key in obj) {
+    const count = obj[key];
+    if (count > maxCount) {
+      maxCount = count;
+      keysWithMaxCount = [key];
+    } else if (count === maxCount) {
+      keysWithMaxCount.push(key);
+    }
+  }
+
+  return keysWithMaxCount;
+};
