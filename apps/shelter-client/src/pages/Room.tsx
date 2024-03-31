@@ -80,6 +80,8 @@ const RoomPage = () => {
       // update players data
       dispatch(
         updateLobby({
+          hasStarted: data.hasStarted,
+          hasFinished: data.hasFinished,
           players: data.players,
           characteristics: data.characteristics,
           conditions: data.conditions,
@@ -125,6 +127,16 @@ const RoomPage = () => {
           tipStr = `Waiting for ${revealPlayer.displayName} to open characteristics`;
         }
 
+        // update action tip on kick round start
+        if (data.currentStage % 2 === 0) {
+          tipStr = 'Kick stage! Choose the weakest and vote :D';
+        }
+
+        // on finish game
+        if (data.hasFinished) {
+          tipStr = 'Game over!';
+        }
+
         updateState({
           userCharList: data.characteristics[currentPlayer.userId],
           actionTip: tipStr,
@@ -135,7 +147,7 @@ const RoomPage = () => {
     return () => {
       sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
-  }, [lobby.hasStarted]);
+  }, [lobby.hasStarted, lobby.hasFinished]);
 
   // FUNCTIONS
   const handleCharRevial = (char: charType) => {
@@ -237,6 +249,7 @@ const RoomPage = () => {
                     {charList.map((char: charType, index: any) => {
                       return (
                         <div
+                          key={index}
                           className={`${char.isRevealed ? 'isRevealed' : 'default-char-style'}`}
                         >
                           <Button
@@ -271,13 +284,13 @@ const RoomPage = () => {
     return (
       <div className="action-tip-container">
         {state.actionTip}
-        {!lobby.hasStarted ? (
+        {!lobby.hasStarted || lobby.hasFinished ? (
           <div>
             <div className="divider"></div>
             <div>
               {state.isOrganizator ? (
                 <button className="start-game-btn" onClick={handleGameStart}>
-                  START GAME
+                  {lobby.hasFinished ? 'RESTART' : 'START GAME'}
                 </button>
               ) : (
                 <div>Waiting for organizator</div>
@@ -380,6 +393,7 @@ const RoomPage = () => {
               {state.userCharList.map((char, index) => {
                 return (
                   <div
+                    key={index}
                     className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
                   >
                     <Button

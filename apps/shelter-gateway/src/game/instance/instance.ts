@@ -99,8 +99,16 @@ export class Instance {
     if (!this.hasStarted) {
       return;
     }
-
     if (this.revealPlayerId !== userId) {
+      return;
+    }
+    // kicked player can not reveal characteristics
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
+      return;
+    }
+    // open chars only on reveal stages
+    if (this.currentStage % 2 === 0) {
       return;
     }
 
@@ -125,28 +133,29 @@ export class Instance {
     /* check if user revealed all possible characteristics and 
       choose next player that can reveal chars */
     if (uCharsRevealed === this.currentStage * this.charOpenLimit) {
-      const revealPlayerIndex = this.players.findIndex(
-        (p) => p.userId === this.revealPlayerId,
-      );
-      this.revealPlayerId = this.players[revealPlayerIndex + 1]?.userId || this.players[0].userId;
+      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
+        const totalPlayers = this.players.length;
+        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
+
+        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
+        const nextIndex = (currentIndex + 1) % totalPlayers; // When reaching the end of the player list, the search wraps around to the beginning 
+        const revealPlayer = this.players[nextIndex];
+
+        if (revealPlayer.isKicked) {
+          // If the next player is kicked, recursively search for the next
+          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
+        }
+        return revealPlayer.userId;
+      };
+
+      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
     }
 
     // transit to the next stage
-    const allRevealsOnCurrentStage = this.charsRevealedCount >=
-      this.currentStage * this.charOpenLimit * this.players.length;
+    const allRevealsOnCurrentStage =
+      this.charsRevealedCount >= this.currentStage * this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
 
-    if (
-      this.revealPlayerId === this.startPlayerId &&
-      allRevealsOnCurrentStage
-    ) {
-      // game is overed (all players revealed limit of characteristics) + kicked the half
-      if (
-        this.charsRevealedCount >= this.players.length * (this.stages.length / 2) * this.charOpenLimit &&
-        Math.floor(this.players.length / 2) === this.players.filter(_ => _.isKicked).length
-      ) {
-        this.triggerFinish();
-        return;
-      }
+    if (allRevealsOnCurrentStage) {
       this.transitNextStage()
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
         ServerEvents.GameMessage,
@@ -170,6 +179,17 @@ export class Instance {
   public voteKick(data: any, client: AuthenticatedSocket): void {
     const { userId, contestantId } = data;
 
+    // kicked player can not vote
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
+      return;
+    }
+
+    // vote only on kick stages
+    if (this.currentStage % 2 === 1) {
+      return;
+    }
+
     // do not allow to vote several times
     if (this.voteKickList.find(_ => _.userId === userId)) {
       return;
@@ -178,7 +198,7 @@ export class Instance {
     this.voteKickList = [...this.voteKickList, { userId, contestantId }]
 
     // calc votes and kick player
-    if (this.voteKickList.length >= this.players.length) {
+    if (this.voteKickList.length >= this.players.filter(_ => _.isKicked !== true).length) {
       const contestantIds = this.voteKickList.map((_: { contestantId: any; }) => _.contestantId);
       const occurrences = countOccurrences(contestantIds);
       const keysWithHighestValue = getKeysWithHighestValue(occurrences);
@@ -202,6 +222,14 @@ export class Instance {
       );
 
       this.voteKickList = []; // clear the list after kick
+
+      // game over (kicked the half)
+      if (Math.floor(this.players.length / 2) === this.players.filter(_ => _.isKicked).length) {
+        this.triggerFinish();
+        this.lobby.dispatchLobbyState();
+        return;
+      }
+
       this.transitNextStage();
       this.lobby.dispatchLobbyState();
       return;
