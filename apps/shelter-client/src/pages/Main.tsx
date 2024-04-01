@@ -10,10 +10,12 @@ import { ROUTES } from '../constants';
 import useNavigate from '../hooks/useNavigate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import Loader from '../libs/loader';
 
 interface IState {
   createInput: string;
   roomList: any[];
+  isRoomsListLoading: boolean;
 }
 
 const MainPage = () => {
@@ -27,6 +29,7 @@ const MainPage = () => {
   const [state, setState] = useState<IState>({
     createInput: '',
     roomList: [],
+    isRoomsListLoading: false,
   });
 
   useEffect(() => {
@@ -45,6 +48,7 @@ const MainPage = () => {
   };
 
   const handleSetPublicLobbies = async () => {
+    updateState({ isRoomsListLoading: true });
     const roomList = await getAllPublicLobbies(user.userId);
 
     // Sort the array in descending order based on the createdAt
@@ -57,6 +61,7 @@ const MainPage = () => {
     const newestRooms = sortedRoomList.slice(0, 4);
 
     updateState({ roomList: newestRooms });
+    updateState({ isRoomsListLoading: false });
   };
 
   return (
@@ -77,24 +82,30 @@ const MainPage = () => {
 
         <hr />
         <div className="rooms-list">
-          {state.roomList.map((room, index) => {
-            return (
-              <div
-                className="room-item"
-                key={index}
-                onClick={() => {
-                  // navigate to current room
-                  const route = ROUTES.ROOMS + '/' + room.key;
-                  navigate(route);
-                }}
-              >
-                <div className="room-text">{room.key}</div>
-                <div className="room-text">
-                  {formatCreatedAt(room.createdAt)}
+          {state.isRoomsListLoading ? (
+            <div className="rooms-list-loader">
+              <Loader />
+            </div>
+          ) : (
+            state.roomList.map((room, index) => {
+              return (
+                <div
+                  className="room-item"
+                  key={index}
+                  onClick={() => {
+                    // navigate to current room
+                    const route = ROUTES.ROOMS + '/' + room.key;
+                    navigate(route);
+                  }}
+                >
+                  <div className="room-text">{room.key}</div>
+                  <div className="room-text">
+                    {formatCreatedAt(room.createdAt)}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
     </div>

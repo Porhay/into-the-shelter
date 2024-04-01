@@ -94,6 +94,12 @@
 
 
 .rooms-list {
+  .rooms-list-loader {
+    display: flex;
+    justify-content: center;
+    margin: 2% 0 0 0;
+  }
+
   .room-item {
     display: flex;
     justify-content: space-between;
