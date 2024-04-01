@@ -27,3 +27,7 @@ $ make all
 
 ## Check it out: https://into-the-shelter.onrender.com
 ###### (note that app use free instance that spins down with inactivity that can delay first request by 50+ seconds)
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Porhay/into-the-shelter&type=Timeline)](https://star-history.com/#Porhay/into-the-shelter&Timeline)
