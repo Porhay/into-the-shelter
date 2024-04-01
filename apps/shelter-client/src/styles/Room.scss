@@ -6,6 +6,40 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     flex-direction: column;
     width: 290px;
 
+    .lobby-conditions-container {
+        background-color: #ffc28cca;
+        font-family: 'Roboto Condensed';
+        font-weight: 400;
+        cursor: pointer;
+        margin: 0 0 10px 0;
+        display: flex;
+        justify-content: space-around;
+
+        .shelter-conditions {
+            h3 {
+                color: #000000;
+                font-size: 20px;
+            }
+
+            p {
+                color: #000000;
+                font-size: 14px;
+            }
+        }
+
+        .catastrophe-conditions {
+            h3 {
+                color: #000000;
+                font-size: 20px;
+            }
+
+            p {
+                color: #000000;
+                font-size: 14px;
+            }
+        }
+    }
+
     .lobby-settings-container {
         background-color: #ffc28cca;
         font-family: 'Roboto Condensed';
@@ -15,9 +49,13 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
         .settings-is-private {
             display: flex;
+            padding: 0 0 5px 5px;
+            margin: 0 0 5px 0;
+            border-bottom: #000000 1px solid;
 
             .is-private-text {
                 flex: 80%;
+
                 h3 {
                     color: #000000;
                     font-size: 20px;
@@ -35,6 +73,38 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+
+        }
+
+        .settings-max-players {
+            display: flex;
+            margin: 0 0 5px 5px;
+
+            .max-players-text {
+                flex: 80%;
+
+                h3 {
+                    color: #000000;
+                    font-size: 20px;
+                }
+
+                p {
+                    color: #000000;
+                    font-size: 14px;
+                }
+            }
+
+            .max-players-selector {
+                margin: 0 10px;
+                flex: 20%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                select {
+                    width: 90%;
+                }
             }
 
         }
@@ -99,6 +169,8 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     margin-left: 3px;
     font-family: 'Roboto Condensed';
     font-weight: 500;
+    width: fit-content;
+    white-space: nowrap;
     // text-shadow: 0 2px 0 #ffffff;
 }
 
@@ -119,27 +191,49 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
     .block-container {
         width: 20%;
-        /* Adjust the width as needed (100% / 8 - margin) */
         box-sizing: border-box;
-        /* Include padding and border in the width calculation */
-
         padding: 2px 0;
-        z-index: 2;
+        z-index: 1;
         position: relative;
-        border: black solid 1px;
 
 
         .camera-block {
+            display: flex;
             position: relative;
             color: white;
             text-align: center;
             background-color: #fff;
-
             height: 140px;
-            display: flex;
             justify-content: center;
+            align-items: center;
+            border: black solid 1px;
+
+            .kick-block {
+                z-index: 1;
+                display: flex;
+                cursor: pointer;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(51, 51, 51, 0.073);
+                font-family: 'Roboto Condensed';
+                opacity: 0;
+                font-size: 18px;
+
+                &:hover {
+                    opacity: 1;
+                    background-color: #1f1f1fce;
+                }
+            }
+
+            .kicked {
+                opacity: 1;
+                background-color: #1f1f1fce;
+            }
 
             .nickname-block {
+                display: flex;
                 margin: 0;
                 padding: 0 0 0 3%;
                 font-family: 'Roboto Condensed';
@@ -150,10 +244,17 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 text-align: start; // or center
                 font-weight: 500;
                 background-color: #1f1f1f46;
-                z-index: 1;
+                z-index: 2;
                 height: auto;
                 color: #fff;
+
+                .vote-block {
+                    padding: 0 0 0 3%;
+                    color: #31ff50;
+                }
             }
+
+
 
             img {
                 width: 100%;
@@ -174,6 +275,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
         }
 
         .chars-row {
+            z-index: 2;
             position: absolute;
             bottom: 0;
             display: flex;

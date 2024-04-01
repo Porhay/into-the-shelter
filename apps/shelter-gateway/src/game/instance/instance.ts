@@ -1,30 +1,33 @@
-import { Socket } from 'socket.io';
-import { Lobby } from '../lobby/lobby';
-import { CardState } from './cardState';
-import { ServerException } from '../server.exception';
-import { AuthenticatedSocket } from '../types';
+/* eslint-disable prettier/prettier */
 
-import { Cards } from '../utils/Cards';
-import { SocketExceptions } from '../utils/SocketExceptions';
+import { Lobby } from '../lobby/lobby';
+import { AuthenticatedSocket } from '../types';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
-import { generateCharList } from 'helpers';
+import {
+  generateFromCharacteristics,
+  getRandomIndex,
+  countOccurrences,
+  getKeysWithHighestValue,
+} from 'helpers';
 
 export class Instance {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
   public isSuspended: boolean = false;
-  public currentRound: number = 1;
-  public cards: CardState[] = [];
-  public scores: Record<Socket['id'], number> = {};
-  public delayBetweenRounds: number = 2;
-  private cardsRevealedForCurrentRound: Record<number, Socket['id']> = {};
   public players: any = [];
   public characteristics: any = {};
+  public conditions: any = {};
+  public currentStage: number;
+  public stages: any[];
+  public startPlayerId: string;
+  public revealPlayerId: string;
+  public voteKickList: any = [];
 
-  constructor(private readonly lobby: Lobby) {
-    this.initializeCards();
-  }
+  private charsRevealedCount: number = 0;
+  private readonly charOpenLimit: number = 2; // per 1 player on every stage
+
+  constructor(private readonly lobby: Lobby) {}
 
   public async triggerStart(
     data: { isPrivate: boolean; maxClients: number; organizatorId: string },
@@ -36,19 +39,36 @@ export class Instance {
 
     // update lobby's settings
     this.lobby.isPrivate = data.isPrivate;
-    // TODO: update in db
+    // TODO: this.lobby.maxClients = data.maxClients;
+    // TODO: this.lobby.isTimerOn = data.isTimerOn;
 
+    // set random characteristics
     this.hasStarted = true;
-    this.lobby.instance.players.map((player) => {
-      const newChars = generateCharList();
+    this.players.map((player) => {
+      const newChars = generateFromCharacteristics('charList');
       this.characteristics[player.userId] = newChars;
     });
+    this.conditions = generateFromCharacteristics('conditions');
+
+    // set current game stage as 1 because game is started
+    this.currentStage = 1;
+
+    // generate stages
+    const stages: { title: string; isActive: boolean; index: number }[] = [];
+    for (let i = 1; i <= Math.floor(this.lobby.clients.size / 2); i++) {
+      stages.push(
+        { title: 'Open', isActive: true, index: stages.length + 1 },
+        { title: 'Kick', isActive: false, index: stages.length + 2 },
+      );
+    }
+    this.stages = stages;
+
+    // choose random player to reveal chars
+    const startPlayerIndex = getRandomIndex(this.players.length);
+    this.startPlayerId = this.players[startPlayerIndex].userId;
+    this.revealPlayerId = this.players[startPlayerIndex].userId; // id of player that can reveal it's characteristics
 
     this.lobby.dispatchLobbyState();
-
-    // settings: { maxClients: data.maxClients, isPrivate: data.isPrivate },
-    // await this.databaseService.updateLobby(context);
-
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {
@@ -79,15 +99,72 @@ export class Instance {
     if (!this.hasStarted) {
       return;
     }
+    if (this.revealPlayerId !== userId) {
+      return;
+    }
+    // kicked player can not reveal characteristics
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
+      return;
+    }
+    // open chars only on reveal stages
+    if (this.currentStage % 2 === 0) {
+      return;
+    }
+
+    const uCharList = this.characteristics[userId];
+
+    // check if user not reveales more chars then limited
+    let uCharsRevealed: number = uCharList.filter(
+      (char: { isRevealed: boolean }) => char.isRevealed === true,
+    ).length;
+    if (uCharsRevealed >= this.currentStage * this.charOpenLimit) {
+      return;
+    }
 
     // update user's characteristic
-    const uCharList = this.characteristics[userId];
     uCharList.find(
       (curChar: { type: any }) => curChar.type === char.type,
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
+    this.charsRevealedCount = this.charsRevealedCount + 1;
+    uCharsRevealed = uCharsRevealed + 1
 
-    // TODO: update in lobbies
+    /* check if user revealed all possible characteristics and 
+      choose next player that can reveal chars */
+    if (uCharsRevealed === this.currentStage * this.charOpenLimit) {
+      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
+        const totalPlayers = this.players.length;
+        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
+
+        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
+        const nextIndex = (currentIndex + 1) % totalPlayers; // When reaching the end of the player list, the search wraps around to the beginning 
+        const revealPlayer = this.players[nextIndex];
+
+        if (revealPlayer.isKicked) {
+          // If the next player is kicked, recursively search for the next
+          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
+        }
+        return revealPlayer.userId;
+      };
+
+      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
+    }
+
+    // transit to the next stage
+    const allRevealsOnCurrentStage =
+      this.charsRevealedCount >= this.currentStage * this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
+
+    if (allRevealsOnCurrentStage) {
+      this.transitNextStage()
+      this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+        ServerEvents.GameMessage,
+        {
+          color: 'blue',
+          message: `Stage ${this.currentStage} is started!`,
+        },
+      );
+    }
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -99,177 +176,95 @@ export class Instance {
     );
   }
 
-  // TODO: used as example, will be removed soon
-  public revealCard(cardIndex: number, client: AuthenticatedSocket): void {
-    if (this.isSuspended || this.hasFinished || !this.hasStarted) {
+  public voteKick(data: any, client: AuthenticatedSocket): void {
+    const { userId, contestantId } = data;
+
+    // kicked player can not vote
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
       return;
     }
 
-    // Make sure player didn't play two time already for this round
-    let cardAlreadyRevealedCount = 0;
+    // vote only on kick stages
+    if (this.currentStage % 2 === 1) {
+      return;
+    }
 
-    for (const clientId of Object.values(this.cardsRevealedForCurrentRound)) {
-      if (clientId === client.id) {
-        cardAlreadyRevealedCount++;
+    // do not allow to vote several times
+    if (this.voteKickList.find(_ => _.userId === userId)) {
+      return;
+    }
+
+    this.voteKickList = [...this.voteKickList, { userId, contestantId }]
+
+    // calc votes and kick player
+    if (this.voteKickList.length >= this.players.filter(_ => _.isKicked !== true).length) {
+      const contestantIds = this.voteKickList.map((_: { contestantId: any; }) => _.contestantId);
+      const occurrences = countOccurrences(contestantIds);
+      const keysWithHighestValue = getKeysWithHighestValue(occurrences);
+
+      let kickedPlayer: any;
+      if (keysWithHighestValue.length > 1) {
+        const randomIndex = getRandomIndex(keysWithHighestValue.length);
+        const userIdToKick = keysWithHighestValue[randomIndex];
+        this.players.find(player => player.userId === userIdToKick).isKicked = true;
+        kickedPlayer = this.players.find(player => player.userId === userIdToKick)
+      } else {
+        this.players.find(player => player.userId === keysWithHighestValue[0]).isKicked = true;
+        kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
-    }
-
-    if (cardAlreadyRevealedCount >= 2) {
-      return;
-    }
-
-    const cardState = this.cards[cardIndex];
-
-    if (!cardState) {
-      throw new ServerException(
-        SocketExceptions.GameError,
-        'Card index invalid',
+      this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+        ServerEvents.GameMessage,
+        {
+          color: 'blue',
+          message: `${kickedPlayer.displayName} is kicked!`,
+        },
       );
-    }
 
-    // If card is already revealed then stop now, no need to reveal it again
-    if (cardState.isRevealed) {
+      this.voteKickList = []; // clear the list after kick
+
+      // game over (kicked the half)
+      if (Math.floor(this.players.length / 2) === this.players.filter(_ => _.isKicked).length) {
+        this.triggerFinish();
+        this.lobby.dispatchLobbyState();
+        return;
+      }
+
+      this.transitNextStage();
+      this.lobby.dispatchLobbyState();
       return;
     }
 
-    cardState.isRevealed = true;
-    cardState.ownerId = client.id;
+    const user = this.players.find(player => player.userId === userId);
 
-    // this.cardsRevealedForCurrentRound.push(cardIndex);
-    this.cardsRevealedForCurrentRound[cardIndex] = cardState.ownerId;
-
-    client.emit<ServerPayloads[ServerEvents.GameMessage]>(
+    this.lobby.dispatchLobbyState();
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {
         color: 'blue',
-        message: 'You revealed card',
+        message: `${user.displayName} is voted!`,
       },
     );
-
-    // If everyone played (revealed 2 cards) then go to next round
-    const everyonePlayed =
-      Object.values(this.cardsRevealedForCurrentRound).length ===
-      this.lobby.clients.size * 2;
-
-    // If every card have been revealed then go to next round
-    let everyCardRevealed = true;
-
-    for (const card of this.cards) {
-      if (!card.isRevealed) {
-        everyCardRevealed = false;
-
-        break;
-      }
-    }
-
-    if (everyonePlayed || everyCardRevealed) {
-      this.transitionToNextRound();
-    }
-
-    this.lobby.dispatchLobbyState();
   }
 
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
 
-  public revealCharacteristic(
-    charType: number,
-    client: AuthenticatedSocket,
-  ): void {
-    if (this.hasFinished || !this.hasStarted) {
-      return;
+  private transitNextStage(): void {
+    this.currentStage = this.currentStage + 1;
+
+    // deactivate stages
+    for (let i = 0; i < this.stages.length; i++) {
+      if (this.stages[i].isActive) {
+        this.stages[i].isActive = false;
+      }
     }
 
-    client.emit<ServerPayloads[ServerEvents.GameMessage]>(
-      ServerEvents.GameMessage,
-      {
-        color: 'blue',
-        message: `You revealed characteristic: ${charType}`,
-      },
-    );
-
-    const playerIndex = this.players.findIndex(
-      (player) => player.socketId === client.id,
-    );
-    console.log(this.players[playerIndex]);
-
-    this.lobby.dispatchLobbyState();
-  }
-
-  private transitionToNextRound(): void {
-    this.isSuspended = true;
-
-    setTimeout(() => {
-      this.isSuspended = false;
-      this.currentRound += 1;
-      this.cardsRevealedForCurrentRound = {};
-
-      // Loop over each card, and see if they have a pair for the same owner,
-      // if so then the card is locked and owner gains a point
-      const cardsRevealed = new Map<Cards, CardState>();
-
-      for (const cardState of this.cards) {
-        if (cardState.isLocked) {
-          continue;
-        }
-
-        if (!cardState.isRevealed) {
-          continue;
-        }
-
-        const previousCard = cardsRevealed.get(cardState.card);
-
-        // We have a pair
-        if (previousCard && previousCard.ownerId === cardState.ownerId) {
-          cardState.isLocked = true;
-          previousCard.isLocked = true;
-
-          // Increment player score
-          this.scores[cardState.ownerId!] =
-            (this.scores[cardState.ownerId!] || 0) + 1;
-        }
-
-        cardsRevealed.set(cardState.card, cardState);
-      }
-
-      // Loop again to hide cards that aren't locked
-      // also check if they're not all locked, would mean game is over
-      let everyCardLocked = true;
-
-      for (const cardState of this.cards) {
-        if (!cardState.isLocked) {
-          cardState.isRevealed = false;
-          cardState.ownerId = null;
-          everyCardLocked = false;
-        }
-      }
-
-      if (everyCardLocked) {
-        this.triggerFinish();
-      }
-
-      this.lobby.dispatchLobbyState();
-    }, 1000 * this.delayBetweenRounds);
-  }
-
-  // TODO: used as example, will be removed soon
-  private initializeCards(): void {
-    // Get only values, not identifiers
-    const cards = Object.values(Cards).filter((c) =>
-      Number.isInteger(c),
-    ) as Cards[];
-
-    // Push two time the card into the list, so it makes a pair
-    for (const card of cards) {
-      const cardState1 = new CardState(card);
-      const cardState2 = new CardState(card);
-
-      this.cards.push(cardState1);
-      this.cards.push(cardState2);
+    // set active current stage
+    const index = this.stages.findIndex((s) => s.index === this.currentStage);
+    if (index !== -1) {
+      this.stages[index].isActive = true;
     }
-
-    // Shuffle array randomly
-    this.cards = this.cards.sort((a, b) => 0.5 - Math.random());
   }
 }

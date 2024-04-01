@@ -9,18 +9,6 @@ export type ServerExceptionResponse = {
   message?: string | object;
 };
 
-export enum Events {
-  Ping = 'client.ping',
-  LobbyCreate = 'client.lobby.create',
-  LobbyJoin = 'client.lobby.join',
-  LobbyLeave = 'client.lobby.leave',
-  GameRevealCard = 'client.game.reveal_card',
-
-  Pong = 'server.pong',
-  LobbyState = 'server.lobby.state',
-  GameMessage = 'server.game.message',
-}
-
 export enum ServerEvents {
   Pong = 'server.pong',
   ChatMessage = 'server.chat.message',
@@ -32,17 +20,17 @@ export type ServerPayloads = {
     lobbyLink: string;
     isOrganizator: boolean | undefined;
     lobbyId: string;
-    mode: 'solo' | 'duo';
-    delayBetweenRounds: number;
     hasStarted: boolean;
     hasFinished: boolean;
-    currentRound: number;
     playersCount: number;
-    cards: any;
     isSuspended: boolean;
-    scores: Record<string, number>;
     players: any;
     characteristics: any;
+    conditions: any;
+    currentStage: number;
+    stages: any[];
+    revealPlayerId: string;
+    voteKickList: any;
   };
 
   [ServerEvents.GameMessage]: {
@@ -57,7 +45,7 @@ export enum ClientEvents {
   LobbyUpdate = 'client.lobby.update',
   LobbyJoin = 'client.lobby.join',
   LobbyLeave = 'client.lobby.leave',
-  GameRevealCard = 'client.game.reveal_card',
   GameStart = 'client.game.start',
   GameRevealChar = 'client.game.reveal_char', // characteristic, i.e: gender, health etc..
+  GameVoteKick = 'client.game.vote_kick',
 }

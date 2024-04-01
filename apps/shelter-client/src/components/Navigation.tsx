@@ -21,8 +21,6 @@ import { Notification, showNotification } from '../libs/notifications';
 import { updateApp } from '../redux/reducers/appSlice';
 
 interface IState {
-  isAuth: boolean;
-  stages: any[];
   isLoginOpened: boolean;
   isAccountOpened: boolean;
   isNotificationsOpened: boolean;
@@ -33,21 +31,12 @@ const Navigation = () => {
   const navigate = useNavigate();
   const { sm } = useSocketManager();
 
-  const app = useSelector((state: RootState) => state.app);
-  const lobby = useSelector((state: RootState) => state.lobby);
   const user = useSelector((state: RootState) => state.user);
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
     setState((prevState) => ({ ...prevState, ...newState }));
   const [state, setState] = useState({
-    isAuth: true,
-    stages: [
-      { title: 'Open' },
-      { title: 'Kick', active: true },
-      { title: 'Open' },
-      { title: 'Kick' },
-    ],
     isLoginOpened: false,
     isAccountOpened: false,
     isNotificationsOpened: false,
@@ -63,8 +52,10 @@ const Navigation = () => {
       // update global state
       const context: any = {
         lobbyLink: getLobbyLink(data.lobbyId),
+        hasStarted: data.hasStarted,
+        currentStage: data.currentStage,
+        stages: data.stages,
       };
-      context.hasStarted = data.hasStarted;
       dispatch(updateLobby(context));
 
       // navigate to current room
@@ -174,7 +165,7 @@ const Navigation = () => {
         </div>
         {user.userId && (
           <div className="nav-timeline-container">
-            <Timeline stages={state.stages} visible={app.showTimeline} />
+            <Timeline />
           </div>
         )}
         {user.userId ? (

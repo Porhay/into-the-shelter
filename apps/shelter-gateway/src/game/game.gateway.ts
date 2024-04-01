@@ -16,13 +16,11 @@ import { ServerException } from './server.exception';
 import { ClientEvents } from './utils/ClientEvents';
 import { ServerEvents } from './utils/ServerEvents';
 import { SocketExceptions } from './utils/SocketExceptions';
-import { ServerPayloads } from './utils/ServerPayloads';
 
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
 import { DatabaseService } from '@app/common';
-import { boolean, number } from 'joi';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -48,7 +46,6 @@ export class GameGateway
 
   @SubscribeMessage(ClientEvents.Ping)
   onPing(client: AuthenticatedSocket): void {
-    this.logger.log('Ping Pong !');
     client.emit(ServerEvents.Pong, {
       message: 'pong',
     });
@@ -135,6 +132,18 @@ export class GameGateway
     client.data.lobby.instance.triggerStart(data, client);
   }
 
+  @SubscribeMessage(ClientEvents.GameVoteKick)
+  onVoteKick(client: AuthenticatedSocket, data: any): void {
+    if (!client.data.lobby) {
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'You are not in a lobby',
+      );
+    }
+
+    client.data.lobby.instance.voteKick(data, client);
+  }
+
   @SubscribeMessage(ClientEvents.GameRevealChar)
   onRevealChar(client: AuthenticatedSocket, data: any): void {
     if (!client.data.lobby) {
@@ -145,18 +154,5 @@ export class GameGateway
     }
 
     client.data.lobby.instance.revealChar(data, client);
-  }
-
-  // TODO: used as example, will be removed soon
-  @SubscribeMessage(ClientEvents.GameRevealCard)
-  onRevealCard(client: AuthenticatedSocket, data: any): void {
-    if (!client.data.lobby) {
-      throw new ServerException(
-        SocketExceptions.LobbyError,
-        'You are not in a lobby',
-      );
-    }
-
-    client.data.lobby.instance.revealCard(data.cardIndex, client);
   }
 }

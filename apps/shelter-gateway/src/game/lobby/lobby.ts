@@ -71,14 +71,16 @@ export class Lobby {
       maxClients: this.maxClients,
       hasStarted: this.instance.hasStarted,
       hasFinished: this.instance.hasFinished,
-      currentRound: this.instance.currentRound,
       playersCount: this.clients.size,
-      cards: this.instance.cards.map((card) => card.toDefinition()),
       isSuspended: this.instance.isSuspended,
-      scores: this.instance.scores,
       players: this.instance.players,
       characteristics: this.instance.characteristics,
+      conditions: this.instance.conditions,
       isPrivate: this.isPrivate,
+      currentStage: this.instance.currentStage,
+      stages: this.instance.stages,
+      revealPlayerId: this.instance.revealPlayerId,
+      voteKickList: this.instance.voteKickList,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

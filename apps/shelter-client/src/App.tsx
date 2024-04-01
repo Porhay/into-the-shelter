@@ -12,7 +12,13 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Navigation />
-        {app.loading ? <Loader /> : <Router />}
+        {app.loading ? (
+          <div className="app-loader">
+            <Loader />
+          </div>
+        ) : (
+          <Router />
+        )}
       </BrowserRouter>
     </div>
   );

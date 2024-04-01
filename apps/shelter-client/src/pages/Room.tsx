@@ -32,6 +32,8 @@ interface IState {
   isOrganizator: boolean;
   userCharList: charListType;
   isPrivateLobby: boolean;
+  voteKickList: any;
+  maxClients: number;
 }
 
 type charType = {
@@ -54,12 +56,14 @@ const RoomPage = () => {
   const [state, setState] = useState<IState>({
     isCameraOn: false,
     isDetailsOpened: false,
-    actionTip: 'YOUR TURN',
+    actionTip: ' . . . ',
     inviteLinkTextBox: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
     userCharList: defineCharsList(),
     isPrivateLobby: true,
+    voteKickList: [],
+    maxClients: 4,
   });
 
   useEffect(() => {
@@ -74,26 +78,34 @@ const RoomPage = () => {
       });
     }
 
-    if (lobby.hasStarted) {
-      const tipStr = `Open characteristics, remained: ${'2'}`;
-      updateState({ actionTip: tipStr });
-    }
-
     const onLobbyState: Listener<
       ServerPayloads[ServerEvents.LobbyState]
     > = async (data) => {
+      // fixes infinity loop, TODO: investigate how to improve
+      if (
+        lobby.hasStarted !== data.hasStarted ||
+        lobby.hasFinished !== data.hasFinished
+      ) {
+        dispatch(
+          updateLobby({
+            hasStarted: data.hasStarted,
+            hasFinished: data.hasFinished,
+          }),
+        );
+      }
+
       // update players data
       dispatch(
         updateLobby({
           players: data.players,
           characteristics: data.characteristics,
+          conditions: data.conditions,
         }),
       );
 
       if (!lobby.hasStarted) {
         // update action tip and isOrganizator
-        const maxPlayers = 4; // TODO: get from lobby settings
-        const tipStr = `Players: ${data.playersCount}/${maxPlayers}`;
+        const tipStr = `Players: ${data.playersCount}/${state.maxClients}`;
         const isOrganizator =
           data.players.find(
             (player: { isOrganizator: boolean }) => player.isOrganizator,
@@ -109,8 +121,42 @@ const RoomPage = () => {
         const currentPlayer = data.players.find(
           (player: { userId: string }) => player.userId === user.userId,
         );
+
+        // update reminded
+        let tipStr: string = ' ';
+        if (data.revealPlayerId === user.userId) {
+          // eslint-disable-next-line
+          const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) => 
+          _.isRevealed === true).length;
+          const remained = (
+            data.currentStage * 2 -
+            alreadyRevealedCount
+          ).toString();
+          tipStr = `Open your characteristics, remained: ${remained}`;
+        } else {
+          const revealPlayer = data.players.find(
+            (player: { userId: string }) =>
+              player.userId === data.revealPlayerId,
+          );
+          tipStr = `Waiting for ${revealPlayer.displayName} to open characteristics`;
+        }
+
+        // update action tip on kick round start
+        if (data.currentStage % 2 === 0) {
+          tipStr = 'Kick stage! Choose the weakest and vote :D';
+          updateState({
+            voteKickList: data.voteKickList,
+          });
+        }
+
+        // on finish game
+        if (data.hasFinished) {
+          tipStr = 'Game over!';
+        }
+
         updateState({
           userCharList: data.characteristics[currentPlayer.userId],
+          actionTip: tipStr,
         });
       }
     };
@@ -118,7 +164,7 @@ const RoomPage = () => {
     return () => {
       sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
-  }, [lobby.hasStarted]);
+  }, [lobby.hasStarted, lobby.hasFinished, state.maxClients]);
 
   // FUNCTIONS
   const handleCharRevial = (char: charType) => {
@@ -127,6 +173,19 @@ const RoomPage = () => {
       data: {
         userId: user.userId,
         char: char,
+      },
+    });
+    return;
+  };
+  const handleVoteKick = (player: any) => {
+    if (typeof player === 'number') {
+      return;
+    }
+    sm.emit({
+      event: ClientEvents.GameVoteKick,
+      data: {
+        userId: user.userId, // who votes
+        contestantId: player.userId, // vote for
       },
     });
     return;
@@ -163,7 +222,22 @@ const RoomPage = () => {
           return (
             <div className="block-container" key={index}>
               <div className="camera-block">
-                <p className="nickname-block">{player.displayName || ''}</p>
+                <div
+                  className={`kick-block ${player.isKicked ? 'kicked' : ''}`}
+                  onClick={() => handleVoteKick(player)}
+                >
+                  {player.isKicked ? 'Kicked' : 'Vote'}
+                </div>
+                <p className="nickname-block">
+                  {player.displayName || ''}
+                  {state.voteKickList.some(
+                    (item: { userId: string | undefined }) =>
+                      item.userId === player.userId,
+                  ) ? (
+                    <p className="vote-block">voted</p>
+                  ) : null}
+                </p>
+
                 <img
                   src={
                     typeof player === 'number' ? avatarDefault : player.avatar
@@ -201,6 +275,7 @@ const RoomPage = () => {
                     {charList.map((char: charType, index: any) => {
                       return (
                         <div
+                          key={index}
                           className={`${char.isRevealed ? 'isRevealed' : 'default-char-style'}`}
                         >
                           <Button
@@ -226,7 +301,7 @@ const RoomPage = () => {
       sm.emit({
         event: ClientEvents.GameStart,
         data: {
-          maxClients: 4, // TODO: update in future
+          maxClients: state.maxClients,
           isPrivate: state.isPrivateLobby,
         },
       });
@@ -235,13 +310,13 @@ const RoomPage = () => {
     return (
       <div className="action-tip-container">
         {state.actionTip}
-        {!lobby.hasStarted ? (
+        {!lobby.hasStarted || lobby.hasFinished ? (
           <div>
             <div className="divider"></div>
             <div>
               {state.isOrganizator ? (
                 <button className="start-game-btn" onClick={handleGameStart}>
-                  START GAME
+                  {lobby.hasFinished ? 'RESTART' : 'START GAME'}
                 </button>
               ) : (
                 <div>Waiting for organizator</div>
@@ -258,28 +333,68 @@ const RoomPage = () => {
       <OponentsList />
       <div className="camera-list-wrapper">
         <div className="siwc-wrapper">
-          <div className="lobby-settings-container">
-            <div className="settings-is-private">
-              <div className="is-private-text">
-                <h3>Private room</h3>
-                <p>Private rooms can be accessed using the room URL only</p>
+          {lobby.hasStarted ? (
+            <div className="lobby-conditions-container">
+              <div className="shelter-conditions">
+                <h3>Shelter</h3>
+                <p>{lobby.conditions.shelter}</p>
               </div>
-              <div className="is-private-btn">
-                <Toggle
-                  defaultChecked={state.isPrivateLobby}
-                  icons={false}
-                  onChange={() => {
-                    updateState({ isPrivateLobby: !state.isPrivateLobby });
-                    handleSettingsUpdate({
-                      key: roomId,
-                      isPrivate: !state.isPrivateLobby,
-                    });
-                  }}
-                />
+              <div className="catastrophe-conditions">
+                <h3>Catastrophe</h3>
+                <p>{lobby.conditions.catastrophe}</p>
               </div>
             </div>
-          </div>
-
+          ) : null}
+          {state.isOrganizator && !lobby.hasStarted ? (
+            <div className="lobby-settings-container">
+              <div className="settings-is-private">
+                <div className="is-private-text">
+                  <h3>Private room</h3>
+                  <p>Private rooms can be accessed using the room URL only</p>
+                </div>
+                <div className="is-private-btn">
+                  <Toggle
+                    defaultChecked={state.isPrivateLobby}
+                    icons={false}
+                    onChange={() => {
+                      updateState({ isPrivateLobby: !state.isPrivateLobby });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        isPrivate: !state.isPrivateLobby,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="settings-max-players">
+                <div className="max-players-text">
+                  <h3>Maximum players</h3>
+                  <p>How many players can join the game</p>
+                </div>
+                <div className="max-players-selector">
+                  <select
+                    name="maxClients"
+                    value={state.maxClients}
+                    onChange={(e) =>
+                      updateState({
+                        maxClients: parseInt(e.target.value),
+                      })
+                    }
+                  >
+                    <option value={2}>2</option>
+                    <option value={3}>3</option>
+                    <option value={4} selected>
+                      4
+                    </option>
+                    <option value={5}>5</option>
+                    <option value={6}>6</option>
+                    <option value={7}>7</option>
+                    <option value={8}>8</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          ) : null}
           <div className="invite-webcam-char-wrapper">
             <div className="invite-webcam-wrapper">
               <div
@@ -331,6 +446,7 @@ const RoomPage = () => {
               {state.userCharList.map((char, index) => {
                 return (
                   <div
+                    key={index}
                     className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
                   >
                     <Button

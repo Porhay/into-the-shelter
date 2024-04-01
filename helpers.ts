@@ -6,7 +6,13 @@ export const generateSixSymbolHash = (): string => {
   return hash.substring(0, 6).toUpperCase();
 };
 
-export const generateCharList = (): any[] => {
+export const getRandomIndex = (maxIndex: number) => {
+  return Math.floor(Math.random() * maxIndex);
+};
+
+export const generateFromCharacteristics = (
+  type: 'charList' | 'conditions',
+): any => {
   let jsonData: { [x: string]: any };
   try {
     const data = fs.readFileSync('./characteristics.json', 'utf8');
@@ -24,6 +30,12 @@ export const generateCharList = (): any[] => {
     const randomIndex = Math.floor(Math.random() * charsByType.length);
     return charsByType[randomIndex];
   };
+
+  if (type === 'conditions') {
+    const shelter = _getRandomChar(jsonData, 'shelter');
+    const catastrophe = _getRandomChar(jsonData, 'catastrophe');
+    return { shelter, catastrophe };
+  }
 
   const charList = [
     {
@@ -71,4 +83,30 @@ export const generateCharList = (): any[] => {
   ];
 
   return charList;
+};
+
+export const countOccurrences = (arr: string[]) => {
+  const counts = {};
+  arr.forEach((id: string) => {
+    counts[id] = (counts[id] || 0) + 1;
+  });
+  return counts;
+};
+
+export const getKeysWithHighestValue = (obj: object) => {
+  let maxCount = -Infinity;
+  let keysWithMaxCount = [];
+
+  // Find the maximum count
+  for (const key in obj) {
+    const count = obj[key];
+    if (count > maxCount) {
+      maxCount = count;
+      keysWithMaxCount = [key];
+    } else if (count === maxCount) {
+      keysWithMaxCount.push(key);
+    }
+  }
+
+  return keysWithMaxCount;
 };
