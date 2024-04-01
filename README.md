@@ -6,7 +6,8 @@
 <p align="center">Shelter card game. Prove that you are better!</p>
 <p align="center">
   <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-  <a href="https://github.com/Porhay/multi-user-dms/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="Package License" /></a>
+  <a href="https://github.com/Porhay/into-the-shelter/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="Package License" /></a>
+  <a href="#contributors"><img src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square" alt="All Contributors" /></a>
 </p>
 
 
@@ -23,6 +24,34 @@
 $ make all
 ```
 </details>
+
+
+## Game screenshots
+<details>
+<summary>Check how it looks</summary>
+<p>
+  <img src="https://lh3.google.com/u/0/d/1nRxfG4P1b7leqcQcTgOiOKwG24rhfWXl=w2880-h920-iv1" alt="Room"/>
+  <img src="https://lh3.google.com/u/0/d/1t1KR_1O5laDUji5opxjJMv-b62qx3bJX=w2880-h1420-iv1" alt="Room kick"/>
+  <img src="https://lh3.google.com/u/0/d/1VEQBF_6sPPW9DPecUFUVigB1Y9wmPJHD=w2880-h1420-iv1" alt="Settings"/>
+</p>
+
+</details>
+
+
+## 🚀 Features
+
+- 📱 **NestJS** — latest version
+- 🎉 **TypeScript** - Type checking
+- ⚙️ **Dotenv** - Supports environment variables
+- 🗝 **Authentication** - Session based
+- 🏪 **Prisma** - Database ORM
+- 🏪 **PostgreSQL** - Open-Source Relational Database
+- 📃 **Swagger** - API Documentation
+- 🐳 **Docker Compose** - Container Orchestration
+- 🔐 **Helmet** - secure HTTP headers
+- 📏 **ESLint** — Pluggable JavaScript linter
+- 💖 **Prettier** - Opinionated Code Formatter
+- 🕵️‍♂️ **Redis** - In-memory data store
 
 
 ## Check it out: https://into-the-shelter.onrender.com
