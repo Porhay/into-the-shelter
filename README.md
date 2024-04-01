@@ -26,7 +26,7 @@ $ make all
 
 
 ## ✅ Check it out: https://into-the-shelter.onrender.com
-###### (note that app use free instance that spins down with inactivity that can delay first request by 50+ seconds)
+###### ▶ (note that app use free instance that spins down with inactivity that can delay first request by 50+ seconds)
 
 
 ## 🖥️ Game screenshots
@@ -46,7 +46,7 @@ $ make all
 - 🎉 **TypeScript** - Type checking
 - ⚙️ **Dotenv** - Supports environment variables
 - 🗝 **Authentication** - Session based
-- 🏪 **Prisma** - Database ORM
+- 💾 **Prisma** - Database ORM
 - 🏪 **PostgreSQL** - Open-Source Relational Database
 - 📃 **Swagger** - API Documentation
 - 🐳 **Docker Compose** - Container Orchestration
