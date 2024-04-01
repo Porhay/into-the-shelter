@@ -38,7 +38,7 @@ const MainPage = () => {
     sm.emit({
       event: ClientEvents.LobbyCreate,
       data: {
-        maxClients: 4, // used as default
+        maxClients: 8, // used as default
         organizatorId: user.userId,
       },
     });

@@ -33,6 +33,7 @@ interface IState {
   userCharList: charListType;
   isPrivateLobby: boolean;
   voteKickList: any;
+  maxClients: number;
 }
 
 type charType = {
@@ -62,6 +63,7 @@ const RoomPage = () => {
     userCharList: defineCharsList(),
     isPrivateLobby: true,
     voteKickList: [],
+    maxClients: 4,
   });
 
   useEffect(() => {
@@ -103,8 +105,7 @@ const RoomPage = () => {
 
       if (!lobby.hasStarted) {
         // update action tip and isOrganizator
-        const maxPlayers = 4; // TODO: get from lobby settings
-        const tipStr = `Players: ${data.playersCount}/${maxPlayers}`;
+        const tipStr = `Players: ${data.playersCount}/${state.maxClients}`;
         const isOrganizator =
           data.players.find(
             (player: { isOrganizator: boolean }) => player.isOrganizator,
@@ -163,7 +164,7 @@ const RoomPage = () => {
     return () => {
       sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
-  }, [lobby.hasStarted, lobby.hasFinished]);
+  }, [lobby.hasStarted, lobby.hasFinished, state.maxClients]);
 
   // FUNCTIONS
   const handleCharRevial = (char: charType) => {
@@ -300,7 +301,7 @@ const RoomPage = () => {
       sm.emit({
         event: ClientEvents.GameStart,
         data: {
-          maxClients: 4, // TODO: update in future
+          maxClients: state.maxClients,
           isPrivate: state.isPrivateLobby,
         },
       });
@@ -363,6 +364,33 @@ const RoomPage = () => {
                       });
                     }}
                   />
+                </div>
+              </div>
+              <div className="settings-max-players">
+                <div className="max-players-text">
+                  <h3>Maximum players</h3>
+                  <p>How many players can join the game</p>
+                </div>
+                <div className="max-players-selector">
+                  <select
+                    name="maxClients"
+                    value={state.maxClients}
+                    onChange={(e) =>
+                      updateState({
+                        maxClients: parseInt(e.target.value),
+                      })
+                    }
+                  >
+                    <option value={2}>2</option>
+                    <option value={3}>3</option>
+                    <option value={4} selected>
+                      4
+                    </option>
+                    <option value={5}>5</option>
+                    <option value={6}>6</option>
+                    <option value={7}>7</option>
+                    <option value={8}>8</option>
+                  </select>
                 </div>
               </div>
             </div>

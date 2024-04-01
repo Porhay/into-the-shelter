@@ -49,6 +49,9 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
         .settings-is-private {
             display: flex;
+            padding: 0 0 5px 5px;
+            margin: 0 0 5px 0;
+            border-bottom: #000000 1px solid;
 
             .is-private-text {
                 flex: 80%;
@@ -70,6 +73,38 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+
+        }
+
+        .settings-max-players {
+            display: flex;
+            margin: 0 0 5px 5px;
+
+            .max-players-text {
+                flex: 80%;
+
+                h3 {
+                    color: #000000;
+                    font-size: 20px;
+                }
+
+                p {
+                    color: #000000;
+                    font-size: 14px;
+                }
+            }
+
+            .max-players-selector {
+                margin: 0 10px;
+                flex: 20%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                select {
+                    width: 90%;
+                }
             }
 
         }
@@ -219,7 +254,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 }
             }
 
-            
+
 
             img {
                 width: 100%;
