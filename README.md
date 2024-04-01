@@ -10,7 +10,7 @@
 </p>
 
 
-## Run locally
+## 🏃 Run locally
 <details>
 <summary>Start postgresql, install dependencies and run app</summary>
 
@@ -25,11 +25,11 @@ $ make all
 </details>
 
 
-## Check it out: https://into-the-shelter.onrender.com
+## ✅ Check it out: https://into-the-shelter.onrender.com
 ###### (note that app use free instance that spins down with inactivity that can delay first request by 50+ seconds)
 
 
-## Game screenshots
+## 🖥️ Game screenshots
 <details>
 <summary>Check how it looks</summary>
 <p>
@@ -56,5 +56,5 @@ $ make all
 - 🕵️‍♂️ **Redis** - In-memory data store
 
 
-## Star History
+## ⭐ Star History
 [![Star History Chart](https://api.star-history.com/svg?repos=Porhay/into-the-shelter&type=Timeline)](https://star-history.com/#Porhay/into-the-shelter&Timeline)
