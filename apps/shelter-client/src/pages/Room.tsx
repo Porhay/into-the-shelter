@@ -135,7 +135,6 @@ const RoomPage = () => {
           tipStr = 'Kick stage! Choose the weakest and vote :D';
           updateState({
             voteKickList: data.voteKickList,
-            kickedPlayers: data.kickedPlayers,
           });
         }
 
@@ -147,6 +146,7 @@ const RoomPage = () => {
         updateState({
           userCharList: data.characteristics[currentPlayer.userId],
           actionTip: tipStr,
+          kickedPlayers: data.kickedPlayers,
         });
       }
     };
