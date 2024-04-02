@@ -23,11 +23,12 @@ export class Instance {
   public startPlayerId: string;
   public revealPlayerId: string;
   public voteKickList: any = [];
+  public kickedPlayers: string[] = [];
 
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
 
-  constructor(private readonly lobby: Lobby) {}
+  constructor(private readonly lobby: Lobby) { }
 
   public async triggerStart(
     data: { isPrivate: boolean; maxClients: number; organizatorId: string },
@@ -57,10 +58,11 @@ export class Instance {
     const stages: { title: string; isActive: boolean; index: number }[] = [];
     for (let i = 1; i <= Math.floor(this.lobby.clients.size / 2); i++) {
       stages.push(
-        { title: 'Open', isActive: true, index: stages.length + 1 },
+        { title: 'Open', isActive: false, index: stages.length + 1 },
         { title: 'Kick', isActive: false, index: stages.length + 2 },
       );
     }
+    stages[0].isActive = true // set first stage as active
     this.stages = stages;
 
     // choose random player to reveal chars
@@ -118,7 +120,7 @@ export class Instance {
     let uCharsRevealed: number = uCharList.filter(
       (char: { isRevealed: boolean }) => char.isRevealed === true,
     ).length;
-    if (uCharsRevealed >= this.currentStage * this.charOpenLimit) {
+    if (uCharsRevealed >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       return;
     }
 
@@ -132,7 +134,7 @@ export class Instance {
 
     /* check if user revealed all possible characteristics and 
       choose next player that can reveal chars */
-    if (uCharsRevealed === this.currentStage * this.charOpenLimit) {
+    if (uCharsRevealed === Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
         const totalPlayers = this.players.length;
         if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
@@ -208,9 +210,11 @@ export class Instance {
         const randomIndex = getRandomIndex(keysWithHighestValue.length);
         const userIdToKick = keysWithHighestValue[randomIndex];
         this.players.find(player => player.userId === userIdToKick).isKicked = true;
+        this.kickedPlayers = [...this.kickedPlayers, userIdToKick]
         kickedPlayer = this.players.find(player => player.userId === userIdToKick)
       } else {
         this.players.find(player => player.userId === keysWithHighestValue[0]).isKicked = true;
+        this.kickedPlayers = [...this.kickedPlayers, keysWithHighestValue[0]]
         kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
