@@ -156,6 +156,15 @@ const RoomPage = () => {
     };
   }, [lobby.hasStarted, lobby.hasFinished, state.maxClients, dispatch]);
 
+  // DATA SETS
+  const kickBlockText = (player: { userId: string }) => {
+    return state.kickedPlayers.includes(player.userId)
+      ? 'Kicked'
+      : !lobby.hasStarted || lobby.hasFinished || lobby.currentStage! % 2 === 1
+        ? ''
+        : 'Vote';
+  };
+
   // FUNCTIONS
   const handleCharRevial = (char: charType) => {
     sm.emit({
@@ -216,9 +225,7 @@ const RoomPage = () => {
                   className={`kick-block ${state.kickedPlayers.includes(player.userId) ? 'kicked' : ''}`}
                   onClick={() => handleVoteKick(player)}
                 >
-                  {state.kickedPlayers.includes(player.userId)
-                    ? 'Kicked'
-                    : 'Vote'}
+                  {kickBlockText(player)}
                 </div>
                 <p className="nickname-block">
                   {player.displayName || ''}
