@@ -58,10 +58,11 @@ export class Instance {
     const stages: { title: string; isActive: boolean; index: number }[] = [];
     for (let i = 1; i <= Math.floor(this.lobby.clients.size / 2); i++) {
       stages.push(
-        { title: 'Open', isActive: true, index: stages.length + 1 },
+        { title: 'Open', isActive: false, index: stages.length + 1 },
         { title: 'Kick', isActive: false, index: stages.length + 2 },
       );
     }
+    stages[0].isActive = true // set first stage as active
     this.stages = stages;
 
     // choose random player to reveal chars

@@ -17,7 +17,7 @@ export class Lobby {
 
   constructor(
     private readonly server: Server,
-    public readonly maxClients: number,
+    public maxClients: number,
   ) {}
 
   public addClient(client: AuthenticatedSocket, playerData: any = {}): void {
