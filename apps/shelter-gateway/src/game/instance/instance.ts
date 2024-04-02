@@ -155,7 +155,7 @@ export class Instance {
 
     // transit to the next stage
     const allRevealsOnCurrentStage =
-      this.charsRevealedCount >= Math.ceil(this.currentStage / 2) * this.charOpenLimit * (this.players.filter(_ => _.isKicked !== false).length);
+      this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
 
     if (allRevealsOnCurrentStage) {
       this.transitNextStage()
@@ -225,6 +225,7 @@ export class Instance {
         },
       );
 
+      this.charsRevealedCount = 0 // clear round char counter
       this.voteKickList = []; // clear the list after kick
 
       // game over (kicked the half)
