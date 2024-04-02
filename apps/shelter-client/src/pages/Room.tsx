@@ -429,15 +429,27 @@ const RoomPage = () => {
                   {state.isCameraOn ? (
                     <Webcam />
                   ) : (
-                    <div className="webcam-avatar">
-                      <img
-                        src={
-                          gameAvatarByPosition(user.gameAvatars, 1)
-                            ?.downloadUrl || user.avatar
-                        }
-                        alt="webcam avatar"
-                      />
-                    </div>
+                    <>
+                      <div
+                        className={`user-kicked-block ${
+                          lobby.players.find(
+                            (player: { userId: string }) =>
+                              player.userId === user.userId,
+                          )?.isKicked
+                            ? 'kicked'
+                            : ''
+                        }`}
+                      ></div>
+                      <div className={`webcam-avatar`}>
+                        <img
+                          src={
+                            gameAvatarByPosition(user.gameAvatars, 1)
+                              ?.downloadUrl || user.avatar
+                          }
+                          alt="webcam avatar"
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

@@ -142,6 +142,29 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     position: relative;
 }
 
+// if user is kicked
+.user-kicked-block {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(51, 51, 51, 0.073);
+    font-family: 'Roboto Condensed';
+    opacity: 0;
+    font-size: 18px;
+}
+.kicked {
+    opacity: 1;
+    background-color: #1f1f1fce;
+    width: 100%;
+    height: 100%;
+}
+// ---
+
 .webcam-avatar {
     width: 290px;
     height: 200px;
