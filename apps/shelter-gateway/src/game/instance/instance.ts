@@ -23,6 +23,7 @@ export class Instance {
   public startPlayerId: string;
   public revealPlayerId: string;
   public voteKickList: any = [];
+  public kickedPlayers: string[] = [];
 
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
@@ -208,9 +209,11 @@ export class Instance {
         const randomIndex = getRandomIndex(keysWithHighestValue.length);
         const userIdToKick = keysWithHighestValue[randomIndex];
         this.players.find(player => player.userId === userIdToKick).isKicked = true;
+        this.kickedPlayers = [...this.kickedPlayers, userIdToKick]
         kickedPlayer = this.players.find(player => player.userId === userIdToKick)
       } else {
         this.players.find(player => player.userId === keysWithHighestValue[0]).isKicked = true;
+        this.kickedPlayers = [...this.kickedPlayers, keysWithHighestValue[0]]
         kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(

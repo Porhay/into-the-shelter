@@ -34,6 +34,7 @@ interface IState {
   isPrivateLobby: boolean;
   voteKickList: any;
   maxClients: number;
+  kickedPlayers: any[];
 }
 
 type charType = {
@@ -63,6 +64,7 @@ const RoomPage = () => {
     userCharList: defineCharsList(),
     isPrivateLobby: true,
     voteKickList: [],
+    kickedPlayers: [],
     maxClients: 4,
   });
 
@@ -81,19 +83,6 @@ const RoomPage = () => {
     const onLobbyState: Listener<
       ServerPayloads[ServerEvents.LobbyState]
     > = async (data) => {
-      // fixes infinity loop, TODO: investigate how to improve
-      if (
-        lobby.hasStarted !== data.hasStarted ||
-        lobby.hasFinished !== data.hasFinished
-      ) {
-        dispatch(
-          updateLobby({
-            hasStarted: data.hasStarted,
-            hasFinished: data.hasFinished,
-          }),
-        );
-      }
-
       // update players data
       dispatch(
         updateLobby({
@@ -141,11 +130,12 @@ const RoomPage = () => {
           tipStr = `Waiting for ${revealPlayer.displayName} to open characteristics`;
         }
 
-        // update action tip on kick round start
+        // on kick round
         if (data.currentStage % 2 === 0) {
           tipStr = 'Kick stage! Choose the weakest and vote :D';
           updateState({
             voteKickList: data.voteKickList,
+            kickedPlayers: data.kickedPlayers,
           });
         }
 
@@ -164,7 +154,7 @@ const RoomPage = () => {
     return () => {
       sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
-  }, [lobby.hasStarted, lobby.hasFinished, state.maxClients]);
+  }, [lobby.hasStarted, lobby.hasFinished, state.maxClients, dispatch]);
 
   // FUNCTIONS
   const handleCharRevial = (char: charType) => {
@@ -223,10 +213,12 @@ const RoomPage = () => {
             <div className="block-container" key={index}>
               <div className="camera-block">
                 <div
-                  className={`kick-block ${player.isKicked ? 'kicked' : ''}`}
+                  className={`kick-block ${state.kickedPlayers.includes(player.userId) ? 'kicked' : ''}`}
                   onClick={() => handleVoteKick(player)}
                 >
-                  {player.isKicked ? 'Kicked' : 'Vote'}
+                  {state.kickedPlayers.includes(player.userId)
+                    ? 'Kicked'
+                    : 'Vote'}
                 </div>
                 <p className="nickname-block">
                   {player.displayName || ''}
@@ -309,7 +301,9 @@ const RoomPage = () => {
 
     return (
       <div className="action-tip-container">
-        {state.actionTip}
+        {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
+          ? state.actionTip
+          : 'You are kicked!'}
         {!lobby.hasStarted || lobby.hasFinished ? (
           <div>
             <div className="divider"></div>
@@ -337,11 +331,11 @@ const RoomPage = () => {
             <div className="lobby-conditions-container">
               <div className="shelter-conditions">
                 <h3>Shelter</h3>
-                <p>{lobby.conditions.shelter}</p>
+                <p>{lobby.conditions.shelter.name}</p>
               </div>
               <div className="catastrophe-conditions">
                 <h3>Catastrophe</h3>
-                <p>{lobby.conditions.catastrophe}</p>
+                <p>{lobby.conditions.catastrophe.name}</p>
               </div>
             </div>
           ) : null}
@@ -432,14 +426,15 @@ const RoomPage = () => {
                     <>
                       <div
                         className={`user-kicked-block ${
-                          lobby.players.find(
-                            (player: { userId: string }) =>
-                              player.userId === user.userId,
-                          )?.isKicked
+                          state.kickedPlayers.includes(user.userId)
                             ? 'kicked'
                             : ''
                         }`}
-                      ></div>
+                      >
+                        {state.kickedPlayers.includes(user.userId)
+                          ? 'Kicked'
+                          : ''}
+                      </div>
                       <div className={`webcam-avatar`}>
                         <img
                           src={

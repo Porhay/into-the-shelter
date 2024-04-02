@@ -81,6 +81,7 @@ export class Lobby {
       stages: this.instance.stages,
       revealPlayerId: this.instance.revealPlayerId,
       voteKickList: this.instance.voteKickList,
+      kickedPlayers: this.instance.kickedPlayers,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

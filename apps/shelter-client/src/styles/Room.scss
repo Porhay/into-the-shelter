@@ -152,17 +152,17 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     align-items: center;
     width: 100%;
     height: 100%;
-    background-color: rgba(51, 51, 51, 0.073);
     font-family: 'Roboto Condensed';
-    opacity: 0;
     font-size: 18px;
 }
+
 .kicked {
     opacity: 1;
-    background-color: #1f1f1fce;
+    background-color: rgba(0, 0, 0, 0.8);
     width: 100%;
     height: 100%;
 }
+
 // ---
 
 .webcam-avatar {
@@ -239,20 +239,19 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 align-items: center;
                 width: 100%;
                 height: 100%;
-                background-color: rgba(51, 51, 51, 0.073);
                 font-family: 'Roboto Condensed';
                 opacity: 0;
                 font-size: 18px;
 
                 &:hover {
                     opacity: 1;
-                    background-color: #1f1f1fce;
+                    background-color: rgba(0, 0, 0, 0.8);
                 }
             }
 
             .kicked {
                 opacity: 1;
-                background-color: #1f1f1fce;
+                background-color: rgba(0, 0, 0, 0.8);
             }
 
             .nickname-block {
