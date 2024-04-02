@@ -155,7 +155,7 @@ export class Instance {
 
     // transit to the next stage
     const allRevealsOnCurrentStage =
-      this.charsRevealedCount >= this.currentStage * this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
+      this.charsRevealedCount >= Math.ceil(this.currentStage / 2) * this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
 
     if (allRevealsOnCurrentStage) {
       this.transitNextStage()
