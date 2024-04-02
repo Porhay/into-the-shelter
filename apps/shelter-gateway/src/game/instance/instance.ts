@@ -28,7 +28,7 @@ export class Instance {
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
 
-  constructor(private readonly lobby: Lobby) {}
+  constructor(private readonly lobby: Lobby) { }
 
   public async triggerStart(
     data: { isPrivate: boolean; maxClients: number; organizatorId: string },
@@ -120,7 +120,7 @@ export class Instance {
     let uCharsRevealed: number = uCharList.filter(
       (char: { isRevealed: boolean }) => char.isRevealed === true,
     ).length;
-    if (uCharsRevealed >= this.currentStage * this.charOpenLimit) {
+    if (uCharsRevealed >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       return;
     }
 
@@ -134,7 +134,7 @@ export class Instance {
 
     /* check if user revealed all possible characteristics and 
       choose next player that can reveal chars */
-    if (uCharsRevealed === this.currentStage * this.charOpenLimit) {
+    if (uCharsRevealed === Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
         const totalPlayers = this.players.length;
         if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion

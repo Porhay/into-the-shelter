@@ -118,7 +118,7 @@ const RoomPage = () => {
           const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) => 
           _.isRevealed === true).length;
           const remained = (
-            data.currentStage * 2 -
+            Math.ceil(data.currentStage / 2) * 2 -
             alreadyRevealedCount
           ).toString();
           tipStr = `Open your characteristics, remained: ${remained}`;
