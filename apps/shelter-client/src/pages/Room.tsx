@@ -400,17 +400,8 @@ const RoomPage = () => {
               </div>
 
               <div className="catastrophe-conditions-wrapper">
-                <div className="catastrophe-conditions">
-                  <img
-                    className="catastrophe-icon"
-                    src={catastropheIcon}
-                    alt={'catastrophe-icon'}
-                  />
-                  <p>{lobby.conditions.catastrophe.name}</p>
-                </div>
-
                 <div
-                  className="conditions-more"
+                  className="catastrophe-conditions"
                   onClick={() => {
                     handleModal(
                       'катастрофа',
@@ -419,6 +410,15 @@ const RoomPage = () => {
                     );
                   }}
                 >
+                  <img
+                    className="catastrophe-icon"
+                    src={catastropheIcon}
+                    alt={'catastrophe-icon'}
+                  />
+                  <p>{lobby.conditions.catastrophe.name}</p>
+                </div>
+
+                <div className="conditions-more">
                   <p>{`more>>>`}</p>
                 </div>
               </div>
