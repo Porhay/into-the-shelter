@@ -51,16 +51,7 @@ export class Instance {
       this.characteristics[player.userId] = newChars;
 
       // set special cards for user
-      this.specialCards[player.userId] = [
-        {
-          type: 'specialCard1',
-          ...generateFromCharacteristics('specialCard')
-        },
-        {
-          type: 'specialCard2',
-          ...generateFromCharacteristics('specialCard')
-        }
-      ];
+      this.specialCards[player.userId] = generateFromCharacteristics('specialCard');
     });
 
     // set conditions
