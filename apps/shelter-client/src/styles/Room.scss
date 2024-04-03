@@ -7,37 +7,54 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     width: 290px;
 
     .lobby-conditions-container {
-        background-color: #ffc28cca;
         font-family: 'Roboto Condensed';
-        font-weight: 400;
         cursor: pointer;
-        margin: 0 0 10px 0;
-        display: flex;
-        justify-content: space-around;
+        margin-bottom: 3px;
+        display: block;
 
-        .shelter-conditions {
-            h3 {
-                color: #000000;
-                font-size: 20px;
-            }
+        .shelter-conditions-wrapper, .catastrophe-conditions-wrapper {
+            background-color: #ffc28cca;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+        }
+
+        .shelter-conditions, .catastrophe-conditions {
+            display:  flex;
+            align-items: center;
+            font-weight: 600;
 
             p {
                 color: #000000;
-                font-size: 14px;
+                font-size: 16px;
+                margin-left: 30px;
             }
         }
 
-        .catastrophe-conditions {
-            h3 {
-                color: #000000;
-                font-size: 20px;
-            }
+        .shelter-conditions-wrapper {
+            margin-bottom: 3px;
+        }
 
-            p {
-                color: #000000;
-                font-size: 14px;
+        .catastrophe-conditions p {
+            & {
+                margin-left: 36px;
             }
         }
+
+        .shelter-icon {
+            height: 45px;
+        }
+
+        .catastrophe-icon {
+            height: 40px;
+        }
+    }
+
+    .conditions-more {
+        color: #444444;
+        font-weight: 600;
+        font-size: 12px;
+        margin-right: 5px;
     }
 
     .lobby-settings-container {
