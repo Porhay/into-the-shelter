@@ -4,6 +4,7 @@ import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../components/Buttons';
 import Webcam from '../components/Webcam';
 import Chat from '../components/Chat';
+import ModalWindow from '../components/ModalWindow';
 import Toggle from 'react-toggle';
 import 'react-toggle/style.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +23,8 @@ import { useParams } from 'react-router-dom';
 import { showNotification } from '../libs/notifications';
 import { NOTIF_TYPE } from '../constants';
 import { updateLobby } from '../redux/reducers/lobbySlice';
+import shelterIcon from '../assets/images/shelter-icon.png';
+import catastropheIcon from '../assets/images/catastrophe-icon.png';
 
 interface IState {
   isCameraOn: boolean;
@@ -35,6 +38,8 @@ interface IState {
   voteKickList: any;
   maxClients: number;
   kickedPlayers: any[];
+  isDescriptionOpened: boolean;
+  modalProps: any;
 }
 
 type charType = {
@@ -66,6 +71,12 @@ const RoomPage = () => {
     voteKickList: [],
     kickedPlayers: [],
     maxClients: 4,
+    isDescriptionOpened: false,
+    modalProps: {
+      type: '',
+      description: '',
+      title: '',
+    },
   });
 
   useEffect(() => {
@@ -115,8 +126,8 @@ const RoomPage = () => {
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
           // eslint-disable-next-line
-          const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) => 
-          _.isRevealed === true).length;
+          const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) =>
+            _.isRevealed === true).length;
           const remained = (
             Math.ceil(data.currentStage / 2) * 2 -
             alreadyRevealedCount
@@ -156,6 +167,8 @@ const RoomPage = () => {
     };
   }, [lobby.hasStarted, lobby.hasFinished, state.maxClients, dispatch]);
 
+  useEffect(() => {}, [state.isDescriptionOpened]);
+
   // DATA SETS
   const kickBlockText = (player: { userId: string }) => {
     return state.kickedPlayers.includes(player.userId)
@@ -188,6 +201,25 @@ const RoomPage = () => {
       },
     });
     return;
+  };
+  const handleOpenModal = (isOpened: boolean) => {
+    updateState({
+      isDescriptionOpened: isOpened,
+    });
+  };
+  const handleModal = (
+    condition: string,
+    description: string,
+    title?: string,
+  ) => {
+    handleOpenModal(true);
+    updateState({
+      modalProps: {
+        type: condition,
+        description: description,
+        title: title,
+      },
+    });
   };
 
   interface settingsUpdate {
@@ -331,18 +363,64 @@ const RoomPage = () => {
 
   return (
     <div className="room-page-container">
+      {state.isDescriptionOpened ? (
+        <ModalWindow
+          handleOpenModal={handleOpenModal}
+          type={state.modalProps.type}
+          description={state.modalProps.description}
+          title={state.modalProps.title}
+        />
+      ) : null}
       <OponentsList />
       <div className="camera-list-wrapper">
         <div className="siwc-wrapper">
           {lobby.hasStarted ? (
             <div className="lobby-conditions-container">
-              <div className="shelter-conditions">
-                <h3>Shelter</h3>
-                <p>{lobby.conditions.shelter.name}</p>
+              <div className="shelter-conditions-wrapper">
+                <div className="shelter-conditions">
+                  <img
+                    className="shelter-icon"
+                    src={shelterIcon}
+                    alt={'shelter-icon'}
+                  />
+                  <p>{lobby.conditions.shelter.name}</p>
+                </div>
+                <div
+                  className="conditions-more"
+                  onClick={() => {
+                    handleModal(
+                      'бункер',
+                      lobby.conditions.shelter.description,
+                      lobby.conditions.shelter.name,
+                    );
+                  }}
+                >
+                  <p>{`more>>>`}</p>
+                </div>
               </div>
-              <div className="catastrophe-conditions">
-                <h3>Catastrophe</h3>
-                <p>{lobby.conditions.catastrophe.name}</p>
+
+              <div className="catastrophe-conditions-wrapper">
+                <div className="catastrophe-conditions">
+                  <img
+                    className="catastrophe-icon"
+                    src={catastropheIcon}
+                    alt={'catastrophe-icon'}
+                  />
+                  <p>{lobby.conditions.catastrophe.name}</p>
+                </div>
+
+                <div
+                  className="conditions-more"
+                  onClick={() => {
+                    handleModal(
+                      'катастрофа',
+                      lobby.conditions.catastrophe.description,
+                      lobby.conditions.catastrophe.name,
+                    );
+                  }}
+                >
+                  <p>{`more>>>`}</p>
+                </div>
               </div>
             </div>
           ) : null}
