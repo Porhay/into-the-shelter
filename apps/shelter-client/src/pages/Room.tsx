@@ -126,8 +126,11 @@ const RoomPage = () => {
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
           // eslint-disable-next-line
-          const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) =>
-            _.isRevealed === true).length;
+          const alreadyRevealedCount = data.characteristics[
+            currentPlayer.userId
+          ].filter(
+            (_: { isRevealed: boolean }) => _.isRevealed === true,
+          ).length;
           const remained = (
             Math.ceil(data.currentStage / 2) * 2 -
             alreadyRevealedCount
@@ -376,17 +379,17 @@ const RoomPage = () => {
         <div className="siwc-wrapper">
           {lobby.hasStarted ? (
             <div className="lobby-conditions-container">
-              <div className="shelter-conditions-wrapper">
-                <div
-                  className="shelter-conditions"
-                  onClick={() => {
-                    handleModal(
-                      'бункер',
-                      lobby.conditions.shelter.description,
-                      lobby.conditions.shelter.name,
-                    );
-                  }}
-                >
+              <div
+                className="shelter-conditions-wrapper"
+                onClick={() => {
+                  handleModal(
+                    'бункер',
+                    lobby.conditions.shelter.description,
+                    lobby.conditions.shelter.name,
+                  );
+                }}
+              >
+                <div className="shelter-conditions">
                   <img
                     className="shelter-icon"
                     src={shelterIcon}
@@ -399,17 +402,17 @@ const RoomPage = () => {
                 </div>
               </div>
 
-              <div className="catastrophe-conditions-wrapper">
-                <div
-                  className="catastrophe-conditions"
-                  onClick={() => {
-                    handleModal(
-                      'катастрофа',
-                      lobby.conditions.catastrophe.description,
-                      lobby.conditions.catastrophe.name,
-                    );
-                  }}
-                >
+              <div
+                className="catastrophe-conditions-wrapper"
+                onClick={() => {
+                  handleModal(
+                    'катастрофа',
+                    lobby.conditions.catastrophe.description,
+                    lobby.conditions.catastrophe.name,
+                  );
+                }}
+              >
+                <div className="catastrophe-conditions">
                   <img
                     className="catastrophe-icon"
                     src={catastropheIcon}
@@ -534,23 +537,40 @@ const RoomPage = () => {
                 </div>
               </div>
             </div>
-            <div className="char-list-container">
-              {state.userCharList.map((char, index) => {
-                return (
-                  <div
+          </div>
+        </div>
+        <div className="char-list-wrapper">
+          <div className="char-list-container">
+            {state.userCharList.map((char, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
+                >
+                  <Button
                     key={index}
-                    className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
-                  >
-                    <Button
-                      key={index}
-                      icon={char.icon}
-                      text={char.text}
-                      onClick={() => handleCharRevial(char)}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+                    icon={char.icon}
+                    text={char.text}
+                    onClick={() => handleCharRevial(char)}
+                  />
+                </div>
+              );
+            })}
+            <div className="char-border"></div>
+          </div>
+          <div className="cards-button-wrapper isNotRevealed">
+            <Button
+              // key={index}
+              icon={'specialCardIcon'}
+              text={`Замінити собі здоров'я на випадкове`}
+              // onClick={() => handleCharRevial(char)}
+            />
+            <Button
+              // key={index}
+              icon={'specialCardIcon'}
+              text={`Обмінятися здоров'ям з гравцем`}
+              // onClick={() => handleCharRevial(char)}
+            />
           </div>
         </div>
       </div>

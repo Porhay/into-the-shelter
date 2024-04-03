@@ -15,6 +15,7 @@ import jobIcon from '../assets/icons/ingame/job-icon.png';
 import phobiaIcon from '../assets/icons/ingame/phobia-icon.png';
 import backpackIcon from '../assets/icons/ingame/backpack-icon.png';
 import additionalInfoIcon from '../assets/icons/ingame/additional-info-icon.png';
+import specialCardIcon from '../assets/icons/special-card-icon.png';
 
 const Icon = (props: any) => {
   const alt = 'icon';
@@ -51,6 +52,8 @@ const Icon = (props: any) => {
       return <img src={exitIcon} alt={alt} />;
     case 'plusIcon':
       return <img src={plusIcon} alt={alt} />;
+    case 'specialCardIcon':
+      return <img src={specialCardIcon} alt={alt} />;
     default:
       return <img src={healthIcon} alt={alt} />;
   }
