@@ -18,6 +18,7 @@ export class Instance {
   public players: any = [];
   public characteristics: any = {};
   public conditions: any = {};
+  public specialCards: any = {};
   public currentStage: number;
   public stages: any[];
   public startPlayerId: string;
@@ -48,7 +49,21 @@ export class Instance {
     this.players.map((player) => {
       const newChars = generateFromCharacteristics('charList');
       this.characteristics[player.userId] = newChars;
+
+      // set special cards for user
+      this.specialCards[player.userId] = [
+        {
+          type: 'specialCard1',
+          ...generateFromCharacteristics('specialCard')
+        },
+        {
+          type: 'specialCard2',
+          ...generateFromCharacteristics('specialCard')
+        }
+      ];
     });
+
+    // set conditions
     this.conditions = generateFromCharacteristics('conditions');
 
     // set current game stage as 1 because game is started
@@ -252,6 +267,38 @@ export class Instance {
     );
   }
 
+  public useSpecialCard(data: any, client: AuthenticatedSocket): void {
+    const { specialCard, userId } = data;
+    if (!this.hasStarted || this.hasFinished) {
+      return;
+    }
+    // kicked player can not use spec card
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
+      return;
+    }
+
+    // check if card is already used
+    const scard = this.specialCards[userId].find(card => card.type === specialCard.type)
+    if (scard.isUsed === true) {
+      return;
+    }
+
+    // apply changes and set as used
+    this.applyChanges(specialCard.id)
+    this.specialCards[userId].find(card => card.type === specialCard.type).isUsed = true;
+
+    const user = this.players.find(player => player.userId === userId);
+    this.lobby.dispatchLobbyState();
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: `${user.displayName} used special card!`,
+      },
+    );
+  }
+
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
@@ -271,5 +318,9 @@ export class Instance {
     if (index !== -1) {
       this.stages[index].isActive = true;
     }
+  }
+
+  private applyChanges(specialCardId): void {
+    console.log(specialCardId, 'applied');
   }
 }

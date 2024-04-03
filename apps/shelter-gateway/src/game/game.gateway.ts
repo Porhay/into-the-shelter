@@ -144,6 +144,18 @@ export class GameGateway
     client.data.lobby.instance.voteKick(data, client);
   }
 
+  @SubscribeMessage(ClientEvents.GameUseSpecialCard)
+  onUseSpecialCard(client: AuthenticatedSocket, data: any): void {
+    if (!client.data.lobby) {
+      throw new ServerException(
+        SocketExceptions.LobbyError,
+        'You are not in a lobby',
+      );
+    }
+
+    client.data.lobby.instance.useSpecialCard(data, client);
+  }
+
   @SubscribeMessage(ClientEvents.GameRevealChar)
   onRevealChar(client: AuthenticatedSocket, data: any): void {
     if (!client.data.lobby) {

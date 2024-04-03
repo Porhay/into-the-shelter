@@ -11,7 +11,7 @@ export const getRandomIndex = (maxIndex: number) => {
 };
 
 export const generateFromCharacteristics = (
-  type: 'charList' | 'conditions',
+  type: 'charList' | 'conditions' | 'specialCard',
 ): any => {
   let jsonData: { [x: string]: any };
   try {
@@ -35,6 +35,16 @@ export const generateFromCharacteristics = (
     const shelter = _getRandomChar(jsonData, 'shelter');
     const catastrophe = _getRandomChar(jsonData, 'catastrophe');
     return { shelter, catastrophe };
+  }
+
+  if (type === 'specialCard') {
+    const specialCardObj = _getRandomChar(jsonData, 'specialCard');
+    const res = {
+      text: specialCardObj.text,
+      id: specialCardObj.id,
+      isUsed: false,
+    };
+    return res;
   }
 
   const charList = [

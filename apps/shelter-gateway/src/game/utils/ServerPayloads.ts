@@ -10,6 +10,7 @@ export type ServerPayloads = {
     isSuspended: boolean;
     players: any;
     characteristics: any;
+    specialCards: any;
     conditions: any;
     isPrivate: boolean;
     currentStage: number;

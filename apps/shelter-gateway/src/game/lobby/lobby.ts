@@ -75,6 +75,7 @@ export class Lobby {
       isSuspended: this.instance.isSuspended,
       players: this.instance.players,
       characteristics: this.instance.characteristics,
+      specialCards: this.instance.specialCards,
       conditions: this.instance.conditions,
       isPrivate: this.isPrivate,
       currentStage: this.instance.currentStage,

@@ -34,6 +34,7 @@ interface IState {
   inviteLink: string;
   isOrganizator: boolean;
   userCharList: charListType;
+  userSpecialCards: any;
   isPrivateLobby: boolean;
   voteKickList: any;
   maxClients: number;
@@ -67,6 +68,7 @@ const RoomPage = () => {
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
     userCharList: defineCharsList(),
+    userSpecialCards: [],
     isPrivateLobby: true,
     voteKickList: [],
     kickedPlayers: [],
@@ -99,6 +101,7 @@ const RoomPage = () => {
         updateLobby({
           players: data.players,
           characteristics: data.characteristics,
+          specialCards: data.specialCards,
           conditions: data.conditions,
         }),
       );
@@ -159,6 +162,7 @@ const RoomPage = () => {
 
         updateState({
           userCharList: data.characteristics[currentPlayer.userId],
+          userSpecialCards: data.specialCards[currentPlayer.userId],
           actionTip: tipStr,
           kickedPlayers: data.kickedPlayers,
         });
@@ -236,6 +240,16 @@ const RoomPage = () => {
       data: data,
     });
     return;
+  };
+
+  const handleUseSpecialCard = (data: { type: string; id: number }) => {
+    sm.emit({
+      event: ClientEvents.GameUseSpecialCard,
+      data: {
+        userId: user.userId,
+        specialCard: data,
+      },
+    });
   };
 
   // COMPONENTS
@@ -560,16 +574,36 @@ const RoomPage = () => {
           </div>
           <div className="cards-button-wrapper isNotRevealed">
             <Button
-              // key={index}
               icon={'specialCardIcon'}
-              text={`Замінити собі здоров'я на випадкове`}
-              // onClick={() => handleCharRevial(char)}
+              text={
+                state.userSpecialCards.find(
+                  (card: { type: string }) => card.type === 'specialCard1',
+                )?.text
+              }
+              onClick={() =>
+                handleUseSpecialCard({
+                  type: 'specialCard1',
+                  id: state.userSpecialCards.find(
+                    (card: { type: string }) => card.type === 'specialCard1',
+                  )?.id,
+                })
+              }
             />
             <Button
-              // key={index}
               icon={'specialCardIcon'}
-              text={`Обмінятися здоров'ям з гравцем`}
-              // onClick={() => handleCharRevial(char)}
+              text={
+                state.userSpecialCards.find(
+                  (card: { type: string }) => card.type === 'specialCard2',
+                )?.text
+              }
+              onClick={() =>
+                handleUseSpecialCard({
+                  type: 'specialCard2',
+                  id: state.userSpecialCards.find(
+                    (card: { type: string }) => card.type === 'specialCard2',
+                  )?.id,
+                })
+              }
             />
           </div>
         </div>
