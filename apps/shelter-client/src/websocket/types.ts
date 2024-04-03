@@ -26,6 +26,7 @@ export type ServerPayloads = {
     isSuspended: boolean;
     players: any;
     characteristics: any;
+    specialCards: any;
     conditions: any;
     currentStage: number;
     stages: any[];
@@ -49,4 +50,5 @@ export enum ClientEvents {
   GameStart = 'client.game.start',
   GameRevealChar = 'client.game.reveal_char', // characteristic, i.e: gender, health etc..
   GameVoteKick = 'client.game.vote_kick',
+  GameUseSpecialCard = 'client.game.use_special_card',
 }

@@ -5,7 +5,7 @@ import { NOTIF_TYPE } from '../constants';
 export const showNotification = (type: string, text: string) => {
   const options: any = {
     position: 'bottom-center',
-    autoClose: 1000,
+    autoClose: 1400,
     hideProgressBar: true,
     closeOnClick: true,
     pauseOnHover: false,

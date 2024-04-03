@@ -34,6 +34,7 @@ interface IState {
   inviteLink: string;
   isOrganizator: boolean;
   userCharList: charListType;
+  userSpecialCards: any;
   isPrivateLobby: boolean;
   voteKickList: any;
   maxClients: number;
@@ -67,6 +68,7 @@ const RoomPage = () => {
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
     userCharList: defineCharsList(),
+    userSpecialCards: [],
     isPrivateLobby: true,
     voteKickList: [],
     kickedPlayers: [],
@@ -99,6 +101,7 @@ const RoomPage = () => {
         updateLobby({
           players: data.players,
           characteristics: data.characteristics,
+          specialCards: data.specialCards,
           conditions: data.conditions,
         }),
       );
@@ -126,8 +129,11 @@ const RoomPage = () => {
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
           // eslint-disable-next-line
-          const alreadyRevealedCount = data.characteristics[currentPlayer.userId].filter((_: { isRevealed: boolean }) =>
-            _.isRevealed === true).length;
+          const alreadyRevealedCount = data.characteristics[
+            currentPlayer.userId
+          ].filter(
+            (_: { isRevealed: boolean }) => _.isRevealed === true,
+          ).length;
           const remained = (
             Math.ceil(data.currentStage / 2) * 2 -
             alreadyRevealedCount
@@ -146,7 +152,6 @@ const RoomPage = () => {
           tipStr = 'Kick stage! Choose the weakest and vote :D';
           updateState({
             voteKickList: data.voteKickList,
-            kickedPlayers: data.kickedPlayers,
           });
         }
 
@@ -157,7 +162,9 @@ const RoomPage = () => {
 
         updateState({
           userCharList: data.characteristics[currentPlayer.userId],
+          userSpecialCards: data.specialCards[currentPlayer.userId],
           actionTip: tipStr,
+          kickedPlayers: data.kickedPlayers,
         });
       }
     };
@@ -233,6 +240,16 @@ const RoomPage = () => {
       data: data,
     });
     return;
+  };
+
+  const handleUseSpecialCard = (data: { type: string; id: number }) => {
+    sm.emit({
+      event: ClientEvents.GameUseSpecialCard,
+      data: {
+        userId: user.userId,
+        specialCard: data,
+      },
+    });
   };
 
   // COMPONENTS
@@ -376,7 +393,16 @@ const RoomPage = () => {
         <div className="siwc-wrapper">
           {lobby.hasStarted ? (
             <div className="lobby-conditions-container">
-              <div className="shelter-conditions-wrapper">
+              <div
+                className="shelter-conditions-wrapper"
+                onClick={() => {
+                  handleModal(
+                    'бункер',
+                    lobby.conditions.shelter.description,
+                    lobby.conditions.shelter.name,
+                  );
+                }}
+              >
                 <div className="shelter-conditions">
                   <img
                     className="shelter-icon"
@@ -385,21 +411,21 @@ const RoomPage = () => {
                   />
                   <p>{lobby.conditions.shelter.name}</p>
                 </div>
-                <div
-                  className="conditions-more"
-                  onClick={() => {
-                    handleModal(
-                      'бункер',
-                      lobby.conditions.shelter.description,
-                      lobby.conditions.shelter.name,
-                    );
-                  }}
-                >
+                <div className="conditions-more">
                   <p>{`more>>>`}</p>
                 </div>
               </div>
 
-              <div className="catastrophe-conditions-wrapper">
+              <div
+                className="catastrophe-conditions-wrapper"
+                onClick={() => {
+                  handleModal(
+                    'катастрофа',
+                    lobby.conditions.catastrophe.description,
+                    lobby.conditions.catastrophe.name,
+                  );
+                }}
+              >
                 <div className="catastrophe-conditions">
                   <img
                     className="catastrophe-icon"
@@ -409,16 +435,7 @@ const RoomPage = () => {
                   <p>{lobby.conditions.catastrophe.name}</p>
                 </div>
 
-                <div
-                  className="conditions-more"
-                  onClick={() => {
-                    handleModal(
-                      'катастрофа',
-                      lobby.conditions.catastrophe.description,
-                      lobby.conditions.catastrophe.name,
-                    );
-                  }}
-                >
+                <div className="conditions-more">
                   <p>{`more>>>`}</p>
                 </div>
               </div>
@@ -534,23 +551,60 @@ const RoomPage = () => {
                 </div>
               </div>
             </div>
-            <div className="char-list-container">
-              {state.userCharList.map((char, index) => {
-                return (
-                  <div
+          </div>
+        </div>
+        <div className="char-list-wrapper">
+          <div className="char-list-container">
+            {state.userCharList.map((char, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
+                >
+                  <Button
                     key={index}
-                    className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
-                  >
-                    <Button
-                      key={index}
-                      icon={char.icon}
-                      text={char.text}
-                      onClick={() => handleCharRevial(char)}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+                    icon={char.icon}
+                    text={char.text}
+                    onClick={() => handleCharRevial(char)}
+                  />
+                </div>
+              );
+            })}
+            <div className="char-border"></div>
+          </div>
+          <div className="cards-button-wrapper isNotRevealed">
+            <Button
+              icon={'specialCardIcon'}
+              text={
+                state.userSpecialCards.find(
+                  (card: { type: string }) => card.type === 'specialCard1',
+                )?.text
+              }
+              onClick={() =>
+                handleUseSpecialCard({
+                  type: 'specialCard1',
+                  id: state.userSpecialCards.find(
+                    (card: { type: string }) => card.type === 'specialCard1',
+                  )?.id,
+                })
+              }
+            />
+            <Button
+              icon={'specialCardIcon'}
+              text={
+                state.userSpecialCards.find(
+                  (card: { type: string }) => card.type === 'specialCard2',
+                )?.text
+              }
+              onClick={() =>
+                handleUseSpecialCard({
+                  type: 'specialCard2',
+                  id: state.userSpecialCards.find(
+                    (card: { type: string }) => card.type === 'specialCard2',
+                  )?.id,
+                })
+              }
+            />
           </div>
         </div>
       </div>

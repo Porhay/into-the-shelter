@@ -7,6 +7,7 @@ export interface LobbyState {
   hasFinished?: boolean | null;
   players?: any;
   characteristics?: any;
+  specialCards?: any;
   conditions?: any;
   currentStage?: number;
   stages?: any[];
@@ -19,6 +20,7 @@ const initialState: LobbyState = {
   hasFinished: false,
   players: [],
   characteristics: {},
+  specialCards: {},
   conditions: {},
   currentStage: 1,
   stages: [],

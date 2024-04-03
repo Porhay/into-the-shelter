@@ -18,6 +18,7 @@ export class Instance {
   public players: any = [];
   public characteristics: any = {};
   public conditions: any = {};
+  public specialCards: any = {};
   public currentStage: number;
   public stages: any[];
   public startPlayerId: string;
@@ -48,7 +49,12 @@ export class Instance {
     this.players.map((player) => {
       const newChars = generateFromCharacteristics('charList');
       this.characteristics[player.userId] = newChars;
+
+      // set special cards for user
+      this.specialCards[player.userId] = generateFromCharacteristics('specialCard');
     });
+
+    // set conditions
     this.conditions = generateFromCharacteristics('conditions');
 
     // set current game stage as 1 because game is started
@@ -155,7 +161,7 @@ export class Instance {
 
     // transit to the next stage
     const allRevealsOnCurrentStage =
-      this.charsRevealedCount >= this.currentStage * this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
+      this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
 
     if (allRevealsOnCurrentStage) {
       this.transitNextStage()
@@ -225,6 +231,7 @@ export class Instance {
         },
       );
 
+      this.charsRevealedCount = 0 // clear round char counter
       this.voteKickList = []; // clear the list after kick
 
       // game over (kicked the half)
@@ -251,6 +258,38 @@ export class Instance {
     );
   }
 
+  public useSpecialCard(data: any, client: AuthenticatedSocket): void {
+    const { specialCard, userId } = data;
+    if (!this.hasStarted || this.hasFinished) {
+      return;
+    }
+    // kicked player can not use spec card
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
+      return;
+    }
+
+    // check if card is already used
+    const scard = this.specialCards[userId].find(card => card.type === specialCard.type)
+    if (scard.isUsed === true) {
+      return;
+    }
+
+    // apply changes and set as used
+    this.applyChanges(specialCard.id, userId)
+    this.specialCards[userId].find(card => card.type === specialCard.type).isUsed = true;
+
+    const user = this.players.find(player => player.userId === userId);
+    this.lobby.dispatchLobbyState();
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: `${user.displayName} used special card!`,
+      },
+    );
+  }
+
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
@@ -269,6 +308,66 @@ export class Instance {
     const index = this.stages.findIndex((s) => s.index === this.currentStage);
     if (index !== -1) {
       this.stages[index].isActive = true;
+    }
+  }
+
+  private applyChanges(specialCardId, userId): void {
+    const applyChangesForSelf = (charType: string) => {
+      const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
+
+      const uCharList = this.characteristics[userId];
+      uCharList.find((char) => char.type === charType).text = newCharText;
+      this.characteristics[userId] = uCharList;
+    }
+
+    const applyChangesForAll = (charType: string) => {
+      for (const player of this.players) {
+        const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
+
+        const uCharList = this.characteristics[player.userId];
+        uCharList.find((char) => char.type === charType).text = newCharText;
+        this.characteristics[player.userId] = uCharList;
+      }
+    }
+
+    const updateConditions = (type: string) => {
+      if (type === 'catastrophe') {
+        const newCatastrophe = generateFromCharacteristics('conditions').catastrophe;
+        console.log(newCatastrophe.name);
+        this.conditions.catastrophe = newCatastrophe
+      }
+    }
+
+    // apply changes accoring to special card id
+    switch (specialCardId) {
+      case 1: // Замінити собі здоров'я на випадкове
+        applyChangesForSelf('health')
+        break;
+      case 2: // Замінити собі професію на випадкову
+        applyChangesForSelf('job')
+        break;
+      case 3: // Замінити собі рюкзак на випадковий
+        applyChangesForSelf('backpack')
+        break;
+      case 4: // Замінити всім професію на випадкову
+        applyChangesForAll('job')
+        break;
+      case 5: // Замінити всім здоров'я на випадкове
+        applyChangesForAll('health')
+        break;
+      case 6: // Вилікувати собі будь яку хворобу
+        const uCharList = this.characteristics[userId];
+        uCharList.find((char) => char.type === 'health').text = 'Абсолютно здоровий';
+        this.characteristics[userId] = uCharList;
+        break;
+      case 7: // Замінити всім фобію на випадкову
+        applyChangesForAll('phobia')
+        break;
+      case 8: // Замінити катастрофу на випадкову
+        updateConditions('catastrophe')
+        break;
+      default:
+        break;
     }
   }
 }

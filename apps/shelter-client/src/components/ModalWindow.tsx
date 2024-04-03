@@ -1,5 +1,5 @@
 import '../styles/ModalWindow.scss';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 const ModalWindow = (props: any) => {
   const modalWindowBlock = useRef<HTMLDivElement>(null);
