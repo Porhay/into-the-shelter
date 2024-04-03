@@ -285,7 +285,7 @@ export class Instance {
     }
 
     // apply changes and set as used
-    this.applyChanges(specialCard.id)
+    this.applyChanges(specialCard.id, userId)
     this.specialCards[userId].find(card => card.type === specialCard.type).isUsed = true;
 
     const user = this.players.find(player => player.userId === userId);
@@ -320,7 +320,63 @@ export class Instance {
     }
   }
 
-  private applyChanges(specialCardId): void {
-    console.log(specialCardId, 'applied');
+  private applyChanges(specialCardId, userId): void {
+    const applyChangesForSelf = (charType: string) => {
+      const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
+
+      const uCharList = this.characteristics[userId];
+      uCharList.find((char) => char.type === charType).text = newCharText;
+      this.characteristics[userId] = uCharList;
+    }
+
+    const applyChangesForAll = (charType: string) => {
+      for (const player of this.players) {
+        const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
+
+        const uCharList = this.characteristics[player.userId];
+        uCharList.find((char) => char.type === charType).text = newCharText;
+        this.characteristics[player.userId] = uCharList;
+      }
+    }
+
+    const updateConditions = (type: string) => {
+      if (type === 'catastrophe') {
+        const newCatastrophe = generateFromCharacteristics('conditions').catastrophe;
+        console.log(newCatastrophe.name);
+        this.conditions.catastrophe = newCatastrophe
+      }
+    }
+
+    // apply changes accoring to special card id
+    switch (specialCardId) {
+      case 1: // Замінити собі здоров'я на випадкове
+        applyChangesForSelf('health')
+        break;
+      case 2: // Замінити собі професію на випадкову
+        applyChangesForSelf('job')
+        break;
+      case 3: // Замінити собі рюкзак на випадковий
+        applyChangesForSelf('backpack')
+        break;
+      case 4: // Замінити всім професію на випадкову
+        applyChangesForAll('job')
+        break;
+      case 5: // Замінити всім здоров'я на випадкове
+        applyChangesForAll('health')
+        break;
+      case 6: // Вилікувати собі будь яку хворобу
+        const uCharList = this.characteristics[userId];
+        uCharList.find((char) => char.type === 'health').text = 'Абсолютно здоровий';
+        this.characteristics[userId] = uCharList;
+        break;
+      case 7: // Замінити всім фобію на випадкову
+        applyChangesForAll('phobia')
+        break;
+      case 8: // Замінити катастрофу на випадкову
+        updateConditions('catastrophe')
+        break;
+      default:
+        break;
+    }
   }
 }
