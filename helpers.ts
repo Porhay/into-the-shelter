@@ -40,7 +40,7 @@ export const generateFromCharacteristics = (
   if (type === 'specialCard') {
     const specialCardObj1 = _getRandomChar(jsonData, 'specialCard');
     const filteredJsonData = jsonData['specialCard'].filter(
-      (sc) => sc.id !== specialCardObj1,
+      (sc) => sc.id !== specialCardObj1.id,
     ); // remove to avoid dublicates in one user
 
     const randomIndex = Math.floor(Math.random() * filteredJsonData.length);

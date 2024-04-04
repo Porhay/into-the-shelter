@@ -19,6 +19,8 @@ import { ServerEvents, ServerPayloads } from '../websocket/types';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import { Notification, showNotification } from '../libs/notifications';
 import { updateApp } from '../redux/reducers/appSlice';
+import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface IState {
   isLoginOpened: boolean;
@@ -32,6 +34,7 @@ const Navigation = () => {
   const { sm } = useSocketManager();
 
   const user = useSelector((state: RootState) => state.user);
+  const app = useSelector((state: RootState) => state.app);
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
@@ -166,6 +169,13 @@ const Navigation = () => {
         {user.userId && (
           <div className="nav-timeline-container">
             <Timeline />
+          </div>
+        )}
+        {user.userId && (
+          <div
+            className={`game-history-container ${app.showTimeline ? '' : 'invisible'}`}
+          >
+            <FontAwesomeIcon icon={faClockRotateLeft} />
           </div>
         )}
         {user.userId ? (

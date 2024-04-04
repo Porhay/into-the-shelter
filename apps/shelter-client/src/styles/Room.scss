@@ -221,8 +221,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 }
 
 .char-border {
-    margin-top: 3px;
-    margin-left: 5px;
+    margin: 3px 8px 0 5px;
     border-bottom: #faaa63ca dashed 1px;
 }
 
@@ -230,7 +229,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     display: flex;
     flex-direction: column;
     font-weight: 500;
-    margin-left: 7.5px;
+    margin: 0 0 3px 7.5px;
     width: fit-content;
     white-space: nowrap;
 }
