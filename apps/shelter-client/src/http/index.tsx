@@ -85,7 +85,7 @@ export const deleteFileReq = async (
   }
 };
 
-export const getAllPublicLobbies = async (userId: string | undefined) => {
+export const getAllPublicLobbiesReq = async (userId: string | undefined) => {
   try {
     const res = await gatewayHost.get(`/api/users/${userId}/lobbies/`);
     return res.data;
@@ -94,5 +94,34 @@ export const getAllPublicLobbies = async (userId: string | undefined) => {
       `Error while getting all public lobbies, userId:${userId}`,
       error,
     );
+  }
+};
+
+export const getActivityLogsByLobbyIdReq = async (
+  userId: string | undefined,
+  lobbyId?: string | null,
+) => {
+  try {
+    const res = await gatewayHost.get(
+      `/api/users/${userId}/lobbies/${lobbyId}/activity-logs/`,
+    );
+    return res.data;
+  } catch (error) {
+    console.log(
+      `Error while getting activity log, userId:${userId}, lobbyId:${lobbyId}`,
+      error,
+    );
+  }
+};
+
+export const createActivityLogReq = async (data: any) => {
+  try {
+    const res = await gatewayHost.post(
+      `/api/users/${data.userId}/lobbies/${data.lobbyId}/activity-logs/`,
+      data,
+    );
+    return res.data;
+  } catch (error) {
+    console.log('Error while createing activity log', error);
   }
 };

@@ -21,6 +21,7 @@ import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
 import { DatabaseService } from '@app/common';
+import { ActivityLogsService } from '../activityLogs/activity-logs.service';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -31,6 +32,7 @@ export class GameGateway
   constructor(
     private readonly lobbyManager: LobbyManager,
     private readonly databaseService: DatabaseService,
+    private readonly activityLogsService: ActivityLogsService,
   ) {}
 
   afterInit(server: Server): any {
@@ -145,7 +147,10 @@ export class GameGateway
   }
 
   @SubscribeMessage(ClientEvents.GameUseSpecialCard)
-  onUseSpecialCard(client: AuthenticatedSocket, data: any): void {
+  async onUseSpecialCard(
+    client: AuthenticatedSocket,
+    data: any,
+  ): Promise<void> {
     if (!client.data.lobby) {
       throw new ServerException(
         SocketExceptions.LobbyError,
@@ -154,6 +159,28 @@ export class GameGateway
     }
 
     client.data.lobby.instance.useSpecialCard(data, client);
+    console.log(5, data);
+
+    // TODO: fix
+    const user = client.data.lobby.instance.players.find(
+      (player) => player.userId === data.userId,
+    );
+    let text: string = '';
+    if (data.contestantId) {
+      const contestant = client.data.lobby.instance.players.find(
+        (player) => player.userId === data.contestantId,
+      );
+      text = `${user.displayName} used special card: ${data.specialCard.text} on ${contestant.displayName}`;
+    } else {
+      text = `${user.displayName} used special card: ${data.specialCard.text}`;
+    }
+
+    await this.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: 'specialCardUsed',
+      payload: text,
+    });
   }
 
   @SubscribeMessage(ClientEvents.GameRevealChar)

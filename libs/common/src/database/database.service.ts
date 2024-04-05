@@ -286,7 +286,7 @@ export class DatabaseService {
       where: { lobbyId: lobbyId },
     });
     if (activityLogs.length === 0) {
-      throw new Error(`Activity logs with ${lobbyId} are not found`);
+      return [];
     }
     return activityLogs;
   }

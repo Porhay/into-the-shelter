@@ -170,12 +170,19 @@ export const normalizePlayers = (players: any) => {
   return players;
 };
 
-export const formatCreatedAt = (createdAt: string) => {
+export const formatCreatedAt = (
+  createdAt: string,
+  timeOnly: boolean = false,
+) => {
   const _padZero = (num: number): string => {
     return num.toString().padStart(2, '0');
   };
 
   const date = new Date(createdAt);
+  if (timeOnly) {
+    const formattedDate = `${_padZero(date.getHours())}:${_padZero(date.getMinutes())}`;
+    return formattedDate;
+  }
   const formattedDate = `${_padZero(date.getDate())}.${_padZero(date.getMonth() + 1)} at ${_padZero(date.getHours())}:${_padZero(date.getMinutes())}`;
   return formattedDate;
 };

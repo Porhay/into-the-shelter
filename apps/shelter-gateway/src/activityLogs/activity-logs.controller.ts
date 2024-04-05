@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { ActivityLogsService } from './activity-logs.service';
 
-@Controller('users/:userId/lobbies/:lobbyId/activity-logs/')
+@Controller('users/:userId/lobbies/:lobbyId/activity-logs')
 export class ActivityLogsController {
   constructor(private readonly activityLogsService: ActivityLogsService) {}
 

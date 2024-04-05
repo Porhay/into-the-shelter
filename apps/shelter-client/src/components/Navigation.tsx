@@ -58,12 +58,14 @@ const Navigation = () => {
     > = async (data) => {
       // update global state
       const context: any = {
+        lobbyKey: data.lobbyId,
         lobbyLink: getLobbyLink(data.lobbyId),
         hasStarted: data.hasStarted,
         currentStage: data.currentStage,
         stages: data.stages,
       };
       dispatch(updateLobby(context));
+      console.log('ss', context);
 
       // navigate to current room
       const route = ROUTES.ROOMS + '/' + data.lobbyId;

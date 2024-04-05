@@ -276,6 +276,7 @@ const RoomPage = () => {
     type: string;
     id: number;
     onContestant: boolean;
+    text: string;
     contestantId?: string;
     isUsed: boolean;
   }) => {
@@ -297,6 +298,7 @@ const RoomPage = () => {
           type: data.type,
           id: data.id,
           onContestant: data.onContestant,
+          text: data.text,
         },
         contestantId: data.contestantId || null,
       },
@@ -663,6 +665,7 @@ const RoomPage = () => {
                       handleUseSpecialCard({
                         type: card.type,
                         id: card.id,
+                        text: card.text,
                         onContestant: card.onContestant,
                         isUsed: card.isUsed,
                       });
