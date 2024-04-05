@@ -145,8 +145,6 @@ const RoomPage = () => {
           isOrganizator: isOrganizator,
         });
       } else {
-        console.log('STARTED:', data);
-
         // update characteristics
         const currentPlayer = data.players.find(
           (player: { userId: string }) => player.userId === user.userId,
