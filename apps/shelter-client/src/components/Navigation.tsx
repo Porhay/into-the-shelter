@@ -19,11 +19,15 @@ import { ServerEvents, ServerPayloads } from '../websocket/types';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import { Notification, showNotification } from '../libs/notifications';
 import { updateApp } from '../redux/reducers/appSlice';
+import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ModalWindow from './ModalWindow';
 
 interface IState {
   isLoginOpened: boolean;
   isAccountOpened: boolean;
   isNotificationsOpened: boolean;
+  isActivityLogsOpened: boolean;
 }
 
 const Navigation = () => {
@@ -32,6 +36,7 @@ const Navigation = () => {
   const { sm } = useSocketManager();
 
   const user = useSelector((state: RootState) => state.user);
+  const app = useSelector((state: RootState) => state.app);
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
@@ -40,6 +45,7 @@ const Navigation = () => {
     isLoginOpened: false,
     isAccountOpened: false,
     isNotificationsOpened: false,
+    isActivityLogsOpened: false,
   });
 
   useEffect(() => {
@@ -155,77 +161,95 @@ const Navigation = () => {
         return toggleLoginTo(false);
     }
   };
+  const handleOpenModal = (isOpened: boolean) => {
+    updateState({
+      isActivityLogsOpened: isOpened,
+    });
+  };
 
   // Navigation
   return (
-    <div className="navigation-wrapper">
-      <div className="navigation-container">
-        <div className="logo-container" onClick={() => navigate(ROUTES.MAIN)}>
-          <img className="logo-image" src={intoTheShelter} alt={''} />
-        </div>
-        {user.userId && (
-          <div className="nav-timeline-container">
-            <Timeline />
+    <div>
+      <div className="navigation-wrapper">
+        <div className="navigation-container">
+          <div className="logo-container" onClick={() => navigate(ROUTES.MAIN)}>
+            <img className="logo-image" src={intoTheShelter} alt={''} />
           </div>
-        )}
-        {user.userId ? (
-          <div className="nav-noty-user-container">
-            <div className="nav-noty-dropdown">
-              <CustomDropdown
-                onClose={handleCloseByType}
-                type={'notifications'}
-                list={[]}
-                text="You don't have new notifications"
-                isOpened={state.isNotificationsOpened}
-              >
-                <img
-                  src={notificationsIcon}
-                  className="notification-dropdown-img"
-                  onClick={() =>
-                    toggleNotificationsTo(!state.isNotificationsOpened)
-                  }
-                  alt={''}
-                />
-              </CustomDropdown>
+          {user.userId && (
+            <div className="nav-timeline-container">
+              <Timeline />
             </div>
-            <div className="nav-user-dropdown">
-              <CustomDropdown
-                onClose={handleCloseByType}
-                type={'account'}
-                list={navigationList}
-                text={displayName}
-                isOpened={state.isAccountOpened}
-              >
-                <img
-                  src={user.avatar || avatarDefault}
-                  className="profile-dropdown-img"
-                  alt="profile"
-                  onClick={() => toggleAccountTo(!state.isAccountOpened)}
-                />
-              </CustomDropdown>
-            </div>
-          </div>
-        ) : (
-          <div className="nav-no-user-dropdown">
-            <CustomDropdown
-              onClose={handleCloseByType}
-              type={'login'}
-              list={authList}
-              text="Way to log in:"
-              isOpened={state.isLoginOpened}
+          )}
+          {user.userId && (
+            <div
+              className={`game-history-container ${app.showTimeline ? '' : 'invisible'}`}
+              onClick={() => handleOpenModal(true)}
             >
-              <Button
-                custom={true}
-                stylesheet="login-btn"
-                icon="enterIcon"
-                text="Login"
-                onClick={() => toggleLoginTo(!state.isLoginOpened)}
-              />
-            </CustomDropdown>
-          </div>
-        )}
+              <FontAwesomeIcon icon={faClockRotateLeft} />
+            </div>
+          )}
+          {user.userId ? (
+            <div className="nav-noty-user-container">
+              <div className="nav-noty-dropdown">
+                <CustomDropdown
+                  onClose={handleCloseByType}
+                  type={'notifications'}
+                  list={[]}
+                  text="You don't have new notifications"
+                  isOpened={state.isNotificationsOpened}
+                >
+                  <img
+                    src={notificationsIcon}
+                    className="notification-dropdown-img"
+                    onClick={() =>
+                      toggleNotificationsTo(!state.isNotificationsOpened)
+                    }
+                    alt={''}
+                  />
+                </CustomDropdown>
+              </div>
+              <div className="nav-user-dropdown">
+                <CustomDropdown
+                  onClose={handleCloseByType}
+                  type={'account'}
+                  list={navigationList}
+                  text={displayName}
+                  isOpened={state.isAccountOpened}
+                >
+                  <img
+                    src={user.avatar || avatarDefault}
+                    className="profile-dropdown-img"
+                    alt="profile"
+                    onClick={() => toggleAccountTo(!state.isAccountOpened)}
+                  />
+                </CustomDropdown>
+              </div>
+            </div>
+          ) : (
+            <div className="nav-no-user-dropdown">
+              <CustomDropdown
+                onClose={handleCloseByType}
+                type={'login'}
+                list={authList}
+                text="Way to log in:"
+                isOpened={state.isLoginOpened}
+              >
+                <Button
+                  custom={true}
+                  stylesheet="login-btn"
+                  icon="enterIcon"
+                  text="Login"
+                  onClick={() => toggleLoginTo(!state.isLoginOpened)}
+                />
+              </CustomDropdown>
+            </div>
+          )}
+        </div>
+        <Notification />
       </div>
-      <Notification />
+      {state.isActivityLogsOpened ? (
+        <ModalWindow handleOpenModal={handleOpenModal} type={'Activity logs'} />
+      ) : null}
     </div>
   );
 };

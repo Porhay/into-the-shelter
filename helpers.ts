@@ -52,12 +52,14 @@ export const generateFromCharacteristics = (
         text: specialCardObj1.text,
         id: specialCardObj1.id,
         isUsed: false,
+        onContestant: specialCardObj1.onContestant || false,
       },
       {
         type: 'specialCard2',
         text: specialCardObj2.text,
         id: specialCardObj2.id,
         isUsed: false,
+        onContestant: specialCardObj2.onContestant || false,
       },
     ];
     return res;

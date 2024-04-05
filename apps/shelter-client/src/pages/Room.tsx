@@ -34,14 +34,24 @@ interface IState {
   inviteLink: string;
   isOrganizator: boolean;
   userCharList: charListType;
-  userSpecialCards: any;
+  userSpecialCards: specialCardsType;
   isPrivateLobby: boolean;
   voteKickList: any;
   maxClients: number;
   kickedPlayers: any[];
   isDescriptionOpened: boolean;
   modalProps: any;
+  isOponentsListFocused: boolean;
+  focusData: any; // sets on isOponentsListFocused
 }
+
+type specialCardsType = {
+  onContestant: boolean;
+  isUsed: boolean;
+  text: string;
+  id: number;
+  type: string;
+}[];
 
 type charType = {
   type: string;
@@ -68,17 +78,34 @@ const RoomPage = () => {
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
     userCharList: defineCharsList(),
-    userSpecialCards: [],
+    userSpecialCards: [
+      {
+        isUsed: false,
+        text: ' ',
+        id: 1,
+        type: 'specialCardIcon1',
+        onContestant: false,
+      },
+      {
+        isUsed: false,
+        text: ' ',
+        id: 2,
+        type: 'specialCardIcon2',
+        onContestant: false,
+      },
+    ],
     isPrivateLobby: true,
     voteKickList: [],
     kickedPlayers: [],
     maxClients: 4,
     isDescriptionOpened: false,
+    isOponentsListFocused: false,
     modalProps: {
       type: '',
       description: '',
       title: '',
     },
+    focusData: {},
   });
 
   useEffect(() => {
@@ -178,6 +205,9 @@ const RoomPage = () => {
 
   // DATA SETS
   const kickBlockText = (player: { userId: string }) => {
+    if (state.isOponentsListFocused) {
+      return 'Select';
+    }
     return state.kickedPlayers.includes(player.userId)
       ? 'Kicked'
       : !lobby.hasStarted || lobby.hasFinished || lobby.currentStage! % 2 === 1
@@ -242,14 +272,38 @@ const RoomPage = () => {
     return;
   };
 
-  const handleUseSpecialCard = (data: { type: string; id: number }) => {
+  const handleUseSpecialCard = (data: {
+    type: string;
+    id: number;
+    onContestant: boolean;
+    contestantId?: string;
+    isUsed: boolean;
+  }) => {
+    if (data.isUsed) {
+      return;
+    }
+
+    // just focus user on contestants
+    if (data.onContestant && !data.contestantId) {
+      updateState({ isOponentsListFocused: true, focusData: data });
+      return;
+    }
+
     sm.emit({
       event: ClientEvents.GameUseSpecialCard,
       data: {
         userId: user.userId,
-        specialCard: data,
+        specialCard: {
+          type: data.type,
+          id: data.id,
+          onContestant: data.onContestant,
+        },
+        contestantId: data.contestantId || null,
       },
     });
+    if (data.onContestant) {
+      updateState({ isOponentsListFocused: false, focusData: {} });
+    }
   };
 
   // COMPONENTS
@@ -272,7 +326,16 @@ const RoomPage = () => {
               <div className="camera-block">
                 <div
                   className={`kick-block ${state.kickedPlayers.includes(player.userId) ? 'kicked' : ''}`}
-                  onClick={() => handleVoteKick(player)}
+                  onClick={() => {
+                    if (state.isOponentsListFocused) {
+                      handleUseSpecialCard({
+                        ...state.focusData,
+                        contestantId: player.userId,
+                      });
+                    } else {
+                      handleVoteKick(player);
+                    }
+                  }}
                 >
                   {kickBlockText(player)}
                 </div>
@@ -380,6 +443,12 @@ const RoomPage = () => {
 
   return (
     <div className="room-page-container">
+      <div
+        className={`focus-window ${state.isOponentsListFocused ? 'darken' : ''}`}
+        onClick={() => {
+          updateState({ isOponentsListFocused: false });
+        }}
+      ></div>
       {state.isDescriptionOpened ? (
         <ModalWindow
           handleOpenModal={handleOpenModal}
@@ -397,7 +466,7 @@ const RoomPage = () => {
                 className="shelter-conditions-wrapper"
                 onClick={() => {
                   handleModal(
-                    'бункер',
+                    'shelter',
                     lobby.conditions.shelter.description,
                     lobby.conditions.shelter.name,
                   );
@@ -420,7 +489,7 @@ const RoomPage = () => {
                 className="catastrophe-conditions-wrapper"
                 onClick={() => {
                   handleModal(
-                    'катастрофа',
+                    'catastrophe',
                     lobby.conditions.catastrophe.description,
                     lobby.conditions.catastrophe.name,
                   );
@@ -572,39 +641,28 @@ const RoomPage = () => {
             })}
             <div className="char-border"></div>
           </div>
-          <div className="cards-button-wrapper isNotRevealed">
-            <Button
-              icon={'specialCardIcon'}
-              text={
-                state.userSpecialCards.find(
-                  (card: { type: string }) => card.type === 'specialCard1',
-                )?.text
-              }
-              onClick={() =>
-                handleUseSpecialCard({
-                  type: 'specialCard1',
-                  id: state.userSpecialCards.find(
-                    (card: { type: string }) => card.type === 'specialCard1',
-                  )?.id,
-                })
-              }
-            />
-            <Button
-              icon={'specialCardIcon'}
-              text={
-                state.userSpecialCards.find(
-                  (card: { type: string }) => card.type === 'specialCard2',
-                )?.text
-              }
-              onClick={() =>
-                handleUseSpecialCard({
-                  type: 'specialCard2',
-                  id: state.userSpecialCards.find(
-                    (card: { type: string }) => card.type === 'specialCard2',
-                  )?.id,
-                })
-              }
-            />
+          <div>
+            {state.userSpecialCards.map((card, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`cards-button-wrapper ${card.isUsed ? 'isRevealed' : 'isNotRevealed'}`}
+                >
+                  <Button
+                    icon={'specialCardIcon'}
+                    text={card.text}
+                    onClick={() => {
+                      handleUseSpecialCard({
+                        type: card.type,
+                        id: card.id,
+                        onContestant: card.onContestant,
+                        isUsed: card.isUsed,
+                      });
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
