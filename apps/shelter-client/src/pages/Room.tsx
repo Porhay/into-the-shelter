@@ -42,6 +42,7 @@ interface IState {
   isDescriptionOpened: boolean;
   modalProps: any;
   isOponentsListFocused: boolean;
+  focusData: any; // sets on isOponentsListFocused
 }
 
 type specialCardsType = {
@@ -104,6 +105,7 @@ const RoomPage = () => {
       description: '',
       title: '',
     },
+    focusData: {},
   });
 
   useEffect(() => {
@@ -203,6 +205,9 @@ const RoomPage = () => {
 
   // DATA SETS
   const kickBlockText = (player: { userId: string }) => {
+    if (state.isOponentsListFocused) {
+      return 'Select';
+    }
     return state.kickedPlayers.includes(player.userId)
       ? 'Kicked'
       : !lobby.hasStarted || lobby.hasFinished || lobby.currentStage! % 2 === 1
@@ -271,19 +276,34 @@ const RoomPage = () => {
     type: string;
     id: number;
     onContestant: boolean;
+    contestantId?: string;
+    isUsed: boolean;
   }) => {
-    if (data.onContestant) {
-      updateState({ isOponentsListFocused: true });
-      console.log(state.isOponentsListFocused);
+    if (data.isUsed) {
       return;
     }
+
+    // just focus user on contestants
+    if (data.onContestant && !data.contestantId) {
+      updateState({ isOponentsListFocused: true, focusData: data });
+      return;
+    }
+
     sm.emit({
       event: ClientEvents.GameUseSpecialCard,
       data: {
         userId: user.userId,
-        specialCard: data,
+        specialCard: {
+          type: data.type,
+          id: data.id,
+          onContestant: data.onContestant,
+        },
+        contestantId: data.contestantId || null,
       },
     });
+    if (data.onContestant) {
+      updateState({ isOponentsListFocused: false, focusData: {} });
+    }
   };
 
   // COMPONENTS
@@ -306,7 +326,16 @@ const RoomPage = () => {
               <div className="camera-block">
                 <div
                   className={`kick-block ${state.kickedPlayers.includes(player.userId) ? 'kicked' : ''}`}
-                  onClick={() => handleVoteKick(player)}
+                  onClick={() => {
+                    if (state.isOponentsListFocused) {
+                      handleUseSpecialCard({
+                        ...state.focusData,
+                        contestantId: player.userId,
+                      });
+                    } else {
+                      handleVoteKick(player);
+                    }
+                  }}
                 >
                   {kickBlockText(player)}
                 </div>
@@ -622,13 +651,14 @@ const RoomPage = () => {
                   <Button
                     icon={'specialCardIcon'}
                     text={card.text}
-                    onClick={() =>
+                    onClick={() => {
                       handleUseSpecialCard({
                         type: card.type,
                         id: card.id,
                         onContestant: card.onContestant,
-                      })
-                    }
+                        isUsed: card.isUsed,
+                      });
+                    }}
                   />
                 </div>
               );

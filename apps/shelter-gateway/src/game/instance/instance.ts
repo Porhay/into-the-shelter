@@ -259,6 +259,7 @@ export class Instance {
   }
 
   public useSpecialCard(data: any, client: AuthenticatedSocket): void {
+    console.log(data);
     const { specialCard, userId, contestantId = null } = data;
     if (!this.hasStarted || this.hasFinished) {
       return;
@@ -339,15 +340,22 @@ export class Instance {
       const cCharList = this.characteristics[contestantId];
       const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
       cCharList.find((char) => char.type === charType).text = newCharText;
-      this.characteristics[userId] = cCharList;
+      this.characteristics[contestantId] = cCharList;
     }
 
     const exchangeWithContestent = (charType: string) => {
-      const uCharList = this.characteristics[userId];
-      const cCharList = this.characteristics[contestantId];
-      const newCharText = cCharList.find((char) => char.type === charType).text;
-      uCharList.find((char) => char.type === charType).text = newCharText;
+      const uCharList = this.characteristics[userId]; // user characteristics list
+      const cCharList = this.characteristics[contestantId]; // contestant characteristics list
+
+      const newUCharText = cCharList.find((char) => char.type === charType).text; // text for user
+      const newCCharText = cCharList.find((char) => char.type === charType).text; // text for contestant
+
+      uCharList.find((char) => char.type === charType).text = newCCharText; // update user with contestant's text
+      cCharList.find((char) => char.type === charType).text = newUCharText; // update contestant with user's text
+
+      // update for both globally
       this.characteristics[userId] = uCharList;
+      this.characteristics[contestantId] = cCharList;
     }
 
     const updateConditions = (type: string) => {
