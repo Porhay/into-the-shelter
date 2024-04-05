@@ -3,7 +3,7 @@ $border-radius: 8px;
 
 .navigation-wrapper {
     min-height: 55px;
-    height: auto;
+    height: 8vh;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -51,7 +51,7 @@ $border-radius: 8px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                margin: 0 10px;
+                margin: 0 6px;
 
                 .notification-dropdown-img {
                     width: 32px;
@@ -59,7 +59,7 @@ $border-radius: 8px;
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    filter: invert(98%) sepia(23%) saturate(207%) hue-rotate(120deg) brightness(195%) contrast(90%);
+                    filter: invert(100%);
                 }
             }
 
@@ -67,7 +67,7 @@ $border-radius: 8px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                margin: 0 10px;
+                margin: 0 6px;
 
                 .profile-dropdown-img {
                     width: 32px;
@@ -76,6 +76,7 @@ $border-radius: 8px;
                     justify-content: center;
                     align-items: center;
                     border-radius: 100%;
+                    border: #fff 1px solid;
                 }
             }
         }
@@ -87,4 +88,14 @@ $border-radius: 8px;
             margin: 0 10px;
         }
     }
+}
+
+.game-history-container {
+    cursor: pointer;
+    font-size: 22px;
+    color: #fff;
+}
+
+.invisible {
+    opacity: 0;
 }
