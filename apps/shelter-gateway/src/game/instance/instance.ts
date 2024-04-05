@@ -259,7 +259,7 @@ export class Instance {
   }
 
   public useSpecialCard(data: any, client: AuthenticatedSocket): void {
-    const { specialCard, userId } = data;
+    const { specialCard, userId, contestantId = null } = data;
     if (!this.hasStarted || this.hasFinished) {
       return;
     }
@@ -276,7 +276,7 @@ export class Instance {
     }
 
     // apply changes and set as used
-    this.applyChanges(specialCard.id, userId)
+    this.applyChanges(specialCard.id, userId, contestantId)
     this.specialCards[userId].find(card => card.type === specialCard.type).isUsed = true;
 
     const user = this.players.find(player => player.userId === userId);
@@ -311,11 +311,16 @@ export class Instance {
     }
   }
 
-  private applyChanges(specialCardId, userId): void {
-    const applyChangesForSelf = (charType: string) => {
-      const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
-
+  private applyChanges(specialCardId: number, userId: string, contestantId: string | null = null): void {
+    const applyChangesForSelf = (charType: string, changeTo: string | null = null) => {
       const uCharList = this.characteristics[userId];
+      if (changeTo) {
+        uCharList.find((char) => char.type === charType).text = changeTo;
+        this.characteristics[userId] = uCharList;
+        return;
+      }
+
+      const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
       uCharList.find((char) => char.type === charType).text = newCharText;
       this.characteristics[userId] = uCharList;
     }
@@ -328,6 +333,21 @@ export class Instance {
         uCharList.find((char) => char.type === charType).text = newCharText;
         this.characteristics[player.userId] = uCharList;
       }
+    }
+
+    const applyChangesForContestent = (charType: string) => {
+      const cCharList = this.characteristics[contestantId];
+      const newCharText = generateFromCharacteristics('charList').find((char) => char.type === charType).text;
+      cCharList.find((char) => char.type === charType).text = newCharText;
+      this.characteristics[userId] = cCharList;
+    }
+
+    const exchangeWithContestent = (charType: string) => {
+      const uCharList = this.characteristics[userId];
+      const cCharList = this.characteristics[contestantId];
+      const newCharText = cCharList.find((char) => char.type === charType).text;
+      uCharList.find((char) => char.type === charType).text = newCharText;
+      this.characteristics[userId] = uCharList;
     }
 
     const updateConditions = (type: string) => {
@@ -356,15 +376,25 @@ export class Instance {
         applyChangesForAll('health')
         break;
       case 6: // Вилікувати собі будь яку хворобу
-        const uCharList = this.characteristics[userId];
-        uCharList.find((char) => char.type === 'health').text = 'Абсолютно здоровий';
-        this.characteristics[userId] = uCharList;
+        applyChangesForSelf('health', 'Абсолютно здоровий')
         break;
       case 7: // Замінити всім фобію на випадкову
         applyChangesForAll('phobia')
         break;
       case 8: // Замінити катастрофу на випадкову
         updateConditions('catastrophe')
+        break;
+      case 9: // Замінити здоров'я суперника на випадкове
+        applyChangesForContestent('health')
+        break;
+      case 10: // Замінити професію суперника на випадкову
+        applyChangesForContestent('job')
+        break;
+      case 11: // Обмінятися здоров'ям із суперником
+        exchangeWithContestent('health')
+        break;
+      case 12: // Обмінятися професією із суперником
+        exchangeWithContestent('job')
         break;
       default:
         break;

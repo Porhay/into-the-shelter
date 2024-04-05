@@ -34,7 +34,7 @@ interface IState {
   inviteLink: string;
   isOrganizator: boolean;
   userCharList: charListType;
-  userSpecialCards: any;
+  userSpecialCards: specialCardsType;
   isPrivateLobby: boolean;
   voteKickList: any;
   maxClients: number;
@@ -42,6 +42,13 @@ interface IState {
   isDescriptionOpened: boolean;
   modalProps: any;
 }
+
+type specialCardsType = {
+  isUsed: boolean;
+  text: string;
+  id: number;
+  type: string;
+}[];
 
 type charType = {
   type: string;
@@ -576,35 +583,25 @@ const RoomPage = () => {
             <div className="char-border"></div>
           </div>
           <div>
-            {state.userSpecialCards.map(
-              (
-                card: {
-                  isUsed: boolean;
-                  text: string;
-                  id: number;
-                  type: string;
-                },
-                index: Key | null | undefined,
-              ) => {
-                return (
-                  <div
-                    key={index}
-                    className={`cards-button-wrapper ${card.isUsed ? 'isRevealed' : 'isNotRevealed'}`}
-                  >
-                    <Button
-                      icon={'specialCardIcon'}
-                      text={card.text}
-                      onClick={() =>
-                        handleUseSpecialCard({
-                          type: card.type,
-                          id: card.id,
-                        })
-                      }
-                    />
-                  </div>
-                );
-              },
-            )}
+            {state.userSpecialCards.map((card, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`cards-button-wrapper ${card.isUsed ? 'isRevealed' : 'isNotRevealed'}`}
+                >
+                  <Button
+                    icon={'specialCardIcon'}
+                    text={card.text}
+                    onClick={() =>
+                      handleUseSpecialCard({
+                        type: card.type,
+                        id: card.id,
+                      })
+                    }
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
