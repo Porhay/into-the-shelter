@@ -247,9 +247,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 .webcam-list {
     display: flex;
     flex-wrap: nowrap;
-    /* Prevent wrapping to the next line */
     justify-content: space-between;
-    /* Distribute space between the elements */
 
     .block-container {
         width: 20%;
@@ -257,7 +255,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
         padding: 2px 0;
         z-index: 1;
         position: relative;
-
+        z-index: 4; // to handle focus-window darken
 
         .camera-block {
             display: flex;
@@ -446,4 +444,16 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     }
 
     filter: $sunset-color;
+}
+
+// on select player by special card to focus player on oponent list
+.focus-window {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+.darken {
+    z-index: 3;
+    background-color: #00000080;
 }

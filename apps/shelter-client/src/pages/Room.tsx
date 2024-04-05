@@ -41,9 +41,11 @@ interface IState {
   kickedPlayers: any[];
   isDescriptionOpened: boolean;
   modalProps: any;
+  isOponentsListFocused: boolean;
 }
 
 type specialCardsType = {
+  onContestant: boolean;
   isUsed: boolean;
   text: string;
   id: number;
@@ -76,14 +78,27 @@ const RoomPage = () => {
     isOrganizator: false,
     userCharList: defineCharsList(),
     userSpecialCards: [
-      { isUsed: false, text: ' ', id: 1, type: 'specialCardIcon1' },
-      { isUsed: false, text: ' ', id: 2, type: 'specialCardIcon2' },
+      {
+        isUsed: false,
+        text: ' ',
+        id: 1,
+        type: 'specialCardIcon1',
+        onContestant: false,
+      },
+      {
+        isUsed: false,
+        text: ' ',
+        id: 2,
+        type: 'specialCardIcon2',
+        onContestant: false,
+      },
     ],
     isPrivateLobby: true,
     voteKickList: [],
     kickedPlayers: [],
     maxClients: 4,
     isDescriptionOpened: false,
+    isOponentsListFocused: false,
     modalProps: {
       type: '',
       description: '',
@@ -252,7 +267,16 @@ const RoomPage = () => {
     return;
   };
 
-  const handleUseSpecialCard = (data: { type: string; id: number }) => {
+  const handleUseSpecialCard = (data: {
+    type: string;
+    id: number;
+    onContestant: boolean;
+  }) => {
+    if (data.onContestant) {
+      updateState({ isOponentsListFocused: true });
+      console.log(state.isOponentsListFocused);
+      return;
+    }
     sm.emit({
       event: ClientEvents.GameUseSpecialCard,
       data: {
@@ -390,6 +414,12 @@ const RoomPage = () => {
 
   return (
     <div className="room-page-container">
+      <div
+        className={`focus-window ${state.isOponentsListFocused ? 'darken' : ''}`}
+        onClick={() => {
+          updateState({ isOponentsListFocused: false });
+        }}
+      ></div>
       {state.isDescriptionOpened ? (
         <ModalWindow
           handleOpenModal={handleOpenModal}
@@ -596,6 +626,7 @@ const RoomPage = () => {
                       handleUseSpecialCard({
                         type: card.type,
                         id: card.id,
+                        onContestant: card.onContestant,
                       })
                     }
                   />

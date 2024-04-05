@@ -257,62 +257,62 @@
         {
             "id": 1,
             "text": "Замінити собі здоров'я на випадкове",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 2,
             "text": "Замінити собі професію на випадкову",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 3,
             "text": "Замінити собі рюкзак на випадковий",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 4,
             "text": "Замінити всім професію на випадкову",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 5,
             "text": "Замінити всім здоров'я на випадкове",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 6,
             "text": "Вилікувати собі будь яку хворобу",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 7,
             "text": "Замінити всім фобію на випадкову",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 8,
             "text": "Замінити катастрофу на випадкову",
-            "onContestent": false
+            "onContestant": false
         },
         {
             "id": 9,
             "text": "Замінити здоров'я суперника на випадкове",
-            "onContestent": true
+            "onContestant": true
         },
         {
             "id": 10,
             "text": "Замінити професію суперника на випадкову",
-            "onContestent": true
+            "onContestant": true
         },
         {
             "id": 11,
             "text": "Обмінятися здоров'ям із суперником",
-            "onContestent": true
+            "onContestant": true
         },
         {
             "id": 12,
             "text": "Обмінятися професією із суперником",
-            "onContestent": true
+            "onContestant": true
         }
     ],
     "catastrophe": [
