@@ -348,10 +348,10 @@ export class Instance {
       const cCharList = this.characteristics[contestantId]; // contestant characteristics list
 
       const newUCharText = cCharList.find((char) => char.type === charType).text; // text for user
-      const newCCharText = cCharList.find((char) => char.type === charType).text; // text for contestant
+      const newCCharText = uCharList.find((char) => char.type === charType).text; // text for contestant
 
-      uCharList.find((char) => char.type === charType).text = newCCharText; // update user with contestant's text
-      cCharList.find((char) => char.type === charType).text = newUCharText; // update contestant with user's text
+      uCharList.find((char) => char.type === charType).text = newUCharText; // update user with contestant's text
+      cCharList.find((char) => char.type === charType).text = newCCharText; // update contestant with user's text
 
       // update for both globally
       this.characteristics[userId] = uCharList;
