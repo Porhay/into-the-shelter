@@ -32,7 +32,7 @@ const ModalWindow = (props: any) => {
         ></div>
 
         <div className="modal-info-wrapper">
-          {props.type === 'shelter' || 'catastrophe' ? (
+          {props.type === 'shelter' || props.type === 'catastrophe' ? (
             <div className="info-title">
               <h3>
                 {props.type}: <span>{props.title}</span>
@@ -43,7 +43,7 @@ const ModalWindow = (props: any) => {
           )}
 
           <div className={`modal-info ${props.type}`}>
-            {props.type === 'shelter' || 'catastrophe' ? (
+            {props.type === 'shelter' || props.type === 'catastrophe' ? (
               <div className="description">
                 <p>{props.description}</p>
               </div>
