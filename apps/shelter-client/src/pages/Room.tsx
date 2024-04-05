@@ -407,7 +407,7 @@ const RoomPage = () => {
                 className="shelter-conditions-wrapper"
                 onClick={() => {
                   handleModal(
-                    'бункер',
+                    'shelter',
                     lobby.conditions.shelter.description,
                     lobby.conditions.shelter.name,
                   );
@@ -430,7 +430,7 @@ const RoomPage = () => {
                 className="catastrophe-conditions-wrapper"
                 onClick={() => {
                   handleModal(
-                    'катастрофа',
+                    'catastrophe',
                     lobby.conditions.catastrophe.description,
                     lobby.conditions.catastrophe.name,
                   );
