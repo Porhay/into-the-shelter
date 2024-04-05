@@ -22,6 +22,7 @@ import { updateApp } from '../redux/reducers/appSlice';
 import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ModalWindow from './ModalWindow';
+import ActivityLogs from './ActivityLogs';
 
 interface IState {
   isLoginOpened: boolean;
@@ -248,7 +249,9 @@ const Navigation = () => {
         <Notification />
       </div>
       {state.isActivityLogsOpened ? (
-        <ModalWindow handleOpenModal={handleOpenModal} type={'Activity logs'} />
+        <ModalWindow handleOpenModal={handleOpenModal}>
+          <ActivityLogs />
+        </ModalWindow>
       ) : null}
     </div>
   );

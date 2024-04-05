@@ -450,12 +450,20 @@ const RoomPage = () => {
         }}
       ></div>
       {state.isDescriptionOpened ? (
-        <ModalWindow
-          handleOpenModal={handleOpenModal}
-          type={state.modalProps.type}
-          description={state.modalProps.description}
-          title={state.modalProps.title}
-        />
+        <ModalWindow handleOpenModal={handleOpenModal}>
+          <div className="modal-info-wrapper">
+            <div className="info-title">
+              <h3>
+                {state.modalProps.type}: <span>{state.modalProps.title}</span>
+              </h3>
+            </div>
+            <div className={`modal-info ${state.modalProps.type}`}>
+              <div className="description">
+                <p>{state.modalProps.description}</p>
+              </div>
+            </div>
+          </div>
+        </ModalWindow>
       ) : null}
       <OponentsList />
       <div className="camera-list-wrapper">

@@ -24,34 +24,15 @@ const ModalWindow = (props: any) => {
   return (
     <div className="modal-window-container">
       <div className="modal-window-block" ref={modalWindowBlock}>
-        <div
-          className="close"
-          onClick={(e: any) => {
-            closeModal();
-          }}
-        ></div>
-
-        <div className="modal-info-wrapper">
-          {props.type === 'shelter' || props.type === 'catastrophe' ? (
-            <div className="info-title">
-              <h3>
-                {props.type}: <span>{props.title}</span>
-              </h3>
-            </div>
-          ) : (
-            <h3>{props.type}</h3>
-          )}
-
-          <div className={`modal-info ${props.type}`}>
-            {props.type === 'shelter' || props.type === 'catastrophe' ? (
-              <div className="description">
-                <p>{props.description}</p>
-              </div>
-            ) : null}
-
-            {/* ALSO WILL BE PROPS.TYPE = RULES. IT WILL PROBABLY LOOK IN ANOTHER WAY */}
-          </div>
+        <div className="close-block">
+          <span
+            className="close"
+            onClick={(e: any) => {
+              closeModal();
+            }}
+          ></span>
         </div>
+        {props.children}
       </div>
     </div>
   );

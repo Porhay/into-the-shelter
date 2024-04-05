@@ -259,7 +259,6 @@ export class Instance {
   }
 
   public useSpecialCard(data: any, client: AuthenticatedSocket): void {
-    console.log(data);
     const { specialCard, userId, contestantId = null } = data;
     if (!this.hasStarted || this.hasFinished) {
       return;
@@ -361,7 +360,6 @@ export class Instance {
     const updateConditions = (type: string) => {
       if (type === 'catastrophe') {
         const newCatastrophe = generateFromCharacteristics('conditions').catastrophe;
-        console.log(newCatastrophe.name);
         this.conditions.catastrophe = newCatastrophe
       }
     }
