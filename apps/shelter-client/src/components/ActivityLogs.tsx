@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 
-interface IState {}
+interface IState {
+  activityLogs: any;
+}
 
 const ActivityLogs = () => {
   const dispatch = useDispatch();
@@ -13,7 +15,9 @@ const ActivityLogs = () => {
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
     setState((prevState) => ({ ...prevState, ...newState }));
-  const [state, setState] = useState({});
+  const [state, setState] = useState({
+    activityLogs: [],
+  });
 
   useEffect(() => {}, []);
 

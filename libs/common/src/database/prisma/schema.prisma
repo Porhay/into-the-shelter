@@ -87,3 +87,15 @@ model chatMessages {
 
   @@map(name: "chat_messages")
 }
+
+model activityLogs {
+  id          String   @id @default(uuid())
+  userId      String
+  lobbyId     String
+  action      String
+  payload     String   
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @map(name: "updated_at")
+
+  @@map(name: "activity_logs")
+}
