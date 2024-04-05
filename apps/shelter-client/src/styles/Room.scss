@@ -12,15 +12,17 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
         margin-bottom: 3px;
         display: block;
 
-        .shelter-conditions-wrapper, .catastrophe-conditions-wrapper {
+        .shelter-conditions-wrapper,
+        .catastrophe-conditions-wrapper {
             background-color: #ffc28cca;
             display: flex;
             justify-content: space-between;
             align-items: end;
         }
 
-        .shelter-conditions, .catastrophe-conditions {
-            display:  flex;
+        .shelter-conditions,
+        .catastrophe-conditions {
+            display: flex;
             align-items: center;
             font-weight: 600;
 
@@ -142,7 +144,7 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     flex-basis: 0;
 }
 
-.invite-webcam-wrapper {    
+.invite-webcam-wrapper {
     align-self: stretch;
 }
 

@@ -68,7 +68,10 @@ const RoomPage = () => {
     inviteLink: lobby.lobbyLink || roomId ? getLobbyLink(roomId) : '',
     isOrganizator: false,
     userCharList: defineCharsList(),
-    userSpecialCards: [],
+    userSpecialCards: [
+      { isUsed: false, text: ' ', id: 1, type: 'specialCardIcon1' },
+      { isUsed: false, text: ' ', id: 2, type: 'specialCardIcon2' },
+    ],
     isPrivateLobby: true,
     voteKickList: [],
     kickedPlayers: [],
@@ -572,39 +575,36 @@ const RoomPage = () => {
             })}
             <div className="char-border"></div>
           </div>
-          <div className="cards-button-wrapper isNotRevealed">
-            <Button
-              icon={'specialCardIcon'}
-              text={
-                state.userSpecialCards.find(
-                  (card: { type: string }) => card.type === 'specialCard1',
-                )?.text
-              }
-              onClick={() =>
-                handleUseSpecialCard({
-                  type: 'specialCard1',
-                  id: state.userSpecialCards.find(
-                    (card: { type: string }) => card.type === 'specialCard1',
-                  )?.id,
-                })
-              }
-            />
-            <Button
-              icon={'specialCardIcon'}
-              text={
-                state.userSpecialCards.find(
-                  (card: { type: string }) => card.type === 'specialCard2',
-                )?.text
-              }
-              onClick={() =>
-                handleUseSpecialCard({
-                  type: 'specialCard2',
-                  id: state.userSpecialCards.find(
-                    (card: { type: string }) => card.type === 'specialCard2',
-                  )?.id,
-                })
-              }
-            />
+          <div>
+            {state.userSpecialCards.map(
+              (
+                card: {
+                  isUsed: boolean;
+                  text: string;
+                  id: number;
+                  type: string;
+                },
+                index: Key | null | undefined,
+              ) => {
+                return (
+                  <div
+                    key={index}
+                    className={`cards-button-wrapper ${card.isUsed ? 'isRevealed' : 'isNotRevealed'}`}
+                  >
+                    <Button
+                      icon={'specialCardIcon'}
+                      text={card.text}
+                      onClick={() =>
+                        handleUseSpecialCard({
+                          type: card.type,
+                          id: card.id,
+                        })
+                      }
+                    />
+                  </div>
+                );
+              },
+            )}
           </div>
         </div>
       </div>
