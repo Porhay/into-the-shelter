@@ -4,6 +4,7 @@ import { Lobby } from '../lobby/lobby';
 import { AuthenticatedSocket } from '../types';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
+import { constants } from '@app/common';
 import {
   generateFromCharacteristics,
   getRandomIndex,
@@ -184,7 +185,7 @@ export class Instance {
     );
   }
 
-  public voteKick(data: any, client: AuthenticatedSocket): void {
+  public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
     const { userId, contestantId } = data;
 
     // kicked player can not vote
@@ -230,6 +231,14 @@ export class Instance {
           message: `${kickedPlayer.displayName} is kicked!`,
         },
       );
+
+      // create activity log
+      // await this.activityLogsService.createActivityLog({
+      //   userId: data.userId,
+      //   lobbyId: client.data.lobby.id,
+      //   action: constants.playerKicked,
+      //   payload: data,
+      // });
 
       this.charsRevealedCount = 0 // clear round char counter
       this.voteKickList = []; // clear the list after kick
@@ -309,8 +318,18 @@ export class Instance {
     if (index !== -1) {
       this.stages[index].isActive = true;
     }
+
+    // create activity log
+    // await this.activityLogsService.createActivityLog({
+    //   userId: data.userId,
+    //   lobbyId: client.data.lobby.id,
+    //   action: constants.nextStageStarted,
+    //   payload: data,
+    // });
+
   }
 
+  /* applies changes on special card use */
   private applyChanges(specialCardId: number, userId: string, contestantId: string | null = null): void {
     const applyChangesForSelf = (charType: string, changeTo: string | null = null) => {
       const uCharList = this.characteristics[userId];

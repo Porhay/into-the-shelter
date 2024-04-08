@@ -9,26 +9,32 @@ export class ActivityLogsService {
     return await this.databaseService.getActivityLogsByLobbyId(userId, lobbyId);
   }
 
-  // await this.activityLogsService.createActivityLog({
-  //   userId: data.userId,
-  //   lobbyId: client.data.lobby.id,
-  //   action: 'useSpecialCard',
-  //   payload: text,
-  // });
-
   async createActivityLog(data: CreateActivityLogDto) {
+    const user = await this.databaseService.getUserById(data.userId);
+
+    // use special card
     if (data.action === constants.useSpecialCard) {
-      const user = await this.databaseService.getUserById(data.userId);
-      if (data.contestantId) {
+      if (data.payload.contestantId) {
         const contestant = await this.databaseService.getUserById(
-          data.contestantId,
+          data.payload.contestantId,
         );
         data.payload['text'] =
-          `${user.displayName} used special card: ${data.payload.specialCard.text} on ${contestant.displayName}`;
+          `${user.displayName} used special card: ${data.payload.specialCard.text} on ${contestant.displayName}.`;
       } else {
         data.payload['text'] =
-          `${user.displayName} used special card: ${data.payload.specialCard.text}`;
+          `${user.displayName} used special card: ${data.payload.specialCard.text}.`;
       }
+    }
+
+    // vote kick
+    if (data.action === constants.voteKick) {
+      data.payload['text'] = `${user.displayName} voted.`;
+    }
+
+    // reveal characteristic
+    if (data.action === constants.revealChar) {
+      data.payload['text'] =
+        `${user.displayName} revealed characteristic: ${data.payload.char.text}.`;
     }
 
     return await this.databaseService.createActivityLog(data);
