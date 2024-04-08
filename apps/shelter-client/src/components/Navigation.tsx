@@ -15,7 +15,7 @@ import { getUser } from '../api/requests';
 import CustomDropdown from './CustomDropdown';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
-import { ServerEvents, ServerPayloads } from '../websocket/types';
+import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import { Notification, showNotification } from '../libs/notifications';
 import { updateApp } from '../redux/reducers/appSlice';
@@ -38,6 +38,7 @@ const Navigation = () => {
 
   const user = useSelector((state: RootState) => state.user);
   const app = useSelector((state: RootState) => state.app);
+  const lobby = useSelector((state: RootState) => state.lobby);
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
@@ -169,13 +170,36 @@ const Navigation = () => {
       isActivityLogsOpened: isOpened,
     });
   };
+  const handleLogoClick = () => {
+    const handleLobbyLeave = () => {
+      sm.emit({
+        event: ClientEvents.LobbyLeave,
+        data: {},
+      });
+    };
+    if (lobby.hasStarted && !lobby.hasFinished) {
+      const result = window.confirm(
+        'Are you sure you want to leave the game? Any progress will be lost!',
+      );
+      if (result) {
+        handleLobbyLeave();
+        navigate(ROUTES.MAIN);
+        return;
+      } else {
+        return;
+      }
+    } else {
+      handleLobbyLeave();
+      navigate(ROUTES.MAIN);
+    }
+  };
 
   // Navigation
   return (
     <div>
       <div className="navigation-wrapper">
         <div className="navigation-container">
-          <div className="logo-container" onClick={() => navigate(ROUTES.MAIN)}>
+          <div className="logo-container" onClick={handleLogoClick}>
             <img className="logo-image" src={intoTheShelter} alt={''} />
           </div>
           {user.userId && (
