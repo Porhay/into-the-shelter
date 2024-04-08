@@ -12,6 +12,7 @@ export class PrismaService {
   lobbies = prisma.lobbies;
   lobbyContestants = prisma.lobbyContestants;
   chatMessages = prisma.chatMessages;
+  activityLogs = prisma.activityLogs;
 
   async disconnect() {
     await prisma.$disconnect();

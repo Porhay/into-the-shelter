@@ -145,8 +145,6 @@ const RoomPage = () => {
           isOrganizator: isOrganizator,
         });
       } else {
-        console.log('STARTED:', data);
-
         // update characteristics
         const currentPlayer = data.players.find(
           (player: { userId: string }) => player.userId === user.userId,
@@ -224,7 +222,6 @@ const RoomPage = () => {
         char: char,
       },
     });
-    return;
   };
   const handleVoteKick = (player: any) => {
     if (typeof player === 'number') {
@@ -237,7 +234,6 @@ const RoomPage = () => {
         contestantId: player.userId, // vote for
       },
     });
-    return;
   };
   const handleOpenModal = (isOpened: boolean) => {
     updateState({
@@ -269,13 +265,13 @@ const RoomPage = () => {
       event: ClientEvents.LobbyUpdate,
       data: data,
     });
-    return;
   };
 
   const handleUseSpecialCard = (data: {
     type: string;
     id: number;
     onContestant: boolean;
+    text: string;
     contestantId?: string;
     isUsed: boolean;
   }) => {
@@ -297,6 +293,7 @@ const RoomPage = () => {
           type: data.type,
           id: data.id,
           onContestant: data.onContestant,
+          text: data.text,
         },
         contestantId: data.contestantId || null,
       },
@@ -450,12 +447,20 @@ const RoomPage = () => {
         }}
       ></div>
       {state.isDescriptionOpened ? (
-        <ModalWindow
-          handleOpenModal={handleOpenModal}
-          type={state.modalProps.type}
-          description={state.modalProps.description}
-          title={state.modalProps.title}
-        />
+        <ModalWindow handleOpenModal={handleOpenModal}>
+          <div className="modal-info-wrapper">
+            <div className="info-title">
+              <h3>
+                {state.modalProps.type}: <span>{state.modalProps.title}</span>
+              </h3>
+            </div>
+            <div className={`modal-info ${state.modalProps.type}`}>
+              <div className="description">
+                <p>{state.modalProps.description}</p>
+              </div>
+            </div>
+          </div>
+        </ModalWindow>
       ) : null}
       <OponentsList />
       <div className="camera-list-wrapper">
@@ -655,6 +660,7 @@ const RoomPage = () => {
                       handleUseSpecialCard({
                         type: card.type,
                         id: card.id,
+                        text: card.text,
                         onContestant: card.onContestant,
                         isUsed: card.isUsed,
                       });

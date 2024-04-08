@@ -4,6 +4,7 @@ import { Lobby } from '../lobby/lobby';
 import { AuthenticatedSocket } from '../types';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
+import { constants } from '@app/common';
 import {
   generateFromCharacteristics,
   getRandomIndex,
@@ -184,7 +185,7 @@ export class Instance {
     );
   }
 
-  public voteKick(data: any, client: AuthenticatedSocket): void {
+  public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
     const { userId, contestantId } = data;
 
     // kicked player can not vote
@@ -231,6 +232,14 @@ export class Instance {
         },
       );
 
+      // create activity log
+      // await this.activityLogsService.createActivityLog({
+      //   userId: data.userId,
+      //   lobbyId: client.data.lobby.id,
+      //   action: constants.playerKicked,
+      //   payload: data,
+      // });
+
       this.charsRevealedCount = 0 // clear round char counter
       this.voteKickList = []; // clear the list after kick
 
@@ -259,7 +268,6 @@ export class Instance {
   }
 
   public useSpecialCard(data: any, client: AuthenticatedSocket): void {
-    console.log(data);
     const { specialCard, userId, contestantId = null } = data;
     if (!this.hasStarted || this.hasFinished) {
       return;
@@ -310,8 +318,18 @@ export class Instance {
     if (index !== -1) {
       this.stages[index].isActive = true;
     }
+
+    // create activity log
+    // await this.activityLogsService.createActivityLog({
+    //   userId: data.userId,
+    //   lobbyId: client.data.lobby.id,
+    //   action: constants.nextStageStarted,
+    //   payload: data,
+    // });
+
   }
 
+  /* applies changes on special card use */
   private applyChanges(specialCardId: number, userId: string, contestantId: string | null = null): void {
     const applyChangesForSelf = (charType: string, changeTo: string | null = null) => {
       const uCharList = this.characteristics[userId];
@@ -361,7 +379,6 @@ export class Instance {
     const updateConditions = (type: string) => {
       if (type === 'catastrophe') {
         const newCatastrophe = generateFromCharacteristics('conditions').catastrophe;
-        console.log(newCatastrophe.name);
         this.conditions.catastrophe = newCatastrophe
       }
     }

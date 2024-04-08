@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { CreateLobbyDto } from './dto/create-lobby.dto';
 import { CreateLobbyContestantDto } from './dto/create-lobby-contestant.dto';
 import { CreateChatMessageDto } from './dto/create-chat-message.dto';
+import { CreateActivityLogDto } from './dto/create-activity-log.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -268,5 +269,30 @@ export class DatabaseService {
       throw new Error(`Message with ID ${messageId} not found`);
     }
     return message;
+  }
+
+  //  -----------
+  //  ACTIVITY_LOGS TABLE
+  //  -----------
+
+  async createActivityLog(activityLog: CreateActivityLogDto) {
+    activityLog.payload = JSON.stringify(activityLog.payload);
+    return this.prisma.activityLogs.create({
+      data: activityLog,
+    });
+  }
+
+  async getActivityLogsByLobbyId(userId: string, lobbyId: string) {
+    const activityLogs = await this.prisma.activityLogs.findMany({
+      where: { lobbyId: lobbyId },
+    });
+    if (activityLogs.length === 0) {
+      return [];
+    }
+
+    for (const log of activityLogs) {
+      log.payload = JSON.parse(log.payload);
+    }
+    return activityLogs;
   }
 }

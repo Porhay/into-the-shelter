@@ -11,7 +11,7 @@ import { Button } from './Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
 import { cookieHelper, fillGameAvatars, getLobbyLink } from '../helpers';
-import { getUserReq } from '../http';
+import { getUser } from '../api/requests';
 import CustomDropdown from './CustomDropdown';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
@@ -22,6 +22,7 @@ import { updateApp } from '../redux/reducers/appSlice';
 import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ModalWindow from './ModalWindow';
+import ActivityLogs from './ActivityLogs';
 
 interface IState {
   isLoginOpened: boolean;
@@ -57,12 +58,14 @@ const Navigation = () => {
     > = async (data) => {
       // update global state
       const context: any = {
+        lobbyKey: data.lobbyId,
         lobbyLink: getLobbyLink(data.lobbyId),
         hasStarted: data.hasStarted,
         currentStage: data.currentStage,
         stages: data.stages,
       };
       dispatch(updateLobby(context));
+      console.log('ss', context);
 
       // navigate to current room
       const route = ROUTES.ROOMS + '/' + data.lobbyId;
@@ -86,7 +89,7 @@ const Navigation = () => {
     const userSessionId = cookieHelper.getCookie('userSessionId');
     if (userId) {
       dispatch(updateApp({ loading: true }));
-      getUserReq(String(userId))
+      getUser(String(userId))
         .then((data: any) => {
           dispatch(
             updateUser({
@@ -248,7 +251,9 @@ const Navigation = () => {
         <Notification />
       </div>
       {state.isActivityLogsOpened ? (
-        <ModalWindow handleOpenModal={handleOpenModal} type={'Activity logs'} />
+        <ModalWindow handleOpenModal={handleOpenModal}>
+          <ActivityLogs />
+        </ModalWindow>
       ) : null}
     </div>
   );

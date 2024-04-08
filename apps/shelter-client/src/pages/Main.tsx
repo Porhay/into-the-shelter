@@ -4,7 +4,7 @@ import useSocketManager from '../hooks/useSocketManager';
 import { ClientEvents } from '../websocket/types';
 import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
-import { getAllPublicLobbies } from '../http/index';
+import { getAllPublicLobbies } from '../api/requests';
 import { formatCreatedAt } from '../helpers';
 import { ROUTES } from '../constants';
 import useNavigate from '../hooks/useNavigate';

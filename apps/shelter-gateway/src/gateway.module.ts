@@ -7,9 +7,10 @@ import { GameGateway } from './game/game.gateway';
 import { GameModule } from './game/game.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LobbyManager } from './game/lobby/lobby.manager';
-import { LobbiesController } from './lobbies/lobbies.controller';
 import { LobbiesModule } from './lobbies/lobbies.module';
+import { ActivityLogsModule } from './activityLogs/activity-logs.module';
 import config from 'config';
+import { ActivityLogsService } from './activityLogs/activity-logs.service';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import config from 'config';
     UploadsModule,
     GameModule,
     LobbiesModule,
+    ActivityLogsModule,
 
     DatabaseModule,
     FirebaseModule,
@@ -28,6 +30,6 @@ import config from 'config';
     }),
   ],
   controllers: [],
-  providers: [GameGateway, LobbyManager],
+  providers: [GameGateway, LobbyManager, ActivityLogsService],
 })
 export class GatewayModule {}

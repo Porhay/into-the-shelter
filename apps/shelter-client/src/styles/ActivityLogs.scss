@@ -1,0 +1,13 @@
+.activity-logs-wraper {
+    overflow-y: scroll;
+    height: 30vh;
+}
+
+.activity-logs-block {
+    display: flex;
+    margin: 8px 0;
+
+    .log {
+        margin: 0 4px;
+    }
+}

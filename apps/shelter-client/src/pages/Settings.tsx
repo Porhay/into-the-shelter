@@ -9,7 +9,7 @@ import {
   gameAvatarByPosition,
   fillGameAvatars,
 } from '../helpers';
-import { updateUserReq, handleUploadReq, deleteFileReq } from '../http/index';
+import * as requests from '../api/requests';
 import { updateUser } from '../redux/reducers/userSlice';
 import penIcon from '../assets/icons/pen-icon.png';
 
@@ -35,7 +35,7 @@ const SettingsPage = () => {
   // FUNCTIONS
   const handleUpdateName = async () => {
     if (state.inputName === '' || state.inputName === user.displayName) return;
-    const updatedUser = await updateUserReq(user.userId, {
+    const updatedUser = await requests.updateUser(user.userId, {
       displayName: state.inputName,
     });
     dispatch(updateUser({ displayName: updatedUser.displayName }));
@@ -47,7 +47,11 @@ const SettingsPage = () => {
   ) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      const response = await handleUploadReq(user.userId, filesArray, type);
+      const response = await requests.handleUpload(
+        user.userId,
+        filesArray,
+        type,
+      );
 
       switch (type) {
         case 'avatar':
@@ -67,7 +71,7 @@ const SettingsPage = () => {
     }
   };
   const handleGameAvatarDelete = async (fileId: string) => {
-    await deleteFileReq(user.userId, fileId);
+    await requests.deleteFile(user.userId, fileId);
     dispatch(
       updateUser({
         gameAvatars: fillGameAvatars(

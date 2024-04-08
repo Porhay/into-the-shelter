@@ -20,7 +20,8 @@ import { SocketExceptions } from './utils/SocketExceptions';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
-import { DatabaseService } from '@app/common';
+import { DatabaseService, constants } from '@app/common';
+import { ActivityLogsService } from '../activityLogs/activity-logs.service';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -31,6 +32,7 @@ export class GameGateway
   constructor(
     private readonly lobbyManager: LobbyManager,
     private readonly databaseService: DatabaseService,
+    private readonly activityLogsService: ActivityLogsService,
   ) {}
 
   afterInit(server: Server): any {
@@ -133,7 +135,7 @@ export class GameGateway
   }
 
   @SubscribeMessage(ClientEvents.GameVoteKick)
-  onVoteKick(client: AuthenticatedSocket, data: any): void {
+  async onVoteKick(client: AuthenticatedSocket, data: any): Promise<void> {
     if (!client.data.lobby) {
       throw new ServerException(
         SocketExceptions.LobbyError,
@@ -142,10 +144,21 @@ export class GameGateway
     }
 
     client.data.lobby.instance.voteKick(data, client);
+
+    // create activity log
+    await this.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.voteKick,
+      payload: data,
+    });
   }
 
   @SubscribeMessage(ClientEvents.GameUseSpecialCard)
-  onUseSpecialCard(client: AuthenticatedSocket, data: any): void {
+  async onUseSpecialCard(
+    client: AuthenticatedSocket,
+    data: any,
+  ): Promise<void> {
     if (!client.data.lobby) {
       throw new ServerException(
         SocketExceptions.LobbyError,
@@ -154,10 +167,18 @@ export class GameGateway
     }
 
     client.data.lobby.instance.useSpecialCard(data, client);
+
+    // create activity log
+    await this.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.useSpecialCard,
+      payload: data,
+    });
   }
 
   @SubscribeMessage(ClientEvents.GameRevealChar)
-  onRevealChar(client: AuthenticatedSocket, data: any): void {
+  async onRevealChar(client: AuthenticatedSocket, data: any): Promise<void> {
     if (!client.data.lobby) {
       throw new ServerException(
         SocketExceptions.LobbyError,
@@ -166,5 +187,13 @@ export class GameGateway
     }
 
     client.data.lobby.instance.revealChar(data, client);
+
+    // create activity log
+    await this.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.revealChar,
+      payload: data,
+    });
   }
 }

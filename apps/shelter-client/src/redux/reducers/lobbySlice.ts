@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface LobbyState {
   lobbyId?: string | null;
+  lobbyKey?: string | null;
   lobbyLink?: string | null;
   hasStarted?: boolean | null;
   hasFinished?: boolean | null;
@@ -15,6 +16,7 @@ export interface LobbyState {
 
 const initialState: LobbyState = {
   lobbyId: null,
+  lobbyKey: null,
   lobbyLink: '',
   hasStarted: false,
   hasFinished: false,
