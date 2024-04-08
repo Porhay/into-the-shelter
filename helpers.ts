@@ -79,6 +79,9 @@ export const generateFromCharacteristics = (
     },
     {
       type: 'health',
+      stage: ['тяжка форма', 'критична форма', 'легка форма', 'середняя форма'][
+        getRandomIndex(4)
+      ],
       text: _getRandomChar(jsonData, 'health'),
       icon: 'healthIcon',
       isRevealed: false,

@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 import { ROUTES, CHAR_TYPES } from './constants';
 
 export type charListType = {
+  stage: any;
   type: string;
   icon: string;
   text: string;

@@ -58,6 +58,7 @@ type charType = {
   type: string;
   icon: string;
   text: string;
+  stage?: string; // for health only
   isRevealed: boolean;
 };
 
@@ -390,7 +391,13 @@ const RoomPage = () => {
                           <Button
                             key={index}
                             icon={char.icon}
-                            text={char.isRevealed ? char.text : 'Not revealed'}
+                            text={
+                              char.isRevealed
+                                ? char.type === 'health'
+                                  ? `${char.text}(${char.stage})`
+                                  : char.text
+                                : 'Not revealed'
+                            }
                           />
                         </div>
                       );
@@ -635,6 +642,7 @@ const RoomPage = () => {
         <div className="char-list-wrapper">
           <div className="char-list-container">
             {state.userCharList.map((char, index) => {
+              console.log(char);
               return (
                 <div
                   key={index}
@@ -643,7 +651,13 @@ const RoomPage = () => {
                   <Button
                     key={index}
                     icon={char.icon}
-                    text={char.text}
+                    text={
+                      char.type === 'health'
+                        ? char.isRevealed
+                          ? `${char.text}(${char.stage})`
+                          : char.text
+                        : char.text
+                    }
                     onClick={() => handleCharRevial(char)}
                   />
                 </div>
