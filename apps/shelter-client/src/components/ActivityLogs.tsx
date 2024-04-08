@@ -2,7 +2,7 @@ import '../styles/ActivityLogs.scss';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { getActivityLogsByLobbyIdReq } from '../http/index';
+import { getActivityLogsByLobbyId } from '../api/requests';
 import { formatCreatedAt } from '../helpers';
 
 interface IState {
@@ -29,8 +29,7 @@ const ActivityLogs = () => {
   // FUNCTIONS
   const handleGetActivityLogs = async () => {
     const data =
-      (await getActivityLogsByLobbyIdReq(user.userId, lobby.lobbyKey)) || [];
-    // const data = await getActivityLogsByLobbyIdReq(user.userId, '1');
+      (await getActivityLogsByLobbyId(user.userId, lobby.lobbyKey)) || [];
     updateState({ activityLogs: data });
     return;
   };

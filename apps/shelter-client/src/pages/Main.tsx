@@ -4,7 +4,7 @@ import useSocketManager from '../hooks/useSocketManager';
 import { ClientEvents } from '../websocket/types';
 import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
-import { getAllPublicLobbiesReq } from '../http/index';
+import { getAllPublicLobbies } from '../api/requests';
 import { formatCreatedAt } from '../helpers';
 import { ROUTES } from '../constants';
 import useNavigate from '../hooks/useNavigate';
@@ -49,7 +49,7 @@ const MainPage = () => {
 
   const handleSetPublicLobbies = async () => {
     updateState({ isRoomsListLoading: true });
-    const roomList = await getAllPublicLobbiesReq(user.userId);
+    const roomList = await getAllPublicLobbies(user.userId);
 
     // Sort the array in descending order based on the createdAt
     const sortedRoomList: any[] = roomList.sort(

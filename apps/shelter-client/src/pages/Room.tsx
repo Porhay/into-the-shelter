@@ -222,7 +222,6 @@ const RoomPage = () => {
         char: char,
       },
     });
-    return;
   };
   const handleVoteKick = (player: any) => {
     if (typeof player === 'number') {
@@ -235,7 +234,6 @@ const RoomPage = () => {
         contestantId: player.userId, // vote for
       },
     });
-    return;
   };
   const handleOpenModal = (isOpened: boolean) => {
     updateState({
@@ -267,7 +265,6 @@ const RoomPage = () => {
       event: ClientEvents.LobbyUpdate,
       data: data,
     });
-    return;
   };
 
   const handleUseSpecialCard = (data: {

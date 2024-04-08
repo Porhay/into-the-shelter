@@ -11,7 +11,7 @@ import { Button } from './Buttons';
 import { RootState } from '../redux/store';
 import { resetUser, updateUser } from '../redux/reducers/userSlice';
 import { cookieHelper, fillGameAvatars, getLobbyLink } from '../helpers';
-import { getUserReq } from '../http';
+import { getUser } from '../api/requests';
 import CustomDropdown from './CustomDropdown';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
@@ -89,7 +89,7 @@ const Navigation = () => {
     const userSessionId = cookieHelper.getCookie('userSessionId');
     if (userId) {
       dispatch(updateApp({ loading: true }));
-      getUserReq(String(userId))
+      getUser(String(userId))
         .then((data: any) => {
           dispatch(
             updateUser({
