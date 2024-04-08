@@ -40,16 +40,14 @@ const ActivityLogs = () => {
         <h3>Activity Logs</h3>
       </div>
       <div className="activity-logs-wraper">
-        {state.activityLogs.map(
-          (data: { payload: string; createdAt: string }) => {
-            return (
-              <div className="activity-logs-block">
-                <p className="log">{formatCreatedAt(data.createdAt, true)}</p>
-                <p>{data.payload}</p>
-              </div>
-            );
-          },
-        )}
+        {state.activityLogs.map((data: { payload: any; createdAt: string }) => {
+          return (
+            <div className="activity-logs-block">
+              <p className="log">{formatCreatedAt(data.createdAt, true)}</p>
+              <p>{data.payload.text}</p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

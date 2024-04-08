@@ -9,3 +9,5 @@ export * from './firebase/firebase.service';
 export * from './database/dto/create-user.dto';
 export * from './database/dto/create-file.dto';
 export * from './database/dto/create-activity-log.dto';
+
+export * as constants from './constants';

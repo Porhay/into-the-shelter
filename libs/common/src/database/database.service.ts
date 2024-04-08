@@ -276,6 +276,7 @@ export class DatabaseService {
   //  -----------
 
   async createActivityLog(activityLog: CreateActivityLogDto) {
+    activityLog.payload = JSON.stringify(activityLog.payload);
     return this.prisma.activityLogs.create({
       data: activityLog,
     });
@@ -287,6 +288,10 @@ export class DatabaseService {
     });
     if (activityLogs.length === 0) {
       return [];
+    }
+
+    for (const log of activityLogs) {
+      log.payload = JSON.parse(log.payload);
     }
     return activityLogs;
   }

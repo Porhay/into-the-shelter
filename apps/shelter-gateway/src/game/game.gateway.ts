@@ -159,27 +159,13 @@ export class GameGateway
     }
 
     client.data.lobby.instance.useSpecialCard(data, client);
-    console.log(5, data);
 
-    // TODO: fix
-    const user = client.data.lobby.instance.players.find(
-      (player) => player.userId === data.userId,
-    );
-    let text: string = '';
-    if (data.contestantId) {
-      const contestant = client.data.lobby.instance.players.find(
-        (player) => player.userId === data.contestantId,
-      );
-      text = `${user.displayName} used special card: ${data.specialCard.text} on ${contestant.displayName}`;
-    } else {
-      text = `${user.displayName} used special card: ${data.specialCard.text}`;
-    }
-
+    // create activity log
     await this.activityLogsService.createActivityLog({
       userId: data.userId,
       lobbyId: client.data.lobby.id,
-      action: 'specialCardUsed',
-      payload: text,
+      action: 'useSpecialCard',
+      payload: { specialCard: data.specialCard },
     });
   }
 

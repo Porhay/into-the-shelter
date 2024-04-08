@@ -1,4 +1,4 @@
-import { DatabaseService, CreateActivityLogDto } from '@app/common';
+import { DatabaseService, CreateActivityLogDto, constants } from '@app/common';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -6,22 +6,31 @@ export class ActivityLogsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async getActivityLogsByLobbyId(userId: string, lobbyId: string) {
-    // suggest that client could send lobby key instead of uuid
-    // const lobby = await this.databaseService.getLobbyByKeyOrNull(lobbyId);
-    // if (!lobby) {
-    //   return await this.databaseService.getActivityLogsByLobbyId(
-    //     userId,
-    //     lobbyId,
-    //   );
-    // }
-    // return await this.databaseService.getActivityLogsByLobbyId(
-    //   userId,
-    //   lobby.id,
-    // );
     return await this.databaseService.getActivityLogsByLobbyId(userId, lobbyId);
   }
 
-  async createActivityLog(activityLog: CreateActivityLogDto) {
-    return await this.databaseService.createActivityLog(activityLog);
+  // await this.activityLogsService.createActivityLog({
+  //   userId: data.userId,
+  //   lobbyId: client.data.lobby.id,
+  //   action: 'useSpecialCard',
+  //   payload: text,
+  // });
+
+  async createActivityLog(data: CreateActivityLogDto) {
+    if (data.action === constants.useSpecialCard) {
+      const user = await this.databaseService.getUserById(data.userId);
+      if (data.contestantId) {
+        const contestant = await this.databaseService.getUserById(
+          data.contestantId,
+        );
+        data.payload['text'] =
+          `${user.displayName} used special card: ${data.payload.specialCard.text} on ${contestant.displayName}`;
+      } else {
+        data.payload['text'] =
+          `${user.displayName} used special card: ${data.payload.specialCard.text}`;
+      }
+    }
+
+    return await this.databaseService.createActivityLog(data);
   }
 }

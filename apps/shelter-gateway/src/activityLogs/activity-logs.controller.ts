@@ -20,7 +20,7 @@ export class ActivityLogsController {
   async createActivityLog(
     @Param('userId') userId: string,
     @Param('lobbyId') lobbyId: string,
-    @Body() activityLog: { payload: string; action: string },
+    @Body() activityLog: { payload: any; action: string },
   ) {
     return await this.activityLogsService.createActivityLog({
       ...activityLog,
