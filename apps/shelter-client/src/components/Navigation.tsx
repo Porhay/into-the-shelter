@@ -16,7 +16,7 @@ import CustomDropdown from './CustomDropdown';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
 import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
-import { updateLobby } from '../redux/reducers/lobbySlice';
+import { resetLobby, updateLobby } from '../redux/reducers/lobbySlice';
 import { Notification, showNotification } from '../libs/notifications';
 import { updateApp } from '../redux/reducers/appSlice';
 import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons';
@@ -182,6 +182,7 @@ const Navigation = () => {
         'Are you sure you want to leave the game? Any progress will be lost!',
       );
       if (result) {
+        dispatch(resetLobby());
         handleLobbyLeave();
         navigate(ROUTES.MAIN);
         return;
@@ -189,6 +190,7 @@ const Navigation = () => {
         return;
       }
     } else {
+      dispatch(resetLobby());
       handleLobbyLeave();
       navigate(ROUTES.MAIN);
     }
