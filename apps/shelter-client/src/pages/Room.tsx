@@ -1,12 +1,13 @@
 import '../styles/Room.scss';
+import 'react-toggle/style.css';
+import Toggle from 'react-toggle';
 import { Key, useEffect, useState } from 'react';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../components/Buttons';
 import Webcam from '../components/Webcam';
 import Chat from '../components/Chat';
 import ModalWindow from '../components/ModalWindow';
-import Toggle from 'react-toggle';
-import 'react-toggle/style.css';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import {
@@ -364,10 +365,10 @@ const RoomPage = () => {
                 >
                   {charList.map((char: charType, index: any) => (
                     <div
+                      key={index}
                       className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
                     >
                       <Button
-                        key={index}
                         icon={char.icon}
                         custom={true}
                         stylesheet="bottom-icon"
