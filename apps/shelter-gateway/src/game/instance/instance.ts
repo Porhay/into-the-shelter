@@ -1,16 +1,15 @@
 /* eslint-disable prettier/prettier */
 
-import { Lobby } from '../lobby/lobby';
-import { AuthenticatedSocket } from '../types';
-import { ServerPayloads } from '../utils/ServerPayloads';
-import { ServerEvents } from '../utils/ServerEvents';
-import { constants } from '@app/common';
 import {
   generateFromCharacteristics,
   getRandomIndex,
   countOccurrences,
   getKeysWithHighestValue,
 } from 'helpers';
+import { Lobby } from '../lobby/lobby';
+import { AuthenticatedSocket } from '../types';
+import { ServerPayloads } from '../utils/ServerPayloads';
+import { ServerEvents } from '../utils/ServerEvents';
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -38,6 +37,15 @@ export class Instance {
   ): Promise<void> {
     if (this.hasStarted) {
       return;
+    }
+    if (this.lobby.clients.size < 2) {
+      return this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+        ServerEvents.GameMessage,
+        {
+          color: 'blue',
+          message: 'Find a friend to play :D',
+        },
+      );
     }
 
     // update lobby's settings

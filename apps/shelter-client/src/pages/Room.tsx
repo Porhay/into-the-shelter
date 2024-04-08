@@ -545,11 +545,15 @@ const RoomPage = () => {
                   <select
                     name="maxClients"
                     value={state.maxClients}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       updateState({
                         maxClients: parseInt(e.target.value),
-                      })
-                    }
+                      });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        maxClients: parseInt(e.target.value),
+                      });
+                    }}
                   >
                     <option value={2}>2</option>
                     <option value={3}>3</option>

@@ -97,15 +97,15 @@ export class GameGateway
   async onLobbyUpdate(client: AuthenticatedSocket, data: any): Promise<any> {
     let isPrivate, maxClients;
     if (data.isPrivate !== null || data.isPrivate !== undefined) {
-      client.data.lobby.instance.isPrivate = data.isPrivate;
+      client.data.lobby.isPrivate = data.isPrivate;
       isPrivate = data.isPrivate;
     }
     if (data.maxClients !== null || data.maxClients !== undefined) {
-      client.data.lobby.instance.maxClients = data.maxClients;
+      client.data.lobby.maxClients = data.maxClients;
       maxClients = data.maxClients;
     }
 
-    // store lobby in database
+    // update lobby in database
     await this.databaseService.updateLobbyByKey(data.key, {
       settings: { isPrivate, maxClients },
     });

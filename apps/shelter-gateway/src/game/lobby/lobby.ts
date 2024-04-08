@@ -50,8 +50,7 @@ export class Lobby {
     client.leave(this.id);
     client.data.lobby = null;
 
-    // If player leave then the game isn't worth to play anymore
-    this.instance.triggerFinish();
+    // TODO: suspend the game
 
     // Alert the remaining player that client left lobby
     this.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
