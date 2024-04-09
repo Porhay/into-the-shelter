@@ -19,22 +19,32 @@ export class ActivityLogsService {
           data.payload.contestantId,
         );
         data.payload['text'] =
-          `${user.displayName} used special card: ${data.payload.specialCard.text} on ${contestant.displayName}.`;
+          `Player ${user.displayName} used special card: ${data.payload.specialCard.text} on ${contestant.displayName}.`;
       } else {
         data.payload['text'] =
-          `${user.displayName} used special card: ${data.payload.specialCard.text}.`;
+          `Player ${user.displayName} used special card: ${data.payload.specialCard.text}.`;
       }
     }
 
     // vote kick
     if (data.action === constants.voteKick) {
-      data.payload['text'] = `${user.displayName} voted.`;
+      data.payload['text'] = `Player ${user.displayName} voted.`;
     }
 
     // reveal characteristic
     if (data.action === constants.revealChar) {
       data.payload['text'] =
-        `${user.displayName} revealed characteristic: ${data.payload.char.text}.`;
+        `Player ${user.displayName} revealed characteristic: ${data.payload.char.text}.`;
+    }
+
+    // player kicked
+    if (data.action === constants.playerKicked) {
+      data.payload['text'] = `Player ${user.displayName} is kicked.`;
+    }
+
+    // next stage started
+    if (data.action === constants.nextStageStarted) {
+      data.payload['text'] = `Stage ${data.payload.currentStage} is started.`;
     }
 
     return await this.databaseService.createActivityLog(data);

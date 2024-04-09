@@ -4,6 +4,8 @@ import { Instance } from '../instance/instance';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { generateSixSymbolHash } from 'helpers';
+import { DatabaseService } from '@app/common';
+import { ActivityLogsService } from '../../activityLogs/activity-logs.service';
 
 export class Lobby {
   public readonly id: string = generateSixSymbolHash();
@@ -14,10 +16,14 @@ export class Lobby {
   >();
   public readonly instance: Instance = new Instance(this);
   public isPrivate: boolean = true;
+  public readonly databaseService = this._databaseService;
+  public readonly activityLogsService = this._activityLogsService;
 
   constructor(
     private readonly server: Server,
     public maxClients: number,
+    private readonly _databaseService: DatabaseService,
+    private readonly _activityLogsService: ActivityLogsService,
   ) {}
 
   public addClient(client: AuthenticatedSocket, playerData: any = {}): void {

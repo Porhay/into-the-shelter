@@ -10,6 +10,8 @@ import { Lobby } from '../lobby/lobby';
 import { AuthenticatedSocket } from '../types';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
+import { constants } from '@app/common';
+
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -29,7 +31,9 @@ export class Instance {
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
 
-  constructor(private readonly lobby: Lobby) { }
+  constructor(
+    private readonly lobby: Lobby,
+  ) { }
 
   public async triggerStart(
     data: { isPrivate: boolean; maxClients: number; organizatorId: string },
@@ -111,7 +115,7 @@ export class Instance {
     );
   }
 
-  public revealChar(data: any, client: AuthenticatedSocket): void {
+  public async revealChar(data: any, client: AuthenticatedSocket): Promise<void> {
     const { char, userId } = data;
     if (!this.hasStarted) {
       return;
@@ -173,7 +177,7 @@ export class Instance {
       this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
 
     if (allRevealsOnCurrentStage) {
-      this.transitNextStage()
+      this.transitNextStage(data, client)
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
         ServerEvents.GameMessage,
         {
@@ -182,6 +186,14 @@ export class Instance {
         },
       );
     }
+
+    // create activity log
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.revealChar,
+      payload: data,
+    });
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -214,6 +226,14 @@ export class Instance {
 
     this.voteKickList = [...this.voteKickList, { userId, contestantId }]
 
+    // create activity log
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.voteKick,
+      payload: data,
+    });
+
     // calc votes and kick player
     if (this.voteKickList.length >= this.players.filter(_ => _.isKicked !== true).length) {
       const contestantIds = this.voteKickList.map((_: { contestantId: any; }) => _.contestantId);
@@ -232,6 +252,15 @@ export class Instance {
         this.kickedPlayers = [...this.kickedPlayers, keysWithHighestValue[0]]
         kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
+
+      // create activity log
+      await this.lobby.activityLogsService.createActivityLog({
+        userId: data.userId,
+        lobbyId: client.data.lobby.id,
+        action: constants.playerKicked,
+        payload: { userId: kickedPlayer.userId }, // kicked player id
+      });
+
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
         ServerEvents.GameMessage,
         {
@@ -240,13 +269,6 @@ export class Instance {
         },
       );
 
-      // create activity log
-      // await this.activityLogsService.createActivityLog({
-      //   userId: data.userId,
-      //   lobbyId: client.data.lobby.id,
-      //   action: constants.playerKicked,
-      //   payload: data,
-      // });
 
       this.charsRevealedCount = 0 // clear round char counter
       this.voteKickList = []; // clear the list after kick
@@ -258,7 +280,7 @@ export class Instance {
         return;
       }
 
-      this.transitNextStage();
+      this.transitNextStage(data, client);
       this.lobby.dispatchLobbyState();
       return;
     }
@@ -275,7 +297,7 @@ export class Instance {
     );
   }
 
-  public useSpecialCard(data: any, client: AuthenticatedSocket): void {
+  public async useSpecialCard(data: any, client: AuthenticatedSocket): Promise<void> {
     const { specialCard, userId, contestantId = null } = data;
     if (!this.hasStarted || this.hasFinished) {
       return;
@@ -296,6 +318,14 @@ export class Instance {
     this.applyChanges(specialCard.id, userId, contestantId)
     this.specialCards[userId].find(card => card.type === specialCard.type).isUsed = true;
 
+    // create activity log
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.useSpecialCard,
+      payload: data,
+    });
+
     const user = this.players.find(player => player.userId === userId);
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -311,7 +341,7 @@ export class Instance {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
 
-  private transitNextStage(): void {
+  private async transitNextStage(data: any, client: AuthenticatedSocket): Promise<void> {
     this.currentStage = this.currentStage + 1;
 
     // deactivate stages
@@ -328,12 +358,12 @@ export class Instance {
     }
 
     // create activity log
-    // await this.activityLogsService.createActivityLog({
-    //   userId: data.userId,
-    //   lobbyId: client.data.lobby.id,
-    //   action: constants.nextStageStarted,
-    //   payload: data,
-    // });
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.nextStageStarted,
+      payload: {...data, currentStage: this.currentStage}, // only currentStage needed
+    });
 
   }
 

@@ -20,7 +20,7 @@ import { SocketExceptions } from './utils/SocketExceptions';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
-import { DatabaseService, constants } from '@app/common';
+import { DatabaseService } from '@app/common';
 import { ActivityLogsService } from '../activityLogs/activity-logs.service';
 
 @UsePipes(new WsValidationPipe())
@@ -71,7 +71,11 @@ export class GameGateway
   ): Promise<
     WsResponse<{ message: string; color?: 'green' | 'red' | 'blue' | 'orange' }>
   > {
-    const lobby = this.lobbyManager.createLobby(data.maxClients);
+    const lobby = this.lobbyManager.createLobby(
+      data.maxClients,
+      this.databaseService,
+      this.activityLogsService,
+    );
 
     // data.player.socketId = client.id  // Cannot set properties of undefined (setting 'socketId')
     lobby.addClient(client);
@@ -144,14 +148,6 @@ export class GameGateway
     }
 
     client.data.lobby.instance.voteKick(data, client);
-
-    // create activity log
-    await this.activityLogsService.createActivityLog({
-      userId: data.userId,
-      lobbyId: client.data.lobby.id,
-      action: constants.voteKick,
-      payload: data,
-    });
   }
 
   @SubscribeMessage(ClientEvents.GameUseSpecialCard)
@@ -167,14 +163,6 @@ export class GameGateway
     }
 
     client.data.lobby.instance.useSpecialCard(data, client);
-
-    // create activity log
-    await this.activityLogsService.createActivityLog({
-      userId: data.userId,
-      lobbyId: client.data.lobby.id,
-      action: constants.useSpecialCard,
-      payload: data,
-    });
   }
 
   @SubscribeMessage(ClientEvents.GameRevealChar)
@@ -187,13 +175,5 @@ export class GameGateway
     }
 
     client.data.lobby.instance.revealChar(data, client);
-
-    // create activity log
-    await this.activityLogsService.createActivityLog({
-      userId: data.userId,
-      lobbyId: client.data.lobby.id,
-      action: constants.revealChar,
-      payload: data,
-    });
   }
 }
