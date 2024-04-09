@@ -385,7 +385,7 @@ const RoomPage = () => {
                 </div>
               </div>
 
-              {state.isDetailsOpened ? (
+              {state.isDetailsOpened && (
                 <div className="chars-block-down">
                   <div className="char-list-container">
                     {charList.map((char: charType, index: any) => {
@@ -410,7 +410,7 @@ const RoomPage = () => {
                     })}
                   </div>
                 </div>
-              ) : null}
+              )}
             </div>
           );
         })}
