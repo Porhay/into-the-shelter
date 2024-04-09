@@ -39,7 +39,10 @@ export class ActivityLogsService {
 
     // player kicked
     if (data.action === constants.playerKicked) {
-      data.payload['text'] = `Player ${user.displayName} is kicked.`;
+      const kickedUser = await this.databaseService.getUserById(
+        data.payload.userId,
+      );
+      data.payload['text'] = `Player ${kickedUser.displayName} is kicked.`;
     }
 
     // next stage started
