@@ -176,4 +176,9 @@ export class GameGateway
 
     client.data.lobby.instance.revealChar(data, client);
   }
+
+  @SubscribeMessage(ClientEvents.GameEndTurn)
+  onEndTurn(client: AuthenticatedSocket, data: any): void {
+    client.data.lobby.instance.endTurn(data, client);
+  }
 }

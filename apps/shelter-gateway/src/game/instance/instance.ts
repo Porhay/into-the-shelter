@@ -135,8 +135,6 @@ export class Instance {
     }
 
     const uCharList = this.characteristics[userId];
-
-    
     const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
     let uCharsRevealedLength = uCharsRevealed.length
 
@@ -185,13 +183,6 @@ export class Instance {
 
     if (allRevealsOnCurrentStage) {
       this.transitNextStage(data, client)
-      this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
-        ServerEvents.GameMessage,
-        {
-          color: 'blue',
-          message: `Stage ${this.currentStage} is started!`,
-        },
-      );
     }
 
     // create activity log
@@ -210,6 +201,55 @@ export class Instance {
         message: 'Characteristic is opened!',
       },
     );
+  }
+
+  /**
+   * Logic: By default player has endTurn=false.
+   * Player revealed all remaining characteristics: endTurn=true.
+   * If all players endTurn=true -> transit to the next stage
+   * and update endTurn=false for all.
+   * 
+   * @param data 
+   * @param client 
+   * @returns Promise<void>
+   */
+  public async endTurn(data: any, client: AuthenticatedSocket): Promise<void> {
+    const { userId } = data;
+
+    if (!this.hasStarted || this.hasFinished) {
+      return;
+    }
+    // kicked player can not end turn
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
+      return;
+    }
+    // end turn only on reveal stages
+    if (this.currentStage % 2 === 0 || !isset(this.currentStage)) {
+      return;
+    }
+
+    // update endTurn
+    this.players.find(player => player.userId === userId).endTurn = true;
+
+    this.lobby.dispatchLobbyState();
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'Player has finished his turn!',
+      },
+    );
+
+    /* check if all the players ended the turn.
+      Transit to the next stage, endTurn=false for all */
+    const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length;
+    if (allEnded) {
+      this.transitNextStage(data, client)
+      this.players.forEach(player => {
+        player.endTurn = false;
+    });
+    }
   }
 
   public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
@@ -373,9 +413,16 @@ export class Instance {
       userId: data.userId,
       lobbyId: client.data.lobby.id,
       action: constants.nextStageStarted,
-      payload: {...data, currentStage: this.currentStage}, // only currentStage needed
+      payload: { currentStage: this.currentStage }, // only currentStage needed
     });
 
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: `Stage ${this.currentStage} is started!`,
+      },
+    );
   }
 
   /* applies changes on special card use */
