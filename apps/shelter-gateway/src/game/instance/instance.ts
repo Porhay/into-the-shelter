@@ -118,7 +118,7 @@ export class Instance {
 
   public async revealChar(data: any, client: AuthenticatedSocket): Promise<void> {
     const { char, userId } = data;
-    if (!this.hasStarted) {
+    if (!this.hasStarted || this.hasFinished) {
       return;
     }
     if (this.revealPlayerId !== userId) {
@@ -136,11 +136,18 @@ export class Instance {
 
     const uCharList = this.characteristics[userId];
 
-    // check if user not reveales more chars then limited
-    let uCharsRevealed: number = uCharList.filter(
+    
+    let uCharsRevealed = uCharList.filter(
       (char: { isRevealed: boolean }) => char.isRevealed === true,
-    ).length;
-    if (uCharsRevealed >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+    );
+
+    // check if user not reveales one char multiple times
+    if (uCharsRevealed.map(c => c.text).includes(char.text)) {
+      return;
+    }
+
+    // check if user not reveales more chars then limited
+    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       return;
     }
 
@@ -208,6 +215,10 @@ export class Instance {
 
   public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
     const { userId, contestantId } = data;
+
+    if (!this.hasStarted || this.hasFinished) {
+      return;
+    }
 
     // kicked player can not vote
     const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
