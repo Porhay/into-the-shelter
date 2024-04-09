@@ -137,9 +137,8 @@ export class Instance {
     const uCharList = this.characteristics[userId];
 
     
-    let uCharsRevealed = uCharList.filter(
-      (char: { isRevealed: boolean }) => char.isRevealed === true,
-    );
+    const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
+    let uCharsRevealedLength = uCharsRevealed.length
 
     // check if user not reveales one char multiple times
     if (uCharsRevealed.map(c => c.text).includes(char.text)) {
@@ -147,7 +146,7 @@ export class Instance {
     }
 
     // check if user not reveales more chars then limited
-    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+    if (uCharsRevealedLength >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       return;
     }
 
@@ -157,11 +156,11 @@ export class Instance {
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
     this.charsRevealedCount = this.charsRevealedCount + 1;
-    uCharsRevealed = uCharsRevealed + 1
+    uCharsRevealedLength = uCharsRevealedLength + 1
 
     /* check if user revealed all possible characteristics and 
       choose next player that can reveal chars */
-    if (uCharsRevealed === Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+    if (uCharsRevealedLength === Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
         const totalPlayers = this.players.length;
         if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
