@@ -101,6 +101,7 @@ const SettingsPage = () => {
               <p className="settings-text">Change usename</p>
               <div className="settings-form">
                 <input
+                  autoComplete="off"
                   type="text"
                   placeholder={user.displayName || 'stranger'}
                   value={state.inputName}
