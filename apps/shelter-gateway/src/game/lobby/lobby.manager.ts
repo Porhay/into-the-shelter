@@ -55,6 +55,14 @@ export class LobbyManager {
       );
     }
 
+    // TODO: Game already started check here
+    // if (lobby.instance.hasStarted) {
+    //   throw new ServerException(
+    //     SocketExceptions.LobbyError,
+    //     'Game already started',
+    //   );
+    // }
+
     playerData.socketId = client.id;
 
     lobby.addClient(client, playerData);

@@ -6,6 +6,7 @@
 .activity-logs-block {
     display: flex;
     margin: 8px 0;
+    behavior: "smooth";
 
     .log {
         margin: 0 4px;
