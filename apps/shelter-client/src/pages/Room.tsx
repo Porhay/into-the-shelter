@@ -400,7 +400,9 @@ const RoomPage = () => {
                             text={
                               char.isRevealed
                                 ? char.type === 'health'
-                                  ? `${char.text}(${char.stage})`
+                                  ? char.text !== 'Абсолютно здоровий'
+                                    ? `${char.text}(${char.stage})`
+                                    : char.text
                                   : char.text
                                 : 'Not revealed'
                             }
