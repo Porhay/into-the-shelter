@@ -16,6 +16,7 @@ export class Lobby {
   >();
   public readonly instance: Instance = new Instance(this);
   public isPrivate: boolean = true;
+  public timer: number = 0;
   public readonly databaseService = this._databaseService;
   public readonly activityLogsService = this._activityLogsService;
 
@@ -73,7 +74,6 @@ export class Lobby {
   public dispatchLobbyState(): void {
     const payload: ServerPayloads[ServerEvents.LobbyState] = {
       lobbyId: this.id,
-      maxClients: this.maxClients,
       hasStarted: this.instance.hasStarted,
       hasFinished: this.instance.hasFinished,
       playersCount: this.clients.size,
@@ -82,7 +82,9 @@ export class Lobby {
       characteristics: this.instance.characteristics,
       specialCards: this.instance.specialCards,
       conditions: this.instance.conditions,
+      maxClients: this.maxClients,
       isPrivate: this.isPrivate,
+      timer: this.timer,
       currentStage: this.instance.currentStage,
       stages: this.instance.stages,
       revealPlayerId: this.instance.revealPlayerId,

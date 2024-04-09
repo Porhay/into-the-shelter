@@ -37,6 +37,7 @@ interface IState {
   userCharList: charListType;
   userSpecialCards: specialCardsType;
   isPrivateLobby: boolean;
+  timer: number;
   voteKickList: any;
   maxClients: number;
   kickedPlayers: any[];
@@ -97,6 +98,7 @@ const RoomPage = () => {
       },
     ],
     isPrivateLobby: true,
+    timer: 0,
     voteKickList: [],
     kickedPlayers: [],
     maxClients: 4,
@@ -261,6 +263,7 @@ const RoomPage = () => {
     key?: string | null;
     isPrivate?: boolean;
     maxClients?: number;
+    timer?: number;
   }
   const handleSettingsUpdate = (data: settingsUpdate) => {
     sm.emit({
@@ -419,10 +422,7 @@ const RoomPage = () => {
     const handleGameStart = () => {
       sm.emit({
         event: ClientEvents.GameStart,
-        data: {
-          maxClients: state.maxClients,
-          isPrivate: state.isPrivateLobby,
-        },
+        data: {},
       });
     };
 
@@ -545,6 +545,42 @@ const RoomPage = () => {
                       });
                     }}
                   />
+                </div>
+              </div>
+              <div className="settings-timer">
+                <div className="timer-text">
+                  <h3>Turn on the timer</h3>
+                  <p>
+                    Players should end thair turns before the time limit to
+                    avoid random :D
+                  </p>
+                </div>
+                <div className="timer-selector">
+                  <select
+                    name="timer"
+                    value={state.timer}
+                    onChange={(e) => {
+                      updateState({
+                        timer: parseInt(e.target.value),
+                      });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        timer: parseInt(e.target.value),
+                      });
+                    }}
+                  >
+                    <option value={0} selected>
+                      off
+                    </option>
+                    <option value={1}>1m</option>
+                    <option value={2}>2m</option>
+                    <option value={3}>3m</option>
+                    <option value={4}>4m</option>
+                    <option value={5}>5m</option>
+                    <option value={6}>6m</option>
+                    <option value={7}>7m</option>
+                    <option value={8}>8m</option>
+                  </select>
                 </div>
               </div>
               <div className="settings-max-players">

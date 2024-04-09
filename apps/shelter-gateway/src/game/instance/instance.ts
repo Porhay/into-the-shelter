@@ -36,10 +36,7 @@ export class Instance {
     private readonly lobby: Lobby,
   ) { }
 
-  public async triggerStart(
-    data: { isPrivate: boolean; maxClients: number; organizatorId: string },
-    client: AuthenticatedSocket,
-  ): Promise<void> {
+  public async triggerStart(data: any, client: AuthenticatedSocket): Promise<void> {
     if (this.hasStarted) {
       return;
     }
@@ -54,9 +51,13 @@ export class Instance {
     }
 
     // update lobby's settings
-    this.lobby.isPrivate = data.isPrivate;
-    // TODO: this.lobby.maxClients = data.maxClients;
-    // TODO: this.lobby.isTimerOn = data.isTimerOn;
+    const lobbydb = await this.lobby.databaseService.getLobbyByKeyOrNull(client.data.lobby.id);
+    this.lobby.isPrivate = lobbydb.settings.isPrivate;
+    this.lobby.maxClients = lobbydb.settings.maxClients;
+    this.lobby.timer = lobbydb.settings.timer;
+
+    console.log('DEBUG', this.lobby.timer);
+    
 
     // set random characteristics
     this.hasStarted = true;
@@ -248,7 +249,7 @@ export class Instance {
       this.transitNextStage(data, client)
       this.players.forEach(player => {
         player.endTurn = false;
-    });
+      });
     }
   }
 

@@ -84,7 +84,7 @@ export class GameGateway
     const context = {
       key: lobby.id,
       organizatorId: data.organizatorId,
-      settings: { maxClients: data.maxClients, isPrivate: true },
+      settings: { maxClients: data.maxClients, isPrivate: true, timer: 0 },
     };
     await this.databaseService.createLobby(context);
 
@@ -99,7 +99,7 @@ export class GameGateway
 
   @SubscribeMessage(ClientEvents.LobbyUpdate)
   async onLobbyUpdate(client: AuthenticatedSocket, data: any): Promise<any> {
-    let isPrivate, maxClients;
+    let isPrivate, maxClients, timer;
     if (data.isPrivate !== null || data.isPrivate !== undefined) {
       client.data.lobby.isPrivate = data.isPrivate;
       isPrivate = data.isPrivate;
@@ -108,10 +108,14 @@ export class GameGateway
       client.data.lobby.maxClients = data.maxClients;
       maxClients = data.maxClients;
     }
+    if (data.maxClients !== null || data.maxClients !== undefined) {
+      client.data.lobby.timer = data.timer;
+      timer = data.timer;
+    }
 
     // update lobby in database
     await this.databaseService.updateLobbyByKey(data.key, {
-      settings: { isPrivate, maxClients },
+      settings: { isPrivate, maxClients, timer },
     });
 
     return {
