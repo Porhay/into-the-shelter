@@ -350,7 +350,10 @@ const RoomPage = () => {
 
                 <img
                   src={
-                    typeof player === 'number' ? avatarDefault : player.avatar
+                    typeof player === 'number'
+                      ? avatarDefault
+                      : gameAvatarByPosition(player.gameAvatars, 1)
+                          ?.downloadUrl || player.avatar
                   }
                   alt="camera block"
                 />
