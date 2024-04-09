@@ -5,6 +5,7 @@ import {
   getRandomIndex,
   countOccurrences,
   getKeysWithHighestValue,
+  isset
 } from 'helpers';
 import { Lobby } from '../lobby/lobby';
 import { AuthenticatedSocket } from '../types';
@@ -129,7 +130,7 @@ export class Instance {
       return;
     }
     // open chars only on reveal stages
-    if (this.currentStage % 2 === 0) {
+    if (this.currentStage % 2 === 0 || !isset(this.currentStage)) {
       return;
     }
 
@@ -215,7 +216,7 @@ export class Instance {
     }
 
     // vote only on kick stages
-    if (this.currentStage % 2 === 1) {
+    if (this.currentStage % 2 === 1 || !isset(this.currentStage)) {
       return;
     }
 

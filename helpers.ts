@@ -14,6 +14,10 @@ export const getRandomIndexInRange = (minIndex: number, maxIndex: number) => {
   return Math.floor(Math.random() * (maxIndex - minIndex) + minIndex);
 };
 
+export const isset = (val: any) => {
+  return val !== null && val !== undefined;
+};
+
 export const generateFromCharacteristics = (
   type: 'charList' | 'conditions' | 'specialCard',
 ): any => {
