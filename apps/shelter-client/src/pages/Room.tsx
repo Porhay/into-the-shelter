@@ -7,7 +7,6 @@ import { Button } from '../components/Buttons';
 import Webcam from '../components/Webcam';
 import Chat from '../components/Chat';
 import ModalWindow from '../components/ModalWindow';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import {
@@ -26,6 +25,7 @@ import { NOTIF_TYPE } from '../constants';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import shelterIcon from '../assets/images/shelter-icon.png';
 import catastropheIcon from '../assets/images/catastrophe-icon.png';
+import Timer from '../components/Timer';
 
 interface IState {
   isCameraOn: boolean;
@@ -147,6 +147,8 @@ const RoomPage = () => {
           characteristics: data.characteristics,
           specialCards: data.specialCards,
           conditions: data.conditions,
+          revealPlayerId: data.revealPlayerId,
+          timer: data.timer,
         }),
       );
 
@@ -440,11 +442,15 @@ const RoomPage = () => {
           userId: user.userId,
         },
       });
-      updateState({ uRemainedChars: 2 });
     };
 
     return (
       <div className="action-tip-container">
+        {lobby.currentStage! % 2 === 1 &&
+          lobby.timer !== 0 &&
+          lobby.revealPlayerId === user.userId && (
+            <Timer duration={lobby.timer! * 60} onTimerEnd={handleEndTurn} />
+          )}
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
