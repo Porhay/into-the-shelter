@@ -213,8 +213,8 @@ export class Instance {
         if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
 
         const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
-        const nextIndex = (currentIndex + 1) % totalPlayers; // When reaching the end of the player list, the search wraps around to the beginning 
-        const revealPlayer = this.players[nextIndex];
+        const revealPlayer = this.players[currentIndex + 1] || this.players[0];
+        console.debug('[chooseNextToReveal] revealPlayer: ', revealPlayer);
 
         if (revealPlayer.isKicked) {
           // If the next player is kicked, recursively search for the next
@@ -226,6 +226,20 @@ export class Instance {
       this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
     }
 
+    /* Check if all the players ended the turn and if all reveals on current stage.
+      Transit to the next stage, endTurn=false for all */
+    const kicked = this.players.filter(player => player.isKicked);
+    const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length - kicked.length;
+    const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
+    console.debug('[allRevealsOnCurrentStage]: ', allRevealsOnCurrentStage);
+    if (allEnded) {
+      this.transitNextStage(data, client)
+      this.players.forEach(player => {
+        player.endTurn = false;
+      });
+    }
+
+    this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {
@@ -233,18 +247,6 @@ export class Instance {
         message: 'Player has finished his turn!',
       },
     );
-
-    /* Check if all the players ended the turn and if all reveals on current stage.
-      Transit to the next stage, endTurn=false for all */
-    const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length;
-    // const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
-    if (allEnded) {
-      this.transitNextStage(data, client)
-      this.players.forEach(player => {
-        player.endTurn = false;
-      });
-    }
-    this.lobby.dispatchLobbyState();
   }
 
   public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
