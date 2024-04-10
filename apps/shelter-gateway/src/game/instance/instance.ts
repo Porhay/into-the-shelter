@@ -203,28 +203,8 @@ export class Instance {
     // update endTurn
     this.players.find(player => player.userId === userId).endTurn = true;
 
-    /* check if user revealed all possible characteristics and 
-      choose next player that can reveal chars */
-    const uCharList = this.characteristics[userId];
-    const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
-    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
-      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
-        const totalPlayers = this.players.length;
-        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
-
-        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
-        const revealPlayer = this.players[currentIndex + 1] || this.players[0];
-        console.debug('[chooseNextToReveal] revealPlayer: ', revealPlayer);
-
-        if (revealPlayer.isKicked) {
-          // If the next player is kicked, recursively search for the next
-          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
-        }
-        return revealPlayer.userId;
-      };
-
-      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
-    }
+    // choose next player
+    this.chooseNextToReveal(data, client)
 
     /* Check if all the players ended the turn and if all reveals on current stage.
       Transit to the next stage, endTurn=false for all */
@@ -299,6 +279,11 @@ export class Instance {
         this.players.find(player => player.userId === keysWithHighestValue[0]).isKicked = true;
         this.kickedPlayers = [...this.kickedPlayers, keysWithHighestValue[0]]
         kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
+      }
+
+      // choose next player if reveal one is kicked
+      if (this.revealPlayerId === kickedPlayer.userId) {
+        this.chooseNextToReveal(data, client)
       }
 
       // create activity log
@@ -387,6 +372,31 @@ export class Instance {
 
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
+  }
+
+  /* check if user revealed all possible characteristics and 
+      choose next player that can reveal chars */
+  private chooseNextToReveal(data: any, client: AuthenticatedSocket): void {
+    const uCharList = this.characteristics[data.userId];
+    const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
+    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
+        const totalPlayers = this.players.length;
+        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
+
+        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
+        const revealPlayer = this.players[currentIndex + 1] || this.players[0];
+        console.debug('[chooseNextToReveal] revealPlayer: ', revealPlayer);
+
+        if (revealPlayer.isKicked) {
+          // If the next player is kicked, recursively search for the next
+          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
+        }
+        return revealPlayer.userId;
+      };
+
+      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
+    }
   }
 
   private async transitNextStage(data: any, client: AuthenticatedSocket): Promise<void> {
