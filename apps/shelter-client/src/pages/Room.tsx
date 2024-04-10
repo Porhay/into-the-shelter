@@ -45,6 +45,7 @@ interface IState {
   modalProps: any;
   isOponentsListFocused: boolean;
   focusData: any; // sets on isOponentsListFocused
+  uRemainedChars: number;
 }
 
 type specialCardsType = {
@@ -61,6 +62,17 @@ type charType = {
   text: string;
   stage?: string; // for health only
   isRevealed: boolean;
+};
+
+const getRemainedChars = (data: any, userId: string) => {
+  const alreadyRevealedCount = data.characteristics[userId].filter(
+    (_: { isRevealed: boolean }) => _.isRevealed === true,
+  ).length;
+  const remained = (
+    Math.ceil(data.currentStage / 2) * 2 -
+    alreadyRevealedCount
+  ).toString();
+  return remained;
 };
 
 const RoomPage = () => {
@@ -110,6 +122,7 @@ const RoomPage = () => {
       title: '',
     },
     focusData: {},
+    uRemainedChars: 2,
   });
 
   useEffect(() => {
@@ -157,16 +170,9 @@ const RoomPage = () => {
         // update reminded
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
-          // eslint-disable-next-line
-          const alreadyRevealedCount = data.characteristics[
-            currentPlayer.userId
-          ].filter(
-            (_: { isRevealed: boolean }) => _.isRevealed === true,
-          ).length;
-          const remained = (
-            Math.ceil(data.currentStage / 2) * 2 -
-            alreadyRevealedCount
-          ).toString();
+          const remained = getRemainedChars(data, currentPlayer.userId);
+          updateState({ uRemainedChars: parseInt(remained) });
+          console.log('uRemainedChars: ', remained);
           tipStr = `Open your characteristics, remained: ${remained}`;
         } else {
           const revealPlayer = data.players.find(
@@ -202,8 +208,6 @@ const RoomPage = () => {
       sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
   }, [lobby.hasStarted, lobby.hasFinished, state.maxClients, dispatch]);
-
-  useEffect(() => {}, [state.isDescriptionOpened]);
 
   // DATA SETS
   const kickBlockText = (player: { userId: string }) => {
@@ -427,13 +431,32 @@ const RoomPage = () => {
         data: {},
       });
     };
+    const handleEndTurn = () => {
+      sm.emit({
+        event: ClientEvents.GameEndTurn,
+        data: {
+          userId: user.userId,
+        },
+      });
+      updateState({ uRemainedChars: 2 });
+    };
 
     return (
       <div className="action-tip-container">
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
-        {!lobby.hasStarted || lobby.hasFinished ? (
+        {state.uRemainedChars === 0 && lobby.currentStage! % 2 === 1 && (
+          <div>
+            <div className="divider"></div>
+            <div>
+              <button className="start-game-btn" onClick={handleEndTurn}>
+                {'END TURN'}
+              </button>
+            </div>
+          </div>
+        )}
+        {(!lobby.hasStarted || lobby.hasFinished) && (
           <div>
             <div className="divider"></div>
             <div>
@@ -446,7 +469,7 @@ const RoomPage = () => {
               )}
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     );
   };
@@ -683,7 +706,6 @@ const RoomPage = () => {
         <div className="char-list-wrapper">
           <div className="char-list-container">
             {state.userCharList.map((char, index) => {
-              console.log(char);
               return (
                 <div
                   key={index}

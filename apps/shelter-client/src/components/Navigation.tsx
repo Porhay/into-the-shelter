@@ -66,7 +66,6 @@ const Navigation = () => {
         stages: data.stages,
       };
       dispatch(updateLobby(context));
-      console.log('ss', context);
 
       // navigate to current room
       const route = ROUTES.ROOMS + '/' + data.lobbyId;

@@ -56,9 +56,6 @@ export class Instance {
     this.lobby.maxClients = lobbydb.settings.maxClients;
     this.lobby.timer = lobbydb.settings.timer;
 
-    console.log('DEBUG', this.lobby.timer);
-    
-
     // set random characteristics
     this.hasStarted = true;
     this.players.map((player) => {
@@ -137,7 +134,6 @@ export class Instance {
 
     const uCharList = this.characteristics[userId];
     const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
-    let uCharsRevealedLength = uCharsRevealed.length
 
     // check if user not reveales one char multiple times
     if (uCharsRevealed.map(c => c.text).includes(char.text)) {
@@ -145,7 +141,7 @@ export class Instance {
     }
 
     // check if user not reveales more chars then limited
-    if (uCharsRevealedLength >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       return;
     }
 
@@ -155,36 +151,6 @@ export class Instance {
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
     this.charsRevealedCount = this.charsRevealedCount + 1;
-    uCharsRevealedLength = uCharsRevealedLength + 1
-
-    /* check if user revealed all possible characteristics and 
-      choose next player that can reveal chars */
-    if (uCharsRevealedLength === Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
-      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
-        const totalPlayers = this.players.length;
-        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
-
-        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
-        const nextIndex = (currentIndex + 1) % totalPlayers; // When reaching the end of the player list, the search wraps around to the beginning 
-        const revealPlayer = this.players[nextIndex];
-
-        if (revealPlayer.isKicked) {
-          // If the next player is kicked, recursively search for the next
-          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
-        }
-        return revealPlayer.userId;
-      };
-
-      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
-    }
-
-    // transit to the next stage
-    const allRevealsOnCurrentStage =
-      this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
-
-    if (allRevealsOnCurrentStage) {
-      this.transitNextStage(data, client)
-    }
 
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
@@ -229,11 +195,37 @@ export class Instance {
     if (this.currentStage % 2 === 0 || !isset(this.currentStage)) {
       return;
     }
+    // only reveal player can end turn
+    if (this.revealPlayerId !== userId) {
+      return;
+    }
 
     // update endTurn
     this.players.find(player => player.userId === userId).endTurn = true;
 
-    this.lobby.dispatchLobbyState();
+    /* check if user revealed all possible characteristics and 
+      choose next player that can reveal chars */
+    const uCharList = this.characteristics[userId];
+    const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
+    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
+        const totalPlayers = this.players.length;
+        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
+
+        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
+        const nextIndex = (currentIndex + 1) % totalPlayers; // When reaching the end of the player list, the search wraps around to the beginning 
+        const revealPlayer = this.players[nextIndex];
+
+        if (revealPlayer.isKicked) {
+          // If the next player is kicked, recursively search for the next
+          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
+        }
+        return revealPlayer.userId;
+      };
+
+      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
+    }
+
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {
@@ -242,15 +234,17 @@ export class Instance {
       },
     );
 
-    /* check if all the players ended the turn.
+    /* Check if all the players ended the turn and if all reveals on current stage.
       Transit to the next stage, endTurn=false for all */
     const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length;
-    if (allEnded) {
+    const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
+    if (allEnded && allRevealsOnCurrentStage) {
       this.transitNextStage(data, client)
       this.players.forEach(player => {
         player.endTurn = false;
       });
     }
+    this.lobby.dispatchLobbyState();
   }
 
   public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
