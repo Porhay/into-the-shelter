@@ -251,9 +251,8 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     font-weight: 500;
     width: fit-content;
     overflow-y: scroll;
-    height: 182px;
-    // white-space: nowrap;
-    // border-bottom: #faaa63ca dashed 1px;
+    scroll-behavior: smooth;
+    height: 186px;
     text-transform: capitalize;
 }
 
@@ -520,4 +519,20 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     text-align: justify;
     -webkit-text-align: justify;
     font-size: 20px;
+}
+
+.char-list-container::-webkit-scrollbar {
+    width: 12px;
+    background-color: transparent;
+}
+
+.char-list-container::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+.char-list-container::-webkit-scrollbar-button {
+    display: none;
 }

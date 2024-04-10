@@ -150,6 +150,8 @@ const RoomPage = () => {
         }),
       );
 
+      console.log('DATA: ', data);
+
       if (!lobby.hasStarted) {
         // update action tip and isOrganizator
         const tipStr = `Players: ${data.playersCount}/${state.maxClients}`;
