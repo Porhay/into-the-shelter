@@ -448,16 +448,19 @@ const RoomPage = () => {
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
-        {state.uRemainedChars === 0 && lobby.currentStage! % 2 === 1 && (
-          <div>
-            <div className="divider"></div>
+        {!state.kickedPlayers.includes(user.userId) &&
+          state.uRemainedChars === 0 &&
+          lobby.currentStage! % 2 === 1 &&
+          !lobby.hasFinished && (
             <div>
-              <button className="start-game-btn" onClick={handleEndTurn}>
-                {'END TURN'}
-              </button>
+              <div className="divider"></div>
+              <div>
+                <button className="start-game-btn" onClick={handleEndTurn}>
+                  {'END TURN'}
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
         {(!lobby.hasStarted || lobby.hasFinished) && (
           <div>
             <div className="divider"></div>
