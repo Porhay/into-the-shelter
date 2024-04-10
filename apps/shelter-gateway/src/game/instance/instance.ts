@@ -237,8 +237,8 @@ export class Instance {
     /* Check if all the players ended the turn and if all reveals on current stage.
       Transit to the next stage, endTurn=false for all */
     const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length;
-    const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
-    if (allEnded && allRevealsOnCurrentStage) {
+    // const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
+    if (allEnded) {
       this.transitNextStage(data, client)
       this.players.forEach(player => {
         player.endTurn = false;
