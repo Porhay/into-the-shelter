@@ -1,5 +1,5 @@
 import '../styles/ActivityLogs.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { getActivityLogsByLobbyId } from '../api/requests';
@@ -14,6 +14,7 @@ const ActivityLogs = () => {
   const user = useSelector((state: RootState) => state.user);
   const app = useSelector((state: RootState) => state.app);
   const lobby = useSelector((state: RootState) => state.lobby);
+  const activityLogsRef = useRef<HTMLDivElement>(null);
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
@@ -21,6 +22,10 @@ const ActivityLogs = () => {
   const [state, setState] = useState({
     activityLogs: [],
   });
+
+  if (activityLogsRef.current) {
+    activityLogsRef.current.scrollTop = activityLogsRef.current.scrollHeight;
+  }
 
   useEffect(() => {
     handleGetActivityLogs();
@@ -39,7 +44,7 @@ const ActivityLogs = () => {
       <div className="info-title">
         <h3>Activity Logs</h3>
       </div>
-      <div className="activity-logs-wraper">
+      <div className="activity-logs-wraper" ref={activityLogsRef}>
         {state.activityLogs.map((data: { payload: any; createdAt: string }) => {
           return (
             <div className="activity-logs-block">

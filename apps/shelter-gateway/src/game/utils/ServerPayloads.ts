@@ -3,7 +3,6 @@ import { ServerEvents } from './ServerEvents';
 export type ServerPayloads = {
   [ServerEvents.LobbyState]: {
     lobbyId: string;
-    maxClients: number;
     hasStarted: boolean;
     hasFinished: boolean;
     playersCount: number;
@@ -12,7 +11,9 @@ export type ServerPayloads = {
     characteristics: any;
     specialCards: any;
     conditions: any;
+    maxClients: number;
     isPrivate: boolean;
+    timer: number;
     currentStage: number;
     stages: any[];
     revealPlayerId: string;

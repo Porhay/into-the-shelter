@@ -158,6 +158,8 @@ const Chat: FC = () => {
       </div>
       <div className="input-container">
         <input
+          autoComplete="off"
+          spellCheck="false"
           type="text"
           placeholder="Type your message..."
           value={state.newMessage}

@@ -4,6 +4,8 @@ import { Instance } from '../instance/instance';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { generateSixSymbolHash } from 'helpers';
+import { DatabaseService } from '@app/common';
+import { ActivityLogsService } from '../../activityLogs/activity-logs.service';
 
 export class Lobby {
   public readonly id: string = generateSixSymbolHash();
@@ -14,10 +16,15 @@ export class Lobby {
   >();
   public readonly instance: Instance = new Instance(this);
   public isPrivate: boolean = true;
+  public timer: number = 0;
+  public readonly databaseService = this._databaseService;
+  public readonly activityLogsService = this._activityLogsService;
 
   constructor(
     private readonly server: Server,
     public maxClients: number,
+    private readonly _databaseService: DatabaseService,
+    private readonly _activityLogsService: ActivityLogsService,
   ) {}
 
   public addClient(client: AuthenticatedSocket, playerData: any = {}): void {
@@ -50,8 +57,7 @@ export class Lobby {
     client.leave(this.id);
     client.data.lobby = null;
 
-    // If player leave then the game isn't worth to play anymore
-    this.instance.triggerFinish();
+    // TODO: suspend the game
 
     // Alert the remaining player that client left lobby
     this.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -68,7 +74,6 @@ export class Lobby {
   public dispatchLobbyState(): void {
     const payload: ServerPayloads[ServerEvents.LobbyState] = {
       lobbyId: this.id,
-      maxClients: this.maxClients,
       hasStarted: this.instance.hasStarted,
       hasFinished: this.instance.hasFinished,
       playersCount: this.clients.size,
@@ -77,7 +82,9 @@ export class Lobby {
       characteristics: this.instance.characteristics,
       specialCards: this.instance.specialCards,
       conditions: this.instance.conditions,
+      maxClients: this.maxClients,
       isPrivate: this.isPrivate,
+      timer: this.timer,
       currentStage: this.instance.currentStage,
       stages: this.instance.stages,
       revealPlayerId: this.instance.revealPlayerId,

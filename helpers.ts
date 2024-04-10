@@ -10,6 +10,14 @@ export const getRandomIndex = (maxIndex: number) => {
   return Math.floor(Math.random() * maxIndex);
 };
 
+export const getRandomIndexInRange = (minIndex: number, maxIndex: number) => {
+  return Math.floor(Math.random() * (maxIndex - minIndex) + minIndex);
+};
+
+export const isset = (val: any) => {
+  return val !== null && val !== undefined;
+};
+
 export const generateFromCharacteristics = (
   type: 'charList' | 'conditions' | 'specialCard',
 ): any => {
@@ -23,8 +31,9 @@ export const generateFromCharacteristics = (
 
   const _getRandomChar = (data: any, type: string) => {
     if (type === 'gender') {
-      const reandomIndex = Math.floor(Math.random() * 2);
-      return ['Чоловік', 'Жінка'][reandomIndex];
+      const age = getRandomIndexInRange(18, 101);
+      const gender = ['Чоловік', 'Жінка'][getRandomIndex(2)];
+      return `${gender}(Вік:${age})`; // example: Чоловік(Вік:101)
     }
     const charsByType = data[type];
     const randomIndex = Math.floor(Math.random() * charsByType.length);
@@ -74,6 +83,9 @@ export const generateFromCharacteristics = (
     },
     {
       type: 'health',
+      stage: ['тяжка форма', 'критична форма', 'легка форма', 'середняя форма'][
+        getRandomIndex(4)
+      ],
       text: _getRandomChar(jsonData, 'health'),
       icon: 'healthIcon',
       isRevealed: false,

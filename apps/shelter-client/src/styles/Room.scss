@@ -96,6 +96,39 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
         }
 
+        .settings-timer {
+            display: flex;
+            padding: 0 0 5px 5px;
+            margin: 0 0 5px 0;
+            border-bottom: #000000 1px solid;
+
+            .timer-text {
+                flex: 80%;
+
+                h3 {
+                    color: #000000;
+                    font-size: 20px;
+                }
+
+                p {
+                    color: #000000;
+                    font-size: 14px;
+                }
+            }
+
+            .timer-selector {
+                margin: 0 10px;
+                flex: 20%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                select {
+                    width: 90%;
+                }
+            }
+        }
+
         .settings-max-players {
             display: flex;
             margin: 0 0 5px 5px;
@@ -217,8 +250,9 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     font-family: 'Roboto Condensed';
     font-weight: 500;
     width: fit-content;
-    white-space: nowrap;
-    // border-bottom: #faaa63ca dashed 1px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    height: 186px;
     text-transform: capitalize;
 }
 
@@ -485,4 +519,20 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
     text-align: justify;
     -webkit-text-align: justify;
     font-size: 20px;
+}
+
+.char-list-container::-webkit-scrollbar {
+    width: 12px;
+    background-color: transparent;
+}
+
+.char-list-container::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+.char-list-container::-webkit-scrollbar-button {
+    display: none;
 }

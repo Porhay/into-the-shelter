@@ -1,16 +1,18 @@
 /* eslint-disable prettier/prettier */
 
-import { Lobby } from '../lobby/lobby';
-import { AuthenticatedSocket } from '../types';
-import { ServerPayloads } from '../utils/ServerPayloads';
-import { ServerEvents } from '../utils/ServerEvents';
-import { constants } from '@app/common';
 import {
   generateFromCharacteristics,
   getRandomIndex,
   countOccurrences,
   getKeysWithHighestValue,
+  isset
 } from 'helpers';
+import { Lobby } from '../lobby/lobby';
+import { AuthenticatedSocket } from '../types';
+import { ServerPayloads } from '../utils/ServerPayloads';
+import { ServerEvents } from '../utils/ServerEvents';
+import { constants } from '@app/common';
+
 
 export class Instance {
   public hasStarted: boolean = false;
@@ -30,20 +32,29 @@ export class Instance {
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
 
-  constructor(private readonly lobby: Lobby) { }
+  constructor(
+    private readonly lobby: Lobby,
+  ) { }
 
-  public async triggerStart(
-    data: { isPrivate: boolean; maxClients: number; organizatorId: string },
-    client: AuthenticatedSocket,
-  ): Promise<void> {
+  public async triggerStart(data: any, client: AuthenticatedSocket): Promise<void> {
     if (this.hasStarted) {
       return;
     }
+    if (this.lobby.clients.size < 2) {
+      return this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+        ServerEvents.GameMessage,
+        {
+          color: 'blue',
+          message: 'Find a friend to play :D',
+        },
+      );
+    }
 
     // update lobby's settings
-    this.lobby.isPrivate = data.isPrivate;
-    // TODO: this.lobby.maxClients = data.maxClients;
-    // TODO: this.lobby.isTimerOn = data.isTimerOn;
+    const lobbydb = await this.lobby.databaseService.getLobbyByKeyOrNull(client.data.lobby.id);
+    this.lobby.isPrivate = lobbydb.settings.isPrivate;
+    this.lobby.maxClients = lobbydb.settings.maxClients;
+    this.lobby.timer = lobbydb.settings.timer;
 
     // set random characteristics
     this.hasStarted = true;
@@ -103,9 +114,9 @@ export class Instance {
     );
   }
 
-  public revealChar(data: any, client: AuthenticatedSocket): void {
+  public async revealChar(data: any, client: AuthenticatedSocket): Promise<void> {
     const { char, userId } = data;
-    if (!this.hasStarted) {
+    if (!this.hasStarted || this.hasFinished) {
       return;
     }
     if (this.revealPlayerId !== userId) {
@@ -117,17 +128,20 @@ export class Instance {
       return;
     }
     // open chars only on reveal stages
-    if (this.currentStage % 2 === 0) {
+    if (this.currentStage % 2 === 0 || !isset(this.currentStage)) {
       return;
     }
 
     const uCharList = this.characteristics[userId];
+    const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
+
+    // check if user not reveales one char multiple times
+    if (uCharsRevealed.map(c => c.text).includes(char.text)) {
+      return;
+    }
 
     // check if user not reveales more chars then limited
-    let uCharsRevealed: number = uCharList.filter(
-      (char: { isRevealed: boolean }) => char.isRevealed === true,
-    ).length;
-    if (uCharsRevealed >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
       return;
     }
 
@@ -137,43 +151,14 @@ export class Instance {
     ).isRevealed = true;
     this.characteristics[userId] = uCharList;
     this.charsRevealedCount = this.charsRevealedCount + 1;
-    uCharsRevealed = uCharsRevealed + 1
 
-    /* check if user revealed all possible characteristics and 
-      choose next player that can reveal chars */
-    if (uCharsRevealed === Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
-      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
-        const totalPlayers = this.players.length;
-        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
-
-        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
-        const nextIndex = (currentIndex + 1) % totalPlayers; // When reaching the end of the player list, the search wraps around to the beginning 
-        const revealPlayer = this.players[nextIndex];
-
-        if (revealPlayer.isKicked) {
-          // If the next player is kicked, recursively search for the next
-          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
-        }
-        return revealPlayer.userId;
-      };
-
-      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
-    }
-
-    // transit to the next stage
-    const allRevealsOnCurrentStage =
-      this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
-
-    if (allRevealsOnCurrentStage) {
-      this.transitNextStage()
-      this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
-        ServerEvents.GameMessage,
-        {
-          color: 'blue',
-          message: `Stage ${this.currentStage} is started!`,
-        },
-      );
-    }
+    // create activity log
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.revealChar,
+      payload: data,
+    });
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -185,8 +170,71 @@ export class Instance {
     );
   }
 
+  /**
+   * Logic: By default player has endTurn=false.
+   * Player revealed all remaining characteristics: endTurn=true.
+   * If all players endTurn=true -> transit to the next stage
+   * and update endTurn=false for all.
+   * 
+   * @param data 
+   * @param client 
+   * @returns Promise<void>
+   */
+  public async endTurn(data: any, client: AuthenticatedSocket): Promise<void> {
+    const { userId } = data;
+
+    if (!this.hasStarted || this.hasFinished) {
+      return;
+    }
+    // kicked player can not end turn
+    const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
+    if (isKicked) {
+      return;
+    }
+    // end turn only on reveal stages
+    if (this.currentStage % 2 === 0 || !isset(this.currentStage)) {
+      return;
+    }
+    // only reveal player can end turn
+    if (this.revealPlayerId !== userId) {
+      return;
+    }
+
+    // update endTurn
+    this.players.find(player => player.userId === userId).endTurn = true;
+
+    // choose next player
+    this.chooseNextToReveal(data, client)
+
+    /* Check if all the players ended the turn and if all reveals on current stage.
+      Transit to the next stage, endTurn=false for all */
+    const kicked = this.players.filter(player => player.isKicked);
+    const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length - kicked.length;
+    const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
+    console.debug('[allRevealsOnCurrentStage]: ', allRevealsOnCurrentStage);
+    if (allEnded) {
+      this.transitNextStage(data, client)
+      this.players.forEach(player => {
+        player.endTurn = false;
+      });
+    }
+
+    this.lobby.dispatchLobbyState();
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'Player has finished his turn!',
+      },
+    );
+  }
+
   public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
     const { userId, contestantId } = data;
+
+    if (!this.hasStarted || this.hasFinished) {
+      return;
+    }
 
     // kicked player can not vote
     const isKicked = this.players.find(player => player.userId === userId).isKicked === true;
@@ -195,7 +243,7 @@ export class Instance {
     }
 
     // vote only on kick stages
-    if (this.currentStage % 2 === 1) {
+    if (this.currentStage % 2 === 1 || !isset(this.currentStage)) {
       return;
     }
 
@@ -205,6 +253,14 @@ export class Instance {
     }
 
     this.voteKickList = [...this.voteKickList, { userId, contestantId }]
+
+    // create activity log
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.voteKick,
+      payload: data,
+    });
 
     // calc votes and kick player
     if (this.voteKickList.length >= this.players.filter(_ => _.isKicked !== true).length) {
@@ -224,6 +280,20 @@ export class Instance {
         this.kickedPlayers = [...this.kickedPlayers, keysWithHighestValue[0]]
         kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
+
+      // choose next player if reveal one is kicked
+      if (this.revealPlayerId === kickedPlayer.userId) {
+        this.chooseNextToReveal(data, client)
+      }
+
+      // create activity log
+      await this.lobby.activityLogsService.createActivityLog({
+        userId: data.userId,
+        lobbyId: client.data.lobby.id,
+        action: constants.playerKicked,
+        payload: { userId: kickedPlayer.userId }, // kicked player id
+      });
+
       this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
         ServerEvents.GameMessage,
         {
@@ -232,13 +302,6 @@ export class Instance {
         },
       );
 
-      // create activity log
-      // await this.activityLogsService.createActivityLog({
-      //   userId: data.userId,
-      //   lobbyId: client.data.lobby.id,
-      //   action: constants.playerKicked,
-      //   payload: data,
-      // });
 
       this.charsRevealedCount = 0 // clear round char counter
       this.voteKickList = []; // clear the list after kick
@@ -250,7 +313,7 @@ export class Instance {
         return;
       }
 
-      this.transitNextStage();
+      this.transitNextStage(data, client);
       this.lobby.dispatchLobbyState();
       return;
     }
@@ -267,7 +330,7 @@ export class Instance {
     );
   }
 
-  public useSpecialCard(data: any, client: AuthenticatedSocket): void {
+  public async useSpecialCard(data: any, client: AuthenticatedSocket): Promise<void> {
     const { specialCard, userId, contestantId = null } = data;
     if (!this.hasStarted || this.hasFinished) {
       return;
@@ -288,6 +351,14 @@ export class Instance {
     this.applyChanges(specialCard.id, userId, contestantId)
     this.specialCards[userId].find(card => card.type === specialCard.type).isUsed = true;
 
+    // create activity log
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.useSpecialCard,
+      payload: data,
+    });
+
     const user = this.players.find(player => player.userId === userId);
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -303,7 +374,32 @@ export class Instance {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
   }
 
-  private transitNextStage(): void {
+  /* check if user revealed all possible characteristics and 
+      choose next player that can reveal chars */
+  private chooseNextToReveal(data: any, client: AuthenticatedSocket): void {
+    const uCharList = this.characteristics[data.userId];
+    const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
+    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
+        const totalPlayers = this.players.length;
+        if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
+
+        const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
+        const revealPlayer = this.players[currentIndex + 1] || this.players[0];
+        console.debug('[chooseNextToReveal] revealPlayer: ', revealPlayer);
+
+        if (revealPlayer.isKicked) {
+          // If the next player is kicked, recursively search for the next
+          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
+        }
+        return revealPlayer.userId;
+      };
+
+      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
+    }
+  }
+
+  private async transitNextStage(data: any, client: AuthenticatedSocket): Promise<void> {
     this.currentStage = this.currentStage + 1;
 
     // deactivate stages
@@ -320,13 +416,20 @@ export class Instance {
     }
 
     // create activity log
-    // await this.activityLogsService.createActivityLog({
-    //   userId: data.userId,
-    //   lobbyId: client.data.lobby.id,
-    //   action: constants.nextStageStarted,
-    //   payload: data,
-    // });
+    await this.lobby.activityLogsService.createActivityLog({
+      userId: data.userId,
+      lobbyId: client.data.lobby.id,
+      action: constants.nextStageStarted,
+      payload: { currentStage: this.currentStage }, // only currentStage needed
+    });
 
+    this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: `Stage ${this.currentStage} is started!`,
+      },
+    );
   }
 
   /* applies changes on special card use */

@@ -141,6 +141,10 @@ export class DatabaseService {
         data.settings.isPrivate !== undefined
           ? data.settings.isPrivate
           : lobby.settings.isPrivate,
+      timer:
+        data.settings.timer !== undefined
+          ? data.settings.timer
+          : lobby.settings.timer,
     };
 
     // Update lobby settings with the merged object
@@ -176,7 +180,7 @@ export class DatabaseService {
     return lobby;
   }
 
-  async getLobbyByKeyOrNull(key: string) {
+  async getLobbyByKeyOrNull(key: string): Promise<any> {
     const lobby = await this.prisma.lobbies.findFirst({
       where: { key: key },
     });

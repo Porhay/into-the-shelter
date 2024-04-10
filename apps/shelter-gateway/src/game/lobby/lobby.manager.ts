@@ -7,14 +7,10 @@ import { ServerException } from '../server.exception';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
-import { DatabaseService } from '@app/common';
 import { LobbiesService } from '../../lobbies/lobbies.service';
 
 export class LobbyManager {
-  constructor(
-    private readonly databaseService: DatabaseService,
-    private readonly lobbiesService: LobbiesService,
-  ) {}
+  constructor(private readonly lobbiesService: LobbiesService) {}
   public server: Server;
   private readonly lobbies: Map<Lobby['id'], Lobby> = new Map<
     Lobby['id'],
@@ -27,8 +23,17 @@ export class LobbyManager {
     client.data.lobby?.removeClient(client);
   }
 
-  public createLobby(maxClients: number): Lobby {
-    const lobby = new Lobby(this.server, maxClients);
+  public createLobby(
+    maxClients: number,
+    databaseService,
+    activityLogsService,
+  ): Lobby {
+    const lobby = new Lobby(
+      this.server,
+      maxClients,
+      databaseService,
+      activityLogsService,
+    );
     this.lobbies.set(lobby.id, lobby);
     return lobby;
   }
@@ -49,6 +54,14 @@ export class LobbyManager {
         'Lobby already full',
       );
     }
+
+    // TODO: Game already started check here
+    // if (lobby.instance.hasStarted) {
+    //   throw new ServerException(
+    //     SocketExceptions.LobbyError,
+    //     'Game already started',
+    //   );
+    // }
 
     playerData.socketId = client.id;
 

@@ -20,7 +20,7 @@ import { SocketExceptions } from './utils/SocketExceptions';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
-import { DatabaseService, constants } from '@app/common';
+import { DatabaseService } from '@app/common';
 import { ActivityLogsService } from '../activityLogs/activity-logs.service';
 
 @UsePipes(new WsValidationPipe())
@@ -71,7 +71,11 @@ export class GameGateway
   ): Promise<
     WsResponse<{ message: string; color?: 'green' | 'red' | 'blue' | 'orange' }>
   > {
-    const lobby = this.lobbyManager.createLobby(data.maxClients);
+    const lobby = this.lobbyManager.createLobby(
+      data.maxClients,
+      this.databaseService,
+      this.activityLogsService,
+    );
 
     // data.player.socketId = client.id  // Cannot set properties of undefined (setting 'socketId')
     lobby.addClient(client);
@@ -80,7 +84,7 @@ export class GameGateway
     const context = {
       key: lobby.id,
       organizatorId: data.organizatorId,
-      settings: { maxClients: data.maxClients, isPrivate: true },
+      settings: { maxClients: data.maxClients, isPrivate: true, timer: 0 },
     };
     await this.databaseService.createLobby(context);
 
@@ -95,19 +99,23 @@ export class GameGateway
 
   @SubscribeMessage(ClientEvents.LobbyUpdate)
   async onLobbyUpdate(client: AuthenticatedSocket, data: any): Promise<any> {
-    let isPrivate, maxClients;
+    let isPrivate, maxClients, timer;
     if (data.isPrivate !== null || data.isPrivate !== undefined) {
-      client.data.lobby.instance.isPrivate = data.isPrivate;
+      client.data.lobby.isPrivate = data.isPrivate;
       isPrivate = data.isPrivate;
     }
     if (data.maxClients !== null || data.maxClients !== undefined) {
-      client.data.lobby.instance.maxClients = data.maxClients;
+      client.data.lobby.maxClients = data.maxClients;
       maxClients = data.maxClients;
     }
+    if (data.maxClients !== null || data.maxClients !== undefined) {
+      client.data.lobby.timer = data.timer;
+      timer = data.timer;
+    }
 
-    // store lobby in database
+    // update lobby in database
     await this.databaseService.updateLobbyByKey(data.key, {
-      settings: { isPrivate, maxClients },
+      settings: { isPrivate, maxClients, timer },
     });
 
     return {
@@ -144,14 +152,6 @@ export class GameGateway
     }
 
     client.data.lobby.instance.voteKick(data, client);
-
-    // create activity log
-    await this.activityLogsService.createActivityLog({
-      userId: data.userId,
-      lobbyId: client.data.lobby.id,
-      action: constants.voteKick,
-      payload: data,
-    });
   }
 
   @SubscribeMessage(ClientEvents.GameUseSpecialCard)
@@ -167,14 +167,6 @@ export class GameGateway
     }
 
     client.data.lobby.instance.useSpecialCard(data, client);
-
-    // create activity log
-    await this.activityLogsService.createActivityLog({
-      userId: data.userId,
-      lobbyId: client.data.lobby.id,
-      action: constants.useSpecialCard,
-      payload: data,
-    });
   }
 
   @SubscribeMessage(ClientEvents.GameRevealChar)
@@ -187,13 +179,10 @@ export class GameGateway
     }
 
     client.data.lobby.instance.revealChar(data, client);
+  }
 
-    // create activity log
-    await this.activityLogsService.createActivityLog({
-      userId: data.userId,
-      lobbyId: client.data.lobby.id,
-      action: constants.revealChar,
-      payload: data,
-    });
+  @SubscribeMessage(ClientEvents.GameEndTurn)
+  onEndTurn(client: AuthenticatedSocket, data: any): void {
+    client.data.lobby.instance.endTurn(data, client);
   }
 }

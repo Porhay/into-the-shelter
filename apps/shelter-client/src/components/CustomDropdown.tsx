@@ -44,22 +44,21 @@ const CustomDropdown: React.FC<DropdownProps> = ({
     };
   }, [isOpened, onClose, type]);
 
-  const isTypeNotifications = type === 'notifications';
   return (
-    <div className={`login-container`} ref={dropdownRef}>
+    <div className="login-container" ref={dropdownRef}>
       {children}
       {isOpened && (
         <div
-          className={`drop-down-content ${isTypeNotifications && 'notifications-content'}`}
+          className={`drop-down-content ${type === 'notifications' && 'notifications-content'}`}
         >
           {(type === 'account' || type === 'login') && (
-            <div className={'login-down-text'}>{text}</div>
+            <div className="login-down-text">{text}</div>
           )}
           {type === 'notifications' && (
-            <div className={'notifications-down-text'}>{text}</div>
+            <div className="notifications-down-text">{text}</div>
           )}
           {list.map((item, index) => (
-            <div className={'button-wraper'} key={index}>
+            <div className="button-wraper" key={index}>
               <div className="default-btn-style">
                 <Button
                   icon={item.icon}

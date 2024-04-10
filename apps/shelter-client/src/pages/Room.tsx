@@ -1,12 +1,13 @@
 import '../styles/Room.scss';
+import 'react-toggle/style.css';
+import Toggle from 'react-toggle';
 import { Key, useEffect, useState } from 'react';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import { Button } from '../components/Buttons';
 import Webcam from '../components/Webcam';
 import Chat from '../components/Chat';
 import ModalWindow from '../components/ModalWindow';
-import Toggle from 'react-toggle';
-import 'react-toggle/style.css';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import {
@@ -36,6 +37,7 @@ interface IState {
   userCharList: charListType;
   userSpecialCards: specialCardsType;
   isPrivateLobby: boolean;
+  timer: number;
   voteKickList: any;
   maxClients: number;
   kickedPlayers: any[];
@@ -43,6 +45,7 @@ interface IState {
   modalProps: any;
   isOponentsListFocused: boolean;
   focusData: any; // sets on isOponentsListFocused
+  uRemainedChars: number;
 }
 
 type specialCardsType = {
@@ -57,7 +60,19 @@ type charType = {
   type: string;
   icon: string;
   text: string;
+  stage?: string; // for health only
   isRevealed: boolean;
+};
+
+const getRemainedChars = (data: any, userId: string) => {
+  const alreadyRevealedCount = data.characteristics[userId].filter(
+    (_: { isRevealed: boolean }) => _.isRevealed === true,
+  ).length;
+  const remained = (
+    Math.ceil(data.currentStage / 2) * 2 -
+    alreadyRevealedCount
+  ).toString();
+  return remained;
 };
 
 const RoomPage = () => {
@@ -95,6 +110,7 @@ const RoomPage = () => {
       },
     ],
     isPrivateLobby: true,
+    timer: 0,
     voteKickList: [],
     kickedPlayers: [],
     maxClients: 4,
@@ -106,6 +122,7 @@ const RoomPage = () => {
       title: '',
     },
     focusData: {},
+    uRemainedChars: 2,
   });
 
   useEffect(() => {
@@ -133,6 +150,8 @@ const RoomPage = () => {
         }),
       );
 
+      console.log('DATA: ', data);
+
       if (!lobby.hasStarted) {
         // update action tip and isOrganizator
         const tipStr = `Players: ${data.playersCount}/${state.maxClients}`;
@@ -153,16 +172,9 @@ const RoomPage = () => {
         // update reminded
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
-          // eslint-disable-next-line
-          const alreadyRevealedCount = data.characteristics[
-            currentPlayer.userId
-          ].filter(
-            (_: { isRevealed: boolean }) => _.isRevealed === true,
-          ).length;
-          const remained = (
-            Math.ceil(data.currentStage / 2) * 2 -
-            alreadyRevealedCount
-          ).toString();
+          const remained = getRemainedChars(data, currentPlayer.userId);
+          updateState({ uRemainedChars: parseInt(remained) });
+          console.log('uRemainedChars: ', remained);
           tipStr = `Open your characteristics, remained: ${remained}`;
         } else {
           const revealPlayer = data.players.find(
@@ -198,8 +210,6 @@ const RoomPage = () => {
       sm.removeListener(ServerEvents.LobbyState, onLobbyState);
     };
   }, [lobby.hasStarted, lobby.hasFinished, state.maxClients, dispatch]);
-
-  useEffect(() => {}, [state.isDescriptionOpened]);
 
   // DATA SETS
   const kickBlockText = (player: { userId: string }) => {
@@ -259,6 +269,7 @@ const RoomPage = () => {
     key?: string | null;
     isPrivate?: boolean;
     maxClients?: number;
+    timer?: number;
   }
   const handleSettingsUpdate = (data: settingsUpdate) => {
     sm.emit({
@@ -348,7 +359,10 @@ const RoomPage = () => {
 
                 <img
                   src={
-                    typeof player === 'number' ? avatarDefault : player.avatar
+                    typeof player === 'number'
+                      ? avatarDefault
+                      : gameAvatarByPosition(player.gameAvatars, 1)
+                          ?.downloadUrl || player.avatar
                   }
                   alt="camera block"
                 />
@@ -364,10 +378,10 @@ const RoomPage = () => {
                 >
                   {charList.map((char: charType, index: any) => (
                     <div
+                      key={index}
                       className={`char-button-wrapper ${char.isRevealed ? 'isRevealed' : 'isNotRevealed'}`}
                     >
                       <Button
-                        key={index}
                         icon={char.icon}
                         custom={true}
                         stylesheet="bottom-icon"
@@ -377,7 +391,7 @@ const RoomPage = () => {
                 </div>
               </div>
 
-              {state.isDetailsOpened ? (
+              {state.isDetailsOpened && (
                 <div className="chars-block-down">
                   <div className="char-list-container">
                     {charList.map((char: charType, index: any) => {
@@ -389,14 +403,22 @@ const RoomPage = () => {
                           <Button
                             key={index}
                             icon={char.icon}
-                            text={char.isRevealed ? char.text : 'Not revealed'}
+                            text={
+                              char.isRevealed
+                                ? char.type === 'health'
+                                  ? char.text !== 'Абсолютно здоровий'
+                                    ? `${char.text}(${char.stage})`
+                                    : char.text
+                                  : char.text
+                                : 'Not revealed'
+                            }
                           />
                         </div>
                       );
                     })}
                   </div>
                 </div>
-              ) : null}
+              )}
             </div>
           );
         })}
@@ -408,11 +430,17 @@ const RoomPage = () => {
     const handleGameStart = () => {
       sm.emit({
         event: ClientEvents.GameStart,
+        data: {},
+      });
+    };
+    const handleEndTurn = () => {
+      sm.emit({
+        event: ClientEvents.GameEndTurn,
         data: {
-          maxClients: state.maxClients,
-          isPrivate: state.isPrivateLobby,
+          userId: user.userId,
         },
       });
+      updateState({ uRemainedChars: 2 });
     };
 
     return (
@@ -420,7 +448,20 @@ const RoomPage = () => {
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
-        {!lobby.hasStarted || lobby.hasFinished ? (
+        {!state.kickedPlayers.includes(user.userId) &&
+          state.uRemainedChars === 0 &&
+          lobby.currentStage! % 2 === 1 &&
+          !lobby.hasFinished && (
+            <div>
+              <div className="divider"></div>
+              <div>
+                <button className="start-game-btn" onClick={handleEndTurn}>
+                  {'END TURN'}
+                </button>
+              </div>
+            </div>
+          )}
+        {(!lobby.hasStarted || lobby.hasFinished) && (
           <div>
             <div className="divider"></div>
             <div>
@@ -433,7 +474,7 @@ const RoomPage = () => {
               )}
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     );
   };
@@ -536,6 +577,42 @@ const RoomPage = () => {
                   />
                 </div>
               </div>
+              <div className="settings-timer">
+                <div className="timer-text">
+                  <h3>Turn on the timer</h3>
+                  <p>
+                    Players should end thair turns before the time limit to
+                    avoid random :D
+                  </p>
+                </div>
+                <div className="timer-selector">
+                  <select
+                    name="timer"
+                    value={state.timer}
+                    onChange={(e) => {
+                      updateState({
+                        timer: parseInt(e.target.value),
+                      });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        timer: parseInt(e.target.value),
+                      });
+                    }}
+                  >
+                    <option value={0} selected>
+                      off
+                    </option>
+                    <option value={1}>1m</option>
+                    <option value={2}>2m</option>
+                    <option value={3}>3m</option>
+                    <option value={4}>4m</option>
+                    <option value={5}>5m</option>
+                    <option value={6}>6m</option>
+                    <option value={7}>7m</option>
+                    <option value={8}>8m</option>
+                  </select>
+                </div>
+              </div>
               <div className="settings-max-players">
                 <div className="max-players-text">
                   <h3>Maximum players</h3>
@@ -545,11 +622,15 @@ const RoomPage = () => {
                   <select
                     name="maxClients"
                     value={state.maxClients}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       updateState({
                         maxClients: parseInt(e.target.value),
-                      })
-                    }
+                      });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        maxClients: parseInt(e.target.value),
+                      });
+                    }}
                   >
                     <option value={2}>2</option>
                     <option value={3}>3</option>
@@ -638,7 +719,13 @@ const RoomPage = () => {
                   <Button
                     key={index}
                     icon={char.icon}
-                    text={char.text}
+                    text={
+                      char.type === 'health'
+                        ? char.isRevealed
+                          ? `${char.text}(${char.stage})`
+                          : char.text
+                        : char.text
+                    }
                     onClick={() => handleCharRevial(char)}
                   />
                 </div>
