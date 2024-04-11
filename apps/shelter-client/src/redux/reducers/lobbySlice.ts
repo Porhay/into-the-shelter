@@ -12,6 +12,9 @@ export interface LobbyState {
   conditions?: any;
   currentStage?: number;
   stages?: any[];
+  revealPlayerId?: string;
+  timer?: number;
+  timerEndTime?: number | null;
 }
 
 const initialState: LobbyState = {
@@ -26,6 +29,9 @@ const initialState: LobbyState = {
   conditions: {},
   currentStage: 1,
   stages: [],
+  revealPlayerId: '',
+  timer: 0,
+  timerEndTime: null,
 };
 
 const lobbySlice = createSlice({

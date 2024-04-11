@@ -7,7 +7,6 @@ import { Button } from '../components/Buttons';
 import Webcam from '../components/Webcam';
 import Chat from '../components/Chat';
 import ModalWindow from '../components/ModalWindow';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import {
@@ -26,6 +25,7 @@ import { NOTIF_TYPE } from '../constants';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import shelterIcon from '../assets/images/shelter-icon.png';
 import catastropheIcon from '../assets/images/catastrophe-icon.png';
+import Timer from '../components/Timer';
 
 interface IState {
   isCameraOn: boolean;
@@ -147,6 +147,9 @@ const RoomPage = () => {
           characteristics: data.characteristics,
           specialCards: data.specialCards,
           conditions: data.conditions,
+          revealPlayerId: data.revealPlayerId,
+          timer: data.timer,
+          timerEndTime: data.timerEndTime,
         }),
       );
 
@@ -434,21 +437,42 @@ const RoomPage = () => {
       });
     };
     const handleEndTurn = () => {
+      if (state.uRemainedChars !== 0) {
+        for (let i = 0; i < state.uRemainedChars; i++) {
+          console.log('handleCharRevial in handleEndTurn, i:', i);
+          const notRevealedChars = lobby.characteristics[user.userId!].filter(
+            (_: { isRevealed: boolean }) => _.isRevealed !== true,
+          );
+          const randomIndex = Math.floor(
+            Math.random() * notRevealedChars.length,
+          );
+          handleCharRevial(notRevealedChars[randomIndex]);
+        }
+      }
+
       sm.emit({
         event: ClientEvents.GameEndTurn,
         data: {
           userId: user.userId,
         },
       });
-      updateState({ uRemainedChars: 2 });
     };
 
     return (
       <div className="action-tip-container">
+        {lobby.currentStage! % 2 === 1 &&
+          lobby.timer !== 0 &&
+          lobby.revealPlayerId === user.userId && (
+            <Timer
+              timerEndTime={lobby.timerEndTime!}
+              onTimerEnd={handleEndTurn}
+            />
+          )}
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
         {!state.kickedPlayers.includes(user.userId) &&
+          lobby.revealPlayerId === user.userId &&
           state.uRemainedChars === 0 &&
           lobby.currentStage! % 2 === 1 &&
           !lobby.hasFinished && (
@@ -599,9 +623,7 @@ const RoomPage = () => {
                       });
                     }}
                   >
-                    <option value={0} selected>
-                      off
-                    </option>
+                    <option value={0}>off</option>
                     <option value={1}>1m</option>
                     <option value={2}>2m</option>
                     <option value={3}>3m</option>
@@ -634,9 +656,7 @@ const RoomPage = () => {
                   >
                     <option value={2}>2</option>
                     <option value={3}>3</option>
-                    <option value={4} selected>
-                      4
-                    </option>
+                    <option value={4}>4</option>
                     <option value={5}>5</option>
                     <option value={6}>6</option>
                     <option value={7}>7</option>

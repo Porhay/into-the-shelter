@@ -19,6 +19,7 @@ export type ServerPayloads = {
     revealPlayerId: string;
     voteKickList: any[];
     kickedPlayers: string[];
+    timerEndTime: number;
   };
 
   [ServerEvents.GameMessage]: {
