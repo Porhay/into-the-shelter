@@ -31,6 +31,7 @@ export class Instance {
 
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
+  public timerEndTime: number | null = null
 
   constructor(
     private readonly lobby: Lobby,
@@ -87,6 +88,9 @@ export class Instance {
     const startPlayerIndex = getRandomIndex(this.players.length);
     this.startPlayerId = this.players[startPlayerIndex].userId;
     this.revealPlayerId = this.players[startPlayerIndex].userId; // id of player that can reveal it's characteristics
+
+    // set timer for player
+    this.setTimerIfRequired()
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -203,20 +207,19 @@ export class Instance {
     // update endTurn
     this.players.find(player => player.userId === userId).endTurn = true;
 
-    // choose next player
-    this.chooseNextToReveal(data, client)
-
     /* Check if all the players ended the turn and if all reveals on current stage.
       Transit to the next stage, endTurn=false for all */
     const kicked = this.players.filter(player => player.isKicked);
     const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length - kicked.length;
-    const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
-    console.debug('[allRevealsOnCurrentStage]: ', allRevealsOnCurrentStage);
+    // const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
     if (allEnded) {
       this.transitNextStage(data, client)
       this.players.forEach(player => {
         player.endTurn = false;
       });
+      this.timerEndTime = null // resore timer
+    } else {
+      this.chooseNextToReveal(data, client)
     }
 
     this.lobby.dispatchLobbyState();
@@ -281,11 +284,6 @@ export class Instance {
         kickedPlayer = this.players.find(player => player.userId === keysWithHighestValue[0])
       }
 
-      // choose next player if reveal one is kicked
-      if (this.revealPlayerId === kickedPlayer.userId) {
-        this.chooseNextToReveal(data, client)
-      }
-
       // create activity log
       await this.lobby.activityLogsService.createActivityLog({
         userId: data.userId,
@@ -302,7 +300,6 @@ export class Instance {
         },
       );
 
-
       this.charsRevealedCount = 0 // clear round char counter
       this.voteKickList = []; // clear the list after kick
 
@@ -313,6 +310,7 @@ export class Instance {
         return;
       }
 
+      this.chooseNextToReveal(data, client)
       this.transitNextStage(data, client);
       this.lobby.dispatchLobbyState();
       return;
@@ -386,7 +384,6 @@ export class Instance {
 
         const currentIndex = this.players.findIndex(p => p.userId === revealPlayerId);
         const revealPlayer = this.players[currentIndex + 1] || this.players[0];
-        console.debug('[chooseNextToReveal] revealPlayer: ', revealPlayer);
 
         if (revealPlayer.isKicked) {
           // If the next player is kicked, recursively search for the next
@@ -396,7 +393,20 @@ export class Instance {
       };
 
       this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
+
+      // set timer for next player
+      this.setTimerIfRequired()
     }
+  }
+
+  private setTimerIfRequired = () => {
+    if (this.lobby.timer === 0 && this.currentStage % 2 !== 0) {
+      return;
+    }
+    const timerEndTime = new Date();
+    timerEndTime.setMinutes(timerEndTime.getMinutes() + this.lobby.timer);
+    this.timerEndTime = timerEndTime.getTime();
+    return timerEndTime;
   }
 
   private async transitNextStage(data: any, client: AuthenticatedSocket): Promise<void> {

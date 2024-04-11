@@ -149,6 +149,7 @@ const RoomPage = () => {
           conditions: data.conditions,
           revealPlayerId: data.revealPlayerId,
           timer: data.timer,
+          timerEndTime: data.timerEndTime,
         }),
       );
 
@@ -449,12 +450,16 @@ const RoomPage = () => {
         {lobby.currentStage! % 2 === 1 &&
           lobby.timer !== 0 &&
           lobby.revealPlayerId === user.userId && (
-            <Timer duration={lobby.timer! * 60} onTimerEnd={handleEndTurn} />
+            <Timer
+              timerEndTime={lobby.timerEndTime!}
+              onTimerEnd={handleEndTurn}
+            />
           )}
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
         {!state.kickedPlayers.includes(user.userId) &&
+          lobby.revealPlayerId === user.userId &&
           state.uRemainedChars === 0 &&
           lobby.currentStage! % 2 === 1 &&
           !lobby.hasFinished && (
@@ -605,9 +610,7 @@ const RoomPage = () => {
                       });
                     }}
                   >
-                    <option value={0} selected>
-                      off
-                    </option>
+                    <option value={0}>off</option>
                     <option value={1}>1m</option>
                     <option value={2}>2m</option>
                     <option value={3}>3m</option>
@@ -640,9 +643,7 @@ const RoomPage = () => {
                   >
                     <option value={2}>2</option>
                     <option value={3}>3</option>
-                    <option value={4} selected>
-                      4
-                    </option>
+                    <option value={4}>4</option>
                     <option value={5}>5</option>
                     <option value={6}>6</option>
                     <option value={7}>7</option>

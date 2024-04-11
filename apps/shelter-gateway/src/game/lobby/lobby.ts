@@ -90,6 +90,7 @@ export class Lobby {
       revealPlayerId: this.instance.revealPlayerId,
       voteKickList: this.instance.voteKickList,
       kickedPlayers: this.instance.kickedPlayers,
+      timerEndTime: this.instance.timerEndTime,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);
