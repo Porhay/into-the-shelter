@@ -437,6 +437,19 @@ const RoomPage = () => {
       });
     };
     const handleEndTurn = () => {
+      if (state.uRemainedChars !== 0) {
+        for (let i = 0; i < state.uRemainedChars; i++) {
+          console.log('handleCharRevial in handleEndTurn, i:', i);
+          const notRevealedChars = lobby.characteristics[user.userId!].filter(
+            (_: { isRevealed: boolean }) => _.isRevealed !== true,
+          );
+          const randomIndex = Math.floor(
+            Math.random() * notRevealedChars.length,
+          );
+          handleCharRevial(notRevealedChars[randomIndex]);
+        }
+      }
+
       sm.emit({
         event: ClientEvents.GameEndTurn,
         data: {
