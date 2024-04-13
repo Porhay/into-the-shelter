@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AIKey } from 'config';
+import { AIKey, AIModels } from 'config';
+import { getRandomIndex } from 'helpers';
 import OpenAI from 'openai';
 
 const client = new OpenAI({
@@ -70,6 +71,7 @@ export class AIService {
     characteristics: any;
     players: any;
   }) {
+    const rendomModel = AIModels[getRandomIndex(AIModels.length)];
     const response = await client.chat.completions.create({
       messages: [
         {
@@ -81,13 +83,18 @@ export class AIService {
           content: genUserContext(data),
         },
       ],
-      model: 'QWEN/QWEN1.5-72B-CHAT', // QWEN/QWEN1.5-72B-CHAT, GARAGE-BAIND/PLATYPUS2-70B-INSTRUCT, NOUSRESEARCH/NOUS-HERMES-2-MIXTRAL-8X7B-SFT, mistralai/Mixtral-8x7B-Instruct-v0.1
-      top_p: 0.1,
-      temperature: 2,
+      model: rendomModel,
+      top_p: 0.25,
+      temperature: 1.5,
       max_tokens: 2048,
     });
 
     const output = response.choices[0].message.content;
-    return output;
+
+    // model subscription
+    const modelSub = `\nModel: ${rendomModel}`;
+    const result = output + modelSub;
+
+    return result;
   }
 }
