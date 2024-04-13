@@ -108,11 +108,14 @@ export class Instance {
       return;
     }
 
-    // generate prediction
-    const predictionStr = await this.lobby.AIService.generatePrediction({
+    // generate prediction in background and set finalPrediction on finish
+    this.lobby.AIService.generatePrediction({
       conditions: this.conditions,
       characteristics: this.characteristics,
       players: this.players,
+    }).then((predictionStr) => {
+      this.finalPrediction = predictionStr
+      this.lobby.dispatchLobbyState();
     })
 
     // reveal all remained characteristics
@@ -127,7 +130,6 @@ export class Instance {
     }
     revealAllCharacteristics()
 
-    this.finalPrediction = predictionStr
     this.hasFinished = true;
 
     this.lobby.dispatchLobbyState();

@@ -19,7 +19,9 @@ export const getRandomIndex = (maxIndex: number) => {
 export const getRandomIndexInRange = (minIndex: number, maxIndex: number) => {
   minIndex = minIndex ** 0.8;
   maxIndex = maxIndex ** 0.8;
-  return Math.floor(Math.random() * (maxIndex - minIndex) + minIndex) ** 1.25;
+  return Math.floor(
+    Math.floor(Math.random() * (maxIndex - minIndex) + minIndex) ** 1.25,
+  );
 };
 
 export const isset = (val: any) => {

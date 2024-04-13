@@ -26,6 +26,7 @@ import { updateLobby } from '../redux/reducers/lobbySlice';
 import shelterIcon from '../assets/images/shelter-icon.png';
 import catastropheIcon from '../assets/images/catastrophe-icon.png';
 import Timer from '../components/Timer';
+import Loader from '../libs/loader';
 
 interface IState {
   isCameraOn: boolean;
@@ -201,14 +202,17 @@ const RoomPage = () => {
         // on finish game
         if (data.hasFinished) {
           tipStr = 'Game over!';
-          updateState({
-            isPredictionOpened: true,
-          });
           dispatch(
             updateLobby({
               hasFinished: data.hasFinished,
             }),
           );
+        }
+
+        if (data.finalPrediction) {
+          updateState({
+            isPredictionOpened: true,
+          });
         }
 
         updateState({
@@ -518,14 +522,12 @@ const RoomPage = () => {
           <div>
             <div className="divider"></div>
             <div>
-              {lobby.hasFinished && (
-                <button
-                  className="start-game-btn"
-                  onClick={() => updateState({ isPredictionOpened: true })}
-                >
-                  SHOW PREDICTION
-                </button>
-              )}
+              <button
+                className="start-game-btn"
+                onClick={() => updateState({ isPredictionOpened: true })}
+              >
+                SHOW PREDICTION
+              </button>
             </div>
           </div>
         )}
@@ -541,7 +543,7 @@ const RoomPage = () => {
           updateState({ isOponentsListFocused: false });
         }}
       ></div>
-      {state.isPredictionOpened ? (
+      {state.isPredictionOpened && (
         <ModalWindow handleOpenModal={handleOpenPreditionModal}>
           <div className="modal-info-wrapper">
             <div className="info-title">
@@ -549,13 +551,19 @@ const RoomPage = () => {
             </div>
             <div className={`modal-info`}>
               <div className="description">
-                <p>{lobby.finalPrediction}</p>
+                {lobby.finalPrediction ? (
+                  <p>{lobby.finalPrediction}</p>
+                ) : (
+                  <div className="prediction-loader">
+                    <Loader color="#000" />
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </ModalWindow>
-      ) : null}
-      {state.isDescriptionOpened ? (
+      )}
+      {state.isDescriptionOpened && (
         <ModalWindow handleOpenModal={handleOpenModal}>
           <div className="modal-info-wrapper">
             <div className="info-title">
@@ -570,7 +578,7 @@ const RoomPage = () => {
             </div>
           </div>
         </ModalWindow>
-      ) : null}
+      )}
       <OponentsList />
       <div className="camera-list-wrapper">
         <div className="siwc-wrapper">
