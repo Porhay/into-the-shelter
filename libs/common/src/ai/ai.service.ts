@@ -75,7 +75,7 @@ const sysContext = `Гра "Бункер" - це рольова карткова
   Переобладнані для довгострокового проживання підземні станції. Забезпечені системами фільтрації повітря та автономним електроживленням. Розмір укриття: 800 кв.м на станцію. Час перебування: до 6 місяців. Кількість їжі: на 4 місяці. У станціях метро є: спільні спальні зони, запаси медичних препаратів, невелика книгозбірня.
 
   Катастрофа: Пандемія невідомого вірусу
-  Розповсюдження невідомого раніше смертельного вірусу призводить до глобальної пандемії. Медичні системи перевантажені, економіка паралізована, а соціальний порядок руйнується. Людство бореться за знаходження вакцини та способи виживання у нових умовах. 
+  Розповсюдження невідомого раніше смертельного вірусу призводить до глобальної пандемії. Медичні системи перевантажені, економіка паралізована, а соціальний порядок руйнується. Людство бореться за знаходження вакцини та способи виживання у нових умовах.
 
 Приклад формату твоєї відповіді:
 
@@ -146,30 +146,32 @@ export class AIService {
     characteristics: any;
     players: any;
   }) {
-    const rendomModel = AIModels[getRandomIndex(AIModels.length)];
-    const response = await client.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: sysContext,
-        },
-        {
-          role: 'user',
-          content: genUserContext(data),
-        },
-      ],
-      model: rendomModel,
-      top_p: 0.25,
-      temperature: 1.5,
-      max_tokens: 2048,
-    });
-
-    const output = response.choices[0].message.content;
-
-    // model subscription
-    const modelSub = `\nModel: ${rendomModel}`;
-    const result = output + modelSub;
-
-    return result;
+    try {
+      const rendomModel = AIModels[getRandomIndex(AIModels.length)];
+      const response = await client.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: sysContext,
+          },
+          {
+            role: 'user',
+            content: genUserContext(data),
+          },
+        ],
+        model: rendomModel,
+        top_p: 0.25,
+        temperature: 1.5,
+        max_tokens: 2048,
+      });
+      const output = response.choices[0].message.content;
+      // model subscription
+      const modelSub = `\nModel: ${rendomModel}`;
+      const result = output + modelSub;
+      return result;
+    } catch (e) {
+      console.log(e);
+      return 'No data';
+    }
   }
 }
