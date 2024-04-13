@@ -556,6 +556,7 @@ const RoomPage = () => {
                 ) : (
                   <div className="prediction-loader">
                     <Loader color="#000" />
+                    Already in process
                   </div>
                 )}
               </div>
