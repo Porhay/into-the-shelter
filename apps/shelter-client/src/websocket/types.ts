@@ -35,6 +35,7 @@ export type ServerPayloads = {
     kickedPlayers: string[];
     timer: number;
     timerEndTime: number | null;
+    finalPrediction: string;
   };
 
   [ServerEvents.GameMessage]: {

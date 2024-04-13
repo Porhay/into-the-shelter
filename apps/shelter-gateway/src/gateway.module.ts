@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule, FirebaseModule } from '@app/common';
+import { DatabaseModule, FirebaseModule, AIModule } from '@app/common';
 import { StatusModule } from './status/status.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { GameGateway } from './game/game.gateway';
@@ -22,6 +22,7 @@ import { ActivityLogsService } from './activityLogs/activity-logs.service';
 
     DatabaseModule,
     FirebaseModule,
+    AIModule,
 
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({

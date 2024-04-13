@@ -26,6 +26,7 @@ import { updateLobby } from '../redux/reducers/lobbySlice';
 import shelterIcon from '../assets/images/shelter-icon.png';
 import catastropheIcon from '../assets/images/catastrophe-icon.png';
 import Timer from '../components/Timer';
+import Loader from '../libs/loader';
 
 interface IState {
   isCameraOn: boolean;
@@ -42,6 +43,7 @@ interface IState {
   maxClients: number;
   kickedPlayers: any[];
   isDescriptionOpened: boolean;
+  isPredictionOpened: boolean;
   modalProps: any;
   isOponentsListFocused: boolean;
   focusData: any; // sets on isOponentsListFocused
@@ -115,6 +117,7 @@ const RoomPage = () => {
     kickedPlayers: [],
     maxClients: 4,
     isDescriptionOpened: false,
+    isPredictionOpened: false,
     isOponentsListFocused: false,
     modalProps: {
       type: '',
@@ -150,6 +153,7 @@ const RoomPage = () => {
           revealPlayerId: data.revealPlayerId,
           timer: data.timer,
           timerEndTime: data.timerEndTime,
+          finalPrediction: data.finalPrediction,
         }),
       );
 
@@ -198,6 +202,17 @@ const RoomPage = () => {
         // on finish game
         if (data.hasFinished) {
           tipStr = 'Game over!';
+          dispatch(
+            updateLobby({
+              hasFinished: data.hasFinished,
+            }),
+          );
+        }
+
+        if (data.finalPrediction) {
+          updateState({
+            isPredictionOpened: true,
+          });
         }
 
         updateState({
@@ -315,6 +330,11 @@ const RoomPage = () => {
     if (data.onContestant) {
       updateState({ isOponentsListFocused: false, focusData: {} });
     }
+  };
+  const handleOpenPreditionModal = (isOpened: boolean) => {
+    updateState({
+      isPredictionOpened: isOpened,
+    });
   };
 
   // COMPONENTS
@@ -439,7 +459,6 @@ const RoomPage = () => {
     const handleEndTurn = () => {
       if (state.uRemainedChars !== 0) {
         for (let i = 0; i < state.uRemainedChars; i++) {
-          console.log('handleCharRevial in handleEndTurn, i:', i);
           const notRevealedChars = lobby.characteristics[user.userId!].filter(
             (_: { isRevealed: boolean }) => _.isRevealed !== true,
           );
@@ -485,17 +504,30 @@ const RoomPage = () => {
               </div>
             </div>
           )}
-        {(!lobby.hasStarted || lobby.hasFinished) && (
+        {!lobby.hasStarted && (
           <div>
             <div className="divider"></div>
             <div>
               {state.isOrganizator ? (
                 <button className="start-game-btn" onClick={handleGameStart}>
-                  {lobby.hasFinished ? 'RESTART' : 'START GAME'}
+                  {'START GAME'}
                 </button>
               ) : (
                 <div>Waiting for organizator</div>
               )}
+            </div>
+          </div>
+        )}
+        {lobby.hasFinished && (
+          <div>
+            <div className="divider"></div>
+            <div>
+              <button
+                className="start-game-btn"
+                onClick={() => updateState({ isPredictionOpened: true })}
+              >
+                SHOW PREDICTION
+              </button>
             </div>
           </div>
         )}
@@ -511,7 +543,28 @@ const RoomPage = () => {
           updateState({ isOponentsListFocused: false });
         }}
       ></div>
-      {state.isDescriptionOpened ? (
+      {state.isPredictionOpened && (
+        <ModalWindow handleOpenModal={handleOpenPreditionModal}>
+          <div className="modal-info-wrapper">
+            <div className="info-title">
+              <h3>Final prediction</h3>
+            </div>
+            <div className={`modal-info`}>
+              <div className="description">
+                {lobby.finalPrediction ? (
+                  <p>{lobby.finalPrediction}</p>
+                ) : (
+                  <div className="prediction-loader">
+                    <Loader color="#000" />
+                    Already in process
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </ModalWindow>
+      )}
+      {state.isDescriptionOpened && (
         <ModalWindow handleOpenModal={handleOpenModal}>
           <div className="modal-info-wrapper">
             <div className="info-title">
@@ -526,7 +579,7 @@ const RoomPage = () => {
             </div>
           </div>
         </ModalWindow>
-      ) : null}
+      )}
       <OponentsList />
       <div className="camera-list-wrapper">
         <div className="siwc-wrapper">
@@ -742,7 +795,9 @@ const RoomPage = () => {
                     text={
                       char.type === 'health'
                         ? char.isRevealed
-                          ? `${char.text}(${char.stage})`
+                          ? char.text !== 'Абсолютно здоровий'
+                            ? `${char.text}(${char.stage})`
+                            : char.text
                           : char.text
                         : char.text
                     }

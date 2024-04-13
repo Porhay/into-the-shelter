@@ -80,3 +80,11 @@ export default () => ({
   CLIENT_SECRET: process.env.CLIENT_SECRET,
   CALLBACK_URL: process.env.CALLBACK_URL,
 });
+
+export const AIKey = process.env.AIKey;
+export const AIModels = [
+  'QWEN/QWEN1.5-72B-CHAT',
+  'GARAGE-BAIND/PLATYPUS2-70B-INSTRUCT',
+  'NOUSRESEARCH/NOUS-HERMES-2-MIXTRAL-8X7B-SFT',
+  'mistralai/Mixtral-8x7B-Instruct-v0.1',
+];

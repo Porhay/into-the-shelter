@@ -3,6 +3,8 @@
 libs/common/src/database/prisma/migrations
 libs/common/src/database/prisma/generated
 
+test.ts
+
 # Database
 data/
 
