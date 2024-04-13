@@ -20,7 +20,7 @@ import { SocketExceptions } from './utils/SocketExceptions';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
-import { DatabaseService } from '@app/common';
+import { DatabaseService, AIService } from '@app/common';
 import { ActivityLogsService } from '../activityLogs/activity-logs.service';
 
 @UsePipes(new WsValidationPipe())
@@ -32,6 +32,7 @@ export class GameGateway
   constructor(
     private readonly lobbyManager: LobbyManager,
     private readonly databaseService: DatabaseService,
+    private readonly AIService: AIService,
     private readonly activityLogsService: ActivityLogsService,
   ) {}
 
@@ -74,6 +75,7 @@ export class GameGateway
     const lobby = this.lobbyManager.createLobby(
       data.maxClients,
       this.databaseService,
+      this.AIService,
       this.activityLogsService,
     );
 

@@ -28,6 +28,7 @@ export class Instance {
   public revealPlayerId: string;
   public voteKickList: any = [];
   public kickedPlayers: string[] = [];
+  public finalPrediction: string = '';
 
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
@@ -102,18 +103,39 @@ export class Instance {
     );
   }
 
-  public triggerFinish(): void {
+  public async triggerFinish(): Promise<void> {
     if (this.hasFinished || !this.hasStarted) {
       return;
     }
 
+    // reveal all remained characteristics
+    const revealAllCharacteristics = (): void => {
+      // Iterate over each key in the map
+      Object.keys(this.characteristics).forEach(key => {
+        // Use forEach to update each characteristic in place
+        this.characteristics[key].forEach(characteristic => {
+          characteristic.isRevealed = true;  // Directly modify the characteristic object
+        });
+      });
+    }
+    revealAllCharacteristics()
+
+    // generate prediction
+    const predictionStr = await this.lobby.AIService.generatePrediction({
+      conditions: this.conditions,
+      characteristics: this.characteristics,
+      players: this.players,
+    })
+
+    this.finalPrediction = predictionStr
     this.hasFinished = true;
 
+    this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
       {
         color: 'blue',
-        message: 'Game finished !',
+        message: 'Game finished! All characteristics revealed..',
       },
     );
   }

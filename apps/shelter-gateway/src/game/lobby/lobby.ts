@@ -4,7 +4,7 @@ import { Instance } from '../instance/instance';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { generateSixSymbolHash } from 'helpers';
-import { DatabaseService } from '@app/common';
+import { AIService, DatabaseService } from '@app/common';
 import { ActivityLogsService } from '../../activityLogs/activity-logs.service';
 
 export class Lobby {
@@ -18,12 +18,14 @@ export class Lobby {
   public isPrivate: boolean = true;
   public timer: number = 0;
   public readonly databaseService = this._databaseService;
+  public readonly AIService = this._AIService;
   public readonly activityLogsService = this._activityLogsService;
 
   constructor(
     private readonly server: Server,
     public maxClients: number,
     private readonly _databaseService: DatabaseService,
+    private readonly _AIService: AIService,
     private readonly _activityLogsService: ActivityLogsService,
   ) {}
 
@@ -91,6 +93,7 @@ export class Lobby {
       voteKickList: this.instance.voteKickList,
       kickedPlayers: this.instance.kickedPlayers,
       timerEndTime: this.instance.timerEndTime,
+      finalPrediction: this.instance.finalPrediction,
     };
 
     this.dispatchToLobby(ServerEvents.LobbyState, payload);

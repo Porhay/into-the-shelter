@@ -26,12 +26,14 @@ export class LobbyManager {
   public createLobby(
     maxClients: number,
     databaseService,
+    AIService,
     activityLogsService,
   ): Lobby {
     const lobby = new Lobby(
       this.server,
       maxClients,
       databaseService,
+      AIService,
       activityLogsService,
     );
     this.lobbies.set(lobby.id, lobby);

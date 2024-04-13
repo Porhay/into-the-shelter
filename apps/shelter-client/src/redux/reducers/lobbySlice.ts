@@ -15,6 +15,7 @@ export interface LobbyState {
   revealPlayerId?: string;
   timer?: number;
   timerEndTime?: number | null;
+  finalPrediction?: string | null;
 }
 
 const initialState: LobbyState = {
@@ -32,6 +33,7 @@ const initialState: LobbyState = {
   revealPlayerId: '',
   timer: 0,
   timerEndTime: null,
+  finalPrediction: '',
 };
 
 const lobbySlice = createSlice({

@@ -80,3 +80,5 @@ export default () => ({
   CLIENT_SECRET: process.env.CLIENT_SECRET,
   CALLBACK_URL: process.env.CALLBACK_URL,
 });
+
+export const AIKey = process.env.AIKey;
