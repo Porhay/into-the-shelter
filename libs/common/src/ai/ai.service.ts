@@ -57,7 +57,7 @@ const genUserContext = (data: any) => {
   ${conditions.shelter.description}
 
   Катастрофа: ${conditions.catastrophe.name}
-  ${conditions.shelter.description}
+  ${conditions.catastrophe.description}
   `;
 
   return context;
