@@ -10,8 +10,16 @@ export const getRandomIndex = (maxIndex: number) => {
   return Math.floor(Math.random() * maxIndex);
 };
 
+/**
+ * Set random to generate smaller numbers more often
+ * @param minIndex
+ * @param maxIndex
+ * @returns
+ */
 export const getRandomIndexInRange = (minIndex: number, maxIndex: number) => {
-  return Math.floor(Math.random() * (maxIndex - minIndex) + minIndex);
+  minIndex = minIndex ** 0.8;
+  maxIndex = maxIndex ** 0.8;
+  return Math.floor(Math.random() * (maxIndex - minIndex) + minIndex) ** 1.25;
 };
 
 export const isset = (val: any) => {
