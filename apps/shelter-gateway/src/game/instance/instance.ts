@@ -108,6 +108,13 @@ export class Instance {
       return;
     }
 
+    // generate prediction
+    const predictionStr = await this.lobby.AIService.generatePrediction({
+      conditions: this.conditions,
+      characteristics: this.characteristics,
+      players: this.players,
+    })
+
     // reveal all remained characteristics
     const revealAllCharacteristics = (): void => {
       // Iterate over each key in the map
@@ -119,13 +126,6 @@ export class Instance {
       });
     }
     revealAllCharacteristics()
-
-    // generate prediction
-    const predictionStr = await this.lobby.AIService.generatePrediction({
-      conditions: this.conditions,
-      characteristics: this.characteristics,
-      players: this.players,
-    })
 
     this.finalPrediction = predictionStr
     this.hasFinished = true;
