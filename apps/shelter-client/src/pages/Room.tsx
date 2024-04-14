@@ -38,6 +38,7 @@ interface IState {
   userCharList: charListType;
   userSpecialCards: specialCardsType;
   isPrivateLobby: boolean;
+  isAllowBots: boolean;
   timer: number;
   voteKickList: any;
   maxClients: number;
@@ -112,6 +113,7 @@ const RoomPage = () => {
       },
     ],
     isPrivateLobby: true,
+    isAllowBots: true,
     timer: 0,
     voteKickList: [],
     kickedPlayers: [],
@@ -286,6 +288,7 @@ const RoomPage = () => {
   interface settingsUpdate {
     key?: string | null;
     isPrivate?: boolean;
+    isAllowBots?: boolean;
     maxClients?: number;
     timer?: number;
   }
@@ -633,7 +636,7 @@ const RoomPage = () => {
               </div>
             </div>
           ) : null}
-          {state.isOrganizator && !lobby.hasStarted ? (
+          {state.isOrganizator && !lobby.hasStarted && (
             <div className="lobby-settings-container">
               <div className="settings-is-private">
                 <div className="is-private-text">
@@ -717,8 +720,27 @@ const RoomPage = () => {
                   </select>
                 </div>
               </div>
+              <div className="settings-allow-bots">
+                <div className="allow-bots-text">
+                  <h3>Allow bots</h3>
+                  <p>Bots will join the lobby based on availability</p>
+                </div>
+                <div className="allow-bots-btn">
+                  <Toggle
+                    defaultChecked={state.isAllowBots}
+                    icons={false}
+                    onChange={() => {
+                      updateState({ isAllowBots: !state.isAllowBots });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        isAllowBots: !state.isAllowBots,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-          ) : null}
+          )}
           <div className="invite-webcam-char-wrapper">
             <div className="invite-webcam-wrapper">
               <div

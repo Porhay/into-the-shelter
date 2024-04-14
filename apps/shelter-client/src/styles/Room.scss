@@ -65,12 +65,16 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
         font-weight: 400;
         cursor: pointer;
         margin: 0 0 10px 0;
+        padding: 0 4px 0 0;
+        height: 186px;
+        overflow-y: scroll;
+        // border: #000000 1px solid;
 
         .settings-is-private {
             display: flex;
-            padding: 0 0 5px 5px;
-            margin: 0 0 5px 0;
-            border-bottom: #000000 1px solid;
+            padding: 0 0 5px 0;
+            margin: 0 0 5px 5px;
+            border-bottom: #00000050 1px solid;
 
             .is-private-text {
                 flex: 80%;
@@ -98,9 +102,9 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
         .settings-timer {
             display: flex;
-            padding: 0 0 5px 5px;
-            margin: 0 0 5px 0;
-            border-bottom: #000000 1px solid;
+            padding: 0 0 5px 0;
+            margin: 0 0 5px 5px;
+            border-bottom: #00000050 1px solid;
 
             .timer-text {
                 flex: 80%;
@@ -131,7 +135,9 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
 
         .settings-max-players {
             display: flex;
+            padding: 0 0 5px 0;
             margin: 0 0 5px 5px;
+            border-bottom: #00000050 1px solid;
 
             .max-players-text {
                 flex: 80%;
@@ -157,6 +163,34 @@ $sunset-color: invert(69%) sepia(91%) saturate(296%) hue-rotate(342deg) brightne
                 select {
                     width: 90%;
                 }
+            }
+
+        }
+
+        .settings-allow-bots {
+            display: flex;
+            padding: 0 0 5px 5px;
+
+            .allow-bots-text {
+                flex: 80%;
+
+                h3 {
+                    color: #000000;
+                    font-size: 20px;
+                }
+
+                p {
+                    color: #000000;
+                    font-size: 14px;
+                }
+            }
+
+            .allow-bots-btn {
+                margin: 0 10px;
+                flex: 20%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
         }
