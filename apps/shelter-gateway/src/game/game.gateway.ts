@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger, UsePipes } from '@nestjs/common';
+import { DatabaseService, AIService } from '@app/common';
 import { WsValidationPipe } from '../websocket/ws.validation-pipe';
 import { LobbyManager } from './lobby/lobby.manager';
 import { AuthenticatedSocket } from './types';
@@ -20,8 +21,8 @@ import { SocketExceptions } from './utils/SocketExceptions';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
-import { DatabaseService, AIService } from '@app/common';
 import { ActivityLogsService } from '../activityLogs/activity-logs.service';
+import { isset } from 'helpers';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -101,23 +102,27 @@ export class GameGateway
 
   @SubscribeMessage(ClientEvents.LobbyUpdate)
   async onLobbyUpdate(client: AuthenticatedSocket, data: any): Promise<any> {
-    let isPrivate, maxClients, timer;
-    if (data.isPrivate !== null || data.isPrivate !== undefined) {
+    let isPrivate, maxClients, timer, isAllowBots;
+    if (isset(data.isPrivate)) {
       client.data.lobby.isPrivate = data.isPrivate;
       isPrivate = data.isPrivate;
     }
-    if (data.maxClients !== null || data.maxClients !== undefined) {
+    if (isset(data.maxClients)) {
       client.data.lobby.maxClients = data.maxClients;
       maxClients = data.maxClients;
     }
-    if (data.maxClients !== null || data.maxClients !== undefined) {
+    if (isset(data.maxClients)) {
       client.data.lobby.timer = data.timer;
       timer = data.timer;
+    }
+    if (isset(data.isAllowBots)) {
+      client.data.lobby.isAllowBots = data.isAllowBots;
+      isAllowBots = data.isAllowBots;
     }
 
     // update lobby in database
     await this.databaseService.updateLobbyByKey(data.key, {
-      settings: { isPrivate, maxClients, timer },
+      settings: { isPrivate, maxClients, timer, isAllowBots },
     });
 
     return {

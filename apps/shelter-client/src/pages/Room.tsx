@@ -154,6 +154,7 @@ const RoomPage = () => {
           conditions: data.conditions,
           revealPlayerId: data.revealPlayerId,
           timer: data.timer,
+          isAllowBots: data.isAllowBots,
           timerEndTime: data.timerEndTime,
           finalPrediction: data.finalPrediction,
         }),

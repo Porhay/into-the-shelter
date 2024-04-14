@@ -145,6 +145,10 @@ export class DatabaseService {
         data.settings.timer !== undefined
           ? data.settings.timer
           : lobby.settings.timer,
+      isAllowBots:
+        data.settings.isAllowBots !== undefined
+          ? data.settings.isAllowBots
+          : lobby.settings.isAllowBots,
     };
 
     // Update lobby settings with the merged object

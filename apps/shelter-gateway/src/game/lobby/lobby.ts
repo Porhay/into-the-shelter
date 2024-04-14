@@ -17,6 +17,7 @@ export class Lobby {
   public readonly instance: Instance = new Instance(this);
   public isPrivate: boolean = true;
   public timer: number = 0;
+  public isAllowBots: boolean = false;
   public readonly databaseService = this._databaseService;
   public readonly AIService = this._AIService;
   public readonly activityLogsService = this._activityLogsService;
@@ -87,6 +88,7 @@ export class Lobby {
       maxClients: this.maxClients,
       isPrivate: this.isPrivate,
       timer: this.timer,
+      isAllowBots: this.isAllowBots,
       currentStage: this.instance.currentStage,
       stages: this.instance.stages,
       revealPlayerId: this.instance.revealPlayerId,

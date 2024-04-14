@@ -14,6 +14,7 @@ export interface LobbyState {
   stages?: any[];
   revealPlayerId?: string;
   timer?: number;
+  isAllowBots?: boolean;
   timerEndTime?: number | null;
   finalPrediction?: string | null;
 }
@@ -32,6 +33,7 @@ const initialState: LobbyState = {
   stages: [],
   revealPlayerId: '',
   timer: 0,
+  isAllowBots: false,
   timerEndTime: null,
   finalPrediction: '',
 };
