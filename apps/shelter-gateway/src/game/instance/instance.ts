@@ -571,16 +571,15 @@ export class Instance {
   }
 
   private async botActionIfRequired(client: AuthenticatedSocket, action: 'reveal' | 'voteKick') {
-    const curPlayer = this.players.find(p => p.userId === this.revealPlayerId);
-    if (!curPlayer.isBot) {
-      return;
-    };
-    if (curPlayer.isKicked) {
-      return;
-    }
-
     switch (action) {
       case 'reveal':
+        const curPlayer = this.players.find(p => p.userId === this.revealPlayerId)
+        if (curPlayer.isKicked) {
+          return;
+        }
+        if (!curPlayer.isBot) {
+          return;
+        };
         const avaliableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
         for (let i = 0; i <= this.charOpenLimit; i++) {
           await this.revealChar({
@@ -591,9 +590,10 @@ export class Instance {
         await this.endTurn({ userId: curPlayer.userId }, client)
         break;
       case 'voteKick':
-        const contestants = this.players.filter(p => Object.keys(p) !== curPlayer.userId)
+        const botPlayers = this.players.filter(p => p.isBot === true)
+        const contestants = this.players.filter(p => Object.keys(p) !== botPlayers[0].userId)
         await this.voteKick({
-          userId: curPlayer.userId,
+          userId: botPlayers[0].userId,
           contestantId: contestants[getRandomIndex(this.players.length)].userId
         }, client)
         break;

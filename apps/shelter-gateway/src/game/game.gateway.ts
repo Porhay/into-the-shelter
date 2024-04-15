@@ -22,7 +22,7 @@ import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
 import { ActivityLogsService } from '../activityLogs/activity-logs.service';
-import { isset, getTime, getRandomGreeting } from 'helpers';
+import { isset, getTime, getRandomGreeting, getRandomIndex } from 'helpers';
 import { constants } from '@app/common';
 
 @UsePipes(new WsValidationPipe())
@@ -123,15 +123,16 @@ export class GameGateway
       // TODO: make join all avaliable
 
       // join bot to lobby
-      const playerBot = constants.Leonardo_bot;
+      const playerBot =
+        constants.allBots[getRandomIndex(constants.allBots.length)];
       this.lobbyManager.joinLobby(data.key, client, playerBot);
 
       // greeting
       client.data.lobby.instance.sendChatMessage(
         {
-          sender: constants.Leonardo_bot.displayName,
-          message: getRandomGreeting(),
-          avatar: constants.Leonardo_bot.avatar,
+          sender: playerBot.displayName,
+          message: getRandomGreeting(playerBot.greetings),
+          avatar: playerBot.avatar,
           timeSent: getTime(),
         },
         client,
