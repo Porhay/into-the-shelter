@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AIKey, AIModels } from 'config';
 import { constants } from '@app/common';
-import { getRandomIndex } from 'helpers';
+import { getRandomIndex, extractJustificationInfo } from 'helpers';
 import OpenAI from 'openai';
 
 const client = new OpenAI({
@@ -124,7 +124,7 @@ export class AIService {
     players: any;
   }) {
     try {
-      const rendomModel = AIModels[getRandomIndex(AIModels.length)];
+      const randomModel = AIModels[getRandomIndex(AIModels.length)];
       const response = await client.chat.completions.create({
         messages: [
           {
@@ -136,14 +136,14 @@ export class AIService {
             content: genPredictionUserContext(data),
           },
         ],
-        model: rendomModel,
+        model: randomModel,
         top_p: 0.25,
         temperature: 1.5,
         max_tokens: 2048,
       });
       const output = response.choices[0].message.content;
       // model subscription
-      const modelSub = `\nModel: ${rendomModel}`;
+      const modelSub = `\nModel: ${randomModel}`;
       const result = output + modelSub;
       return result;
     } catch (e) {
@@ -158,7 +158,6 @@ export class AIService {
     player: any;
   }) {
     try {
-      const rendomModel = AIModels[getRandomIndex(AIModels.length)];
       const response = await client.chat.completions.create({
         messages: [
           {
@@ -170,13 +169,14 @@ export class AIService {
             content: genJustificationUserContext(data),
           },
         ],
-        model: rendomModel,
+        model: 'NOUSRESEARCH/NOUS-HERMES-2-MIXTRAL-8X7B-SFT',
         top_p: 0.25,
         temperature: 1.5,
         max_tokens: 2048,
       });
       const output = response.choices[0].message.content;
-      return output;
+      const result = extractJustificationInfo(output);
+      return result;
     } catch (e) {
       console.log(e);
       return null;

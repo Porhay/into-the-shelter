@@ -173,3 +173,24 @@ export const getRandomGreeting = (list: string[]) => {
   const greeting = list[getRandomIndex(list.length)];
   return greeting;
 };
+
+export function extractJustificationInfo(text: string): {
+  characteristics: string[];
+  argument: string;
+} {
+  // Regular expression patterns to match characteristics and argument
+  const characteristicsPattern = /Характеристики:\s*(.+?)\./;
+  const argumentPattern = /Аргумент:\s*(.+)/;
+
+  // Match characteristics and argument
+  const characteristicsMatch = text.match(characteristicsPattern);
+  const argumentMatch = text.match(argumentPattern);
+
+  // Extract characteristics and argument
+  const characteristics = characteristicsMatch
+    ? characteristicsMatch[1].split(', ').map((item) => item.trim())
+    : [];
+  const argument = argumentMatch ? argumentMatch[1].trim() : '';
+
+  return { characteristics, argument };
+}

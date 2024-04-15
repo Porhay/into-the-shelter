@@ -5,7 +5,8 @@ import {
   getRandomIndex,
   countOccurrences,
   getKeysWithHighestValue,
-  isset
+  isset,
+  getTime
 } from 'helpers';
 import { Lobby } from '../lobby/lobby';
 import { AuthenticatedSocket } from '../types';
@@ -580,18 +581,39 @@ export class Instance {
         if (!curPlayer.isBot) {
           return;
         };
-        const availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
+        let availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
         const justification = await this.lobby.AIService.generateJustification({
           conditions: this.conditions,
           characteristics: this.characteristics,
           player: curPlayer,
         })
-        for (let i = 0; i <= this.charOpenLimit; i++) {
-          await this.revealChar({
-            userId: curPlayer.userId,
-            char: availableChars[getRandomIndex(availableChars.length)]
-          }, client)
+        for (let i = 0; i < this.charOpenLimit; i++) {
+          try {
+            await this.revealChar({
+              userId: curPlayer.userId,
+              char: availableChars.find(ch => ch.text === justification.characteristics[i])
+            }, client)
+
+            // bot argumentation in chat
+            this.lobby.instance.sendChatMessage(
+              {
+                sender: curPlayer.displayName,
+                message: justification.argument,
+                avatar: curPlayer.avatar,
+                timeSent: getTime(),
+              },
+              client,
+            );
+          } catch (error) {
+            const randomIndex = getRandomIndex(availableChars.length)
+            await this.revealChar({
+              userId: curPlayer.userId,
+              char: availableChars[randomIndex]
+            }, client)
+            availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
+          }
         }
+
         await this.endTurn({ userId: curPlayer.userId }, client)
         break;
       case 'voteKick':
