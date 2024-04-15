@@ -22,7 +22,8 @@ import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
 import { ActivityLogsService } from '../activityLogs/activity-logs.service';
-import { isset } from 'helpers';
+import { isset, getTime, getRandomGreeting } from 'helpers';
+import { constants } from '@app/common';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway()
@@ -118,6 +119,23 @@ export class GameGateway
     if (isset(data.isAllowBots)) {
       client.data.lobby.isAllowBots = data.isAllowBots;
       isAllowBots = data.isAllowBots;
+
+      // TODO: make join all avaliable
+
+      // join bot to lobby
+      const playerBot = constants.Leonardo_bot;
+      this.lobbyManager.joinLobby(data.key, client, playerBot);
+
+      // greeting
+      client.data.lobby.instance.sendChatMessage(
+        {
+          sender: constants.Leonardo_bot.displayName,
+          message: getRandomGreeting(),
+          avatar: constants.Leonardo_bot.avatar,
+          timeSent: getTime(),
+        },
+        client,
+      );
     }
 
     // update lobby in database

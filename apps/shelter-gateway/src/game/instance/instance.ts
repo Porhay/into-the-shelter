@@ -42,7 +42,7 @@ export class Instance {
     if (this.hasStarted) {
       return;
     }
-    if (this.lobby.clients.size < 2) {
+    if (this.players.length < 2) {
       return this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
         ServerEvents.GameMessage,
         {
@@ -76,7 +76,7 @@ export class Instance {
 
     // generate stages
     const stages: { title: string; isActive: boolean; index: number }[] = [];
-    for (let i = 1; i <= Math.floor(this.lobby.clients.size / 2); i++) {
+    for (let i = 1; i <= Math.floor(this.players.length / 2); i++) {
       stages.push(
         { title: 'Open', isActive: false, index: stages.length + 1 },
         { title: 'Kick', isActive: false, index: stages.length + 2 },
@@ -92,6 +92,9 @@ export class Instance {
 
     // set timer for player
     this.setTimerIfRequired()
+
+    // reveal here if bot
+    await this.botActionIfRequired(client, 'reveal')
 
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
@@ -144,6 +147,7 @@ export class Instance {
 
   public async revealChar(data: any, client: AuthenticatedSocket): Promise<void> {
     const { char, userId } = data;
+
     if (!this.hasStarted || this.hasFinished) {
       return;
     }
@@ -237,13 +241,15 @@ export class Instance {
     const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length - kicked.length;
     // const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
     if (allEnded) {
-      this.transitNextStage(data, client)
+      await this.transitNextStage(data, client)
       this.players.forEach(player => {
         player.endTurn = false;
       });
+      await this.botActionIfRequired(client, 'voteKick')
       this.timerEndTime = null // resore timer
     } else {
       this.chooseNextToReveal(data, client)
+      await this.botActionIfRequired(client, 'reveal')
     }
 
     this.lobby.dispatchLobbyState();
@@ -335,7 +341,8 @@ export class Instance {
       }
 
       this.chooseNextToReveal(data, client)
-      this.transitNextStage(data, client);
+      await this.transitNextStage(data, client);
+      await this.botActionIfRequired(client, 'reveal')
       this.lobby.dispatchLobbyState();
       return;
     }
@@ -398,11 +405,11 @@ export class Instance {
 
   /* check if user revealed all possible characteristics and 
       choose next player that can reveal chars */
-  private chooseNextToReveal(data: any, client: AuthenticatedSocket): void {
+  private async chooseNextToReveal(data: any, client: AuthenticatedSocket): Promise<void> {
     const uCharList = this.characteristics[data.userId];
     const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
     if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
-      const chooseNextToReveal = (revealPlayerId, attempt = 0) => {
+      const chooseNext = (revealPlayerId, attempt = 0) => {
         const totalPlayers = this.players.length;
         if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
 
@@ -411,12 +418,12 @@ export class Instance {
 
         if (revealPlayer.isKicked) {
           // If the next player is kicked, recursively search for the next
-          return chooseNextToReveal(revealPlayer.userId, attempt + 1);
+          return chooseNext(revealPlayer.userId, attempt + 1);
         }
         return revealPlayer.userId;
       };
 
-      this.revealPlayerId = chooseNextToReveal(this.revealPlayerId);
+      this.revealPlayerId = chooseNext(this.revealPlayerId);
 
       // set timer for next player
       this.setTimerIfRequired()
@@ -557,6 +564,38 @@ export class Instance {
         break;
       case 12: // Обмінятися професією із суперником
         exchangeWithContestent('job')
+        break;
+      default:
+        break;
+    }
+  }
+
+  private async botActionIfRequired(client: AuthenticatedSocket, action: 'reveal' | 'voteKick') {
+    const curPlayer = this.players.find(p => p.userId === this.revealPlayerId);
+    if (!curPlayer.isBot) {
+      return;
+    };
+    if (curPlayer.isKicked) {
+      return;
+    }
+
+    switch (action) {
+      case 'reveal':
+        const avaliableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
+        for (let i = 0; i <= this.charOpenLimit; i++) {
+          await this.revealChar({
+            userId: curPlayer.userId,
+            char: avaliableChars[getRandomIndex(avaliableChars.length)]
+          }, client)
+        }
+        await this.endTurn({ userId: curPlayer.userId }, client)
+        break;
+      case 'voteKick':
+        const contestants = this.players.filter(p => Object.keys(p) !== curPlayer.userId)
+        await this.voteKick({
+          userId: curPlayer.userId,
+          contestantId: contestants[getRandomIndex(this.players.length)].userId
+        }, client)
         break;
       default:
         break;

@@ -9,7 +9,7 @@ export class UsersService {
   ) {}
 
   async getUserById(userId: string): Promise<any> {
-    const dbUser = await this.databaseService.getUserById(userId);
+    const dbUser = await this.databaseService.getUserByIdOrNull(userId);
 
     const updatedGameAvatars = [];
 

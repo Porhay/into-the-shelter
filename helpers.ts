@@ -160,3 +160,39 @@ export const getKeysWithHighestValue = (obj: object) => {
 
   return keysWithMaxCount;
 };
+
+export const getTime = () => {
+  const date = new Date();
+  const hour = date.getHours().toString().padStart(2, '0');
+  const minute = date.getMinutes().toString().padStart(2, '0');
+  const timeStr = `${hour}:${minute}`;
+  return timeStr;
+};
+
+export const getRandomGreeting = () => {
+  const list = [
+    'Hi there!',
+    'Hey there, sunshine!',
+    'What’s cooking, good looking?',
+    'Hello, champion!',
+    'Howdy, partner!',
+    'Hiya, superstar!',
+    'Greetings, Earthling!',
+    'What’s up, buttercup?',
+    'Ahoy, matey!',
+    'Long time no see, how’ve you been?',
+    'Yo, how’s it hanging?',
+    'Peek-a-boo! What’s new with you?',
+    'How’s it shaking, bacon?',
+    'Look who’s here! The legend themselves!',
+    'What’s the story, morning glory?',
+    'Hey, hey, what do you say?',
+    'What’s crackin’, little snackin’?',
+    'Ready to rock and roll?',
+    'Is it a bird? Is it a plane? No, it’s you!',
+    'Knock, knock! Who’s there? Me, wondering how you’re doing!',
+    'Sup, my fellow earthling?',
+  ];
+  const greeting = list[getRandomIndex(list.length)];
+  return greeting;
+};

@@ -45,15 +45,13 @@ export class DatabaseService {
     });
   }
 
-  async getUserById(userId: string) {
+  async getUserByIdOrNull(userId: string) {
     const user = await this.prisma.users.findUnique({
       where: { id: userId },
     });
-
     if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
+      return null;
     }
-
     return user;
   }
 

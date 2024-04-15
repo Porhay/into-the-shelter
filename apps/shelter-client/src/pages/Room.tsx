@@ -113,7 +113,7 @@ const RoomPage = () => {
       },
     ],
     isPrivateLobby: true,
-    isAllowBots: true,
+    isAllowBots: false,
     timer: 0,
     voteKickList: [],
     kickedPlayers: [],
