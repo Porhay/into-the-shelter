@@ -94,9 +94,6 @@ export class Instance {
     // set timer for player
     this.setTimerIfRequired()
 
-    // reveal here if bot
-    await this.botActionIfRequired(client, 'reveal')
-
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
@@ -105,6 +102,9 @@ export class Instance {
         message: 'Game started!',
       },
     );
+
+    // reveal here if bot
+    await this.botActionIfRequired(client, 'reveal')
   }
 
   public async triggerFinish(): Promise<void> {
@@ -246,11 +246,9 @@ export class Instance {
       this.players.forEach(player => {
         player.endTurn = false;
       });
-      await this.botActionIfRequired(client, 'voteKick')
       this.timerEndTime = null // resore timer
     } else {
       this.chooseNextToReveal(data, client)
-      await this.botActionIfRequired(client, 'reveal')
     }
 
     this.lobby.dispatchLobbyState();
@@ -261,6 +259,10 @@ export class Instance {
         message: 'Player has finished his turn!',
       },
     );
+
+    allEnded 
+      ? await this.botActionIfRequired(client, 'voteKick')
+      : await this.botActionIfRequired(client, 'reveal')
   }
 
   public async voteKick(data: any, client: AuthenticatedSocket): Promise<void> {
@@ -343,8 +345,8 @@ export class Instance {
 
       this.chooseNextToReveal(data, client)
       await this.transitNextStage(data, client);
-      await this.botActionIfRequired(client, 'reveal')
       this.lobby.dispatchLobbyState();
+      await this.botActionIfRequired(client, 'reveal')
       return;
     }
 
@@ -591,7 +593,7 @@ export class Instance {
           try {
             await this.revealChar({
               userId: curPlayer.userId,
-              char: availableChars.find(ch => ch.text === justification.characteristics[i])
+              char: availableChars.find(ch => ch.text === justification.characteristics[i] || ch.text.includes(justification.characteristics[i]))
             }, client)
 
             // bot argumentation in chat
@@ -605,6 +607,7 @@ export class Instance {
               client,
             );
           } catch (error) {
+            console.log(error);
             const randomIndex = getRandomIndex(availableChars.length)
             await this.revealChar({
               userId: curPlayer.userId,

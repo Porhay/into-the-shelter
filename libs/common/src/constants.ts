@@ -121,8 +121,16 @@ export const Maslina_bot = {
   avatar:
     'https://storage.googleapis.com/into-the-shelter.appspot.com/maslina-1713176127995.jpg?GoogleAccessId=firebase-adminsdk-buiok%40into-the-shelter.iam.gserviceaccount.com&Expires=2028708928&Signature=tD%2BknsUsHes2LEpVhMW6yLdrqCQsUrQyU4bWqYrLxJ6NmUocUMBv0tW22DL9038XvPzD2v%2FE3ilOWz94%2FcpQ8djV8kVzvXcwqC67fbc4sdQKZhbX2MejdRhIrshYJVs3SunlKVCOwBZNFBU%2BodujlnzFBfdm4pRKamAsydVQXiStd3ygRXOI7McZTNKuht6xuBoyyYAe44Jv0cKgqZIzNH1csaDJ0kh8NLayergxMdhG5gvoAhNYR3o1uy1ymwQtrd%2BVIpnhrgN45k3EQeQkYpX27UsoWIhE6Kg3Vaht8aPWL2neayn9YzhyWKwyxSno89MWcVWXsdNrSbB%2FG%2BgpwQ%3D%3D',
 };
+export const Mangolik_bot = {
+  isBot: true,
+  userId: '00000000-0000-0000-0000-000000000005',
+  displayName: 'Mangolik',
+  greetings: ['Анікдот :D'],
+  avatar:
+    'https://storage.googleapis.com/into-the-shelter.appspot.com/Diachik-1713199371739.jpg?GoogleAccessId=firebase-adminsdk-buiok%40into-the-shelter.iam.gserviceaccount.com&Expires=2028732172&Signature=2Jk3vEcz%2B3NFjYf7rwpG6AAs6mwQ4p20cr68LWAAbetn6zG6jXj4BbuQI2fqJJ1%2B0IAv12gYWvLUBUY0BpTO0YHXUv0PoSPYeqKClnIukKc1BQ0l7bRCajdPIF%2BOy%2Fic9Ywmn5B9qO%2FlRaUufNwJC9JyypMmmZakyFO%2BUIjH5%2FwnJ6apEuUy3z53hYkWPY4BuPLt9UpCwZwe%2Fb28%2BB5EZT3q%2B9phvVa91CUoOR0lbUzwd%2BBs44TdsKkLgW254Rt3aX1wsIa9%2BfaDo7Vpt%2FOZb7mDvDLstCgwaB9twvDuxOcQPGUEB27cXXaVr%2B87ChZU4G9XzrnuWkQ%2B2piMFnVohw%3D%3D',
+};
 
-export const allBots = [Maslina_bot, Kiko_bot, Vasov_bot, Leonardo_bot];
+export const allBots = [Maslina_bot, Kiko_bot, Vasov_bot, Mangolik_bot];
 
 // ai contexts
 export const predictionSysContext = `Гра "Бункер" - це рольова карткова гра про апокаліпсис для кількох гравців. Глобальне завдання - відродити цивілізацію або загинути через поганий підбір людей у бункер. Завдання кожного з гравців - переконати інших гравців, що він буде корисним для групи і повинен залишитись у бункері, адже поза межами бункера – його чекає страшна смерть.

@@ -178,6 +178,8 @@ export function extractJustificationInfo(text: string): {
   characteristics: string[];
   argument: string;
 } {
+  console.log('extractJustificationInfo', text);
+
   // Regular expression patterns to match characteristics and argument
   const characteristicsPattern = /Характеристики:\s*(.+?)\./;
   const argumentPattern = /Аргумент:\s*(.+)/;
