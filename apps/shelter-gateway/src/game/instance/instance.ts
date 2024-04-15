@@ -580,11 +580,16 @@ export class Instance {
         if (!curPlayer.isBot) {
           return;
         };
-        const avaliableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
+        const availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
+        const justification = await this.lobby.AIService.generateJustification({
+          conditions: this.conditions,
+          characteristics: this.characteristics,
+          player: curPlayer,
+        })
         for (let i = 0; i <= this.charOpenLimit; i++) {
           await this.revealChar({
             userId: curPlayer.userId,
-            char: avaliableChars[getRandomIndex(avaliableChars.length)]
+            char: availableChars[getRandomIndex(availableChars.length)]
           }, client)
         }
         await this.endTurn({ userId: curPlayer.userId }, client)

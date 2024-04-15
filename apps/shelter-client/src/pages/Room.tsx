@@ -160,8 +160,6 @@ const RoomPage = () => {
         }),
       );
 
-      console.log('DATA: ', data);
-
       if (!lobby.hasStarted) {
         // update action tip and isOrganizator
         const tipStr = `Players: ${data.playersCount}/${state.maxClients}`;
@@ -184,7 +182,6 @@ const RoomPage = () => {
         if (data.revealPlayerId === user.userId) {
           const remained = getRemainedChars(data, currentPlayer.userId);
           updateState({ uRemainedChars: parseInt(remained) });
-          console.log('uRemainedChars: ', remained);
           tipStr = `Open your characteristics, remained: ${remained}`;
         } else {
           const revealPlayer = data.players.find(

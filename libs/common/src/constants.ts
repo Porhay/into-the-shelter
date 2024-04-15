@@ -87,6 +87,7 @@ export const Leonardo_bot = {
     'Огида',
     'Це зрада',
     'Ми в вині',
+    'У - ухилянт',
   ],
   avatar:
     'https://storage.googleapis.com/into-the-shelter.appspot.com/leo-1713176386363.jpg?GoogleAccessId=firebase-adminsdk-buiok%40into-the-shelter.iam.gserviceaccount.com&Expires=2028709186&Signature=7eXmummgtNDaWo2LcoME5H0wAz%2FNY8Uyfl5vJPPd9ZgTJLpIRpjqlQQLWxBuANcHvXjIHjU9LYXzyR0AcP012k9%2BuBgWTtWU2y%2BCdPy8IGbttwOmGV8%2BdwRqNn04zadaWEByrCl5rh1ubC1D6o1tOkpw0AA4mbtzl3K7Qix%2B8xTyPhiloj5FLxVMxzaBy5cRMcWHs6hKyTE5kDUYhxTqYZKSHKkimEzMFjPPdXPIMgjtzpIH304KJ5g3ffk%2BKLXJnB0%2FDiQyCVIHFaSNs2OsWiDbMxEpVnmi7Sna8TvLxPqq3aNXp8sqh8A4iO5g9GgKlCz4J5s8TWbm0xOjOqjflA%3D%3D',
@@ -95,7 +96,12 @@ export const Kiko_bot = {
   isBot: true,
   userId: '00000000-0000-0000-0000-000000000002',
   displayName: 'Kiko',
-  greetings: ['Alo... Aloooooooo!', 'Ви хто такі?!'],
+  greetings: [
+    'Alo... Aloooooooo!',
+    'Ви хто такі?!',
+    'Hello darkness my old friend',
+    'Дарооу',
+  ],
   avatar:
     'https://storage.googleapis.com/into-the-shelter.appspot.com/kiko-1713176291063.jpg?GoogleAccessId=firebase-adminsdk-buiok%40into-the-shelter.iam.gserviceaccount.com&Expires=2028709091&Signature=fXnRlXTvI4RLUcSOkD8wB0zeniqvyVswX6wTnwxE%2BqpobhkCda3R%2BYL8EitQtouhmBJx8tvEW6G7zLtDWlFL63MqExmbbEdo9%2Bs2D9PhSVYAWi5tPNL%2F4b6SBx8Tf9iKISDuNy68x9hjzlFwjA0m%2BpkYYm6xVziKWk35chxI26MG1SUGsq1D34DGmbhWSS%2FOFZ%2Bek1ghqD96XwdMVVVLCPHQz91yjOzvXfA47w6EgS78EgatbOmAGR9NIyS7lQ4Q7jfJRwG8c1zSFSTIVHorl6P6Mn49LlwedX5N47vd%2FI9LqhyUj9XeIzScOB%2F7Ru97rOkfzHDivynRz4yJe%2FMwYQ%3D%3D',
 };
@@ -203,4 +209,9 @@ export const predictionSysContext = `Гра "Бункер" - це рольова
 Але наступного дня Влад погіршує свій стан через інфекцію в рану. Квасон розуміє, що її поранення стає критичним. Залишивши її у безпечному місці з їжею та водою, Квасон продовжує свою мандрування в пошуках допомоги, зливаючись з масою вигнаних, що втратили всю надію на краще майбутнє.
 `;
 
-export const botRevealSysContext = ``;
+export const justificationSysContext = `Гра "Бункер" - це рольова карткова гра про апокаліпсис для кількох гравців. Глобальне завдання - відродити цивілізацію або загинути через поганий підбір людей у бункер. Завдання кожного з гравців - переконати інших гравців, що він буде корисним для групи і повинен залишитись у бункері, адже поза межами бункера – його чекає страшна смерть.
+Кожна гра має унікальні налаштування: "катастрофа" (сценарій апокаліпсису, властивості нового навколишнього середовища) та "бункер" (розмір, вміст та інші особливості бункера), від яких може залежати стратегія підбору жителів бункера та їхня подальша доля.
+Кожен гравець має набір карток властивостей: стать, вік, здоров'я, хоббі, професія, фобія, інвентар, додаткова інформація. Вміст карток може бути позитивним чи негативним. Гравець відкриває ту частину з них, яку вважає переконливою для того щоб інші гравці не вигнали його з бункера.
+Під час гри гравці спілкуються та дискутують і голосують за те, кого потрібно вигнати з бункера. Гра закінчується тоді, коли в бункері залишається лише певна кількість гравців.
+Тепер найважливіше. Уяви що ти експерт з виживання в постапокаліптичному світі, знаєш багато можливих сценаріїв розвитку подій, розумієш наскільки малий шанс виживання в бункері та за його межами. Ти знаєш що деякі характеристики людей можуть критично конфліктувати з іншими, і деякі особливості бункера і катастрофи сильно зменшують шанси виживання людини. Ти вмієш розповідати короткі атмосферні оповіді в постапокаліптичному стилі, та не упускаєш жорстоких, кривавих, чи інтимних деталей. Твоє завдання, на основі інформації про катастрофу, бункер, та характеристики твого гравця, придумати аргумент, чому тебе мають залишити в бункері.
+А саме, ти маєш обрати одну чи дві відкриті характеристики персонажа, подумати над рішенням та написати 3 речення про те, чому чим ці характеристики є важливими і корисними. Ти має бути дуже переконливим дипломатом, та навести дуже серйозний аргумент чому тебе мають прийняти до бункеру під час катастрофи, коли людство стоїть на межі вимирання і кожна людина, що виживе відіграє дуже важливу роль в подальшій долі людства.`;
