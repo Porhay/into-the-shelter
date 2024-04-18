@@ -63,6 +63,23 @@ $border-radius: 8px;
                 }
             }
 
+            .nav-noty-store {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0 7px;
+
+                .store-img {
+                    cursor: pointer;
+                    width: 29px;
+                    height: 29px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    filter: invert(100%);
+                }
+            }
+
             .nav-user-dropdown {
                 display: flex;
                 justify-content: center;

@@ -7,6 +7,7 @@ import WelcomePage from '../pages/Welcome';
 import RoomPage from '../pages/Room';
 import SettingsPage from '../pages/Settings';
 import ProfilePage from '../pages/Profile';
+import StorePage from '../pages/Store';
 
 export const authRoutes = [
   {
@@ -24,6 +25,10 @@ export const authRoutes = [
   {
     path: ROUTES.PROFILE,
     Component: ProfilePage,
+  },
+  {
+    path: ROUTES.STORE,
+    Component: StorePage,
   },
 ];
 
