@@ -9,13 +9,17 @@ import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { UsersService } from './users/users.service';
 import { AuthService } from './auth/auth.service';
+import { PaypalController } from './paypal/paypal.controller';
+import { PaypalModule } from './paypal/paypal.module';
 import config from 'config';
+import { PaypalService } from './paypal/paypal.service';
 
 @Module({
   imports: [
     StatusModule,
     UsersModule,
     AuthModule,
+    PaypalModule,
     DatabaseModule,
     FirebaseModule,
     ConfigModule.forRoot({
@@ -24,7 +28,7 @@ import config from 'config';
     }),
     PassportModule.register({ session: true }),
   ],
-  controllers: [AuthController, UsersController],
-  providers: [AuthService, UsersService],
+  controllers: [AuthController, UsersController, PaypalController],
+  providers: [AuthService, UsersService, PaypalService],
 })
 export class AccountsModule {}

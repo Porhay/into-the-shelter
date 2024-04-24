@@ -1,12 +1,12 @@
 import '../styles/Buttons.scss';
 import videocamIcon from '../assets/icons/videocam-icon.png';
-import enterIcon from '../assets/icons/enter-icon.png';
-import googleIcon from '../assets/icons/google-icon.png';
-import googleColorIcon from '../assets/icons/google-color-icon.png';
-import discordIcon from '../assets/icons/discord-icon.png';
+import enterIcon from '../assets/icons/login/enter-icon.png';
+import googleIcon from '../assets/icons/login/google-icon.png';
+import googleColorIcon from '../assets/icons/login/google-color-icon.png';
+import discordIcon from '../assets/icons/login/discord-icon.png';
 import profileIcon from '../assets/icons/profile-icon.png';
 import settingsIcon from '../assets/icons/settings-icon.png';
-import exitIcon from '../assets/icons/exit-icon.png';
+import exitIcon from '../assets/icons/login/exit-icon.png';
 import plusIcon from '../assets/icons/plus-icon.png';
 import genderIcon from '../assets/icons/ingame/gender-icon.png';
 import healthIcon from '../assets/icons/ingame/health-icon.png';
