@@ -126,7 +126,7 @@ export const createActivityLog = async (data: any) => {
   }
 };
 
-export const captureOrder = async (data: { orderId: string }) => {
+export const captureOrder = async (data: { orderId: string | null }) => {
   try {
     const res = await accountsHost.post(
       `/api/paypal/orders/${data.orderId}/capture/`,
@@ -138,15 +138,15 @@ export const captureOrder = async (data: { orderId: string }) => {
   }
 };
 
-export const createOrder = async () => {
+export const createOrder = async (productId: string | null) => {
   try {
     const cart = [
       {
-        id: '1',
-        quantity: '2',
+        productId: productId,
       },
     ];
     const res = await accountsHost.post(`/api/paypal/orders/`, { cart });
+    console.log(res);
     return res.data;
   } catch (error) {
     console.log('Error while createing activity log', error);

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, sandboxUrl } from 'config';
 import fetch from 'node-fetch';
+import { createOrderRequest } from './dto/createOrder.request';
 
 @Injectable()
 export class PaypalService {
@@ -50,12 +51,31 @@ export class PaypalService {
    * Create an order to start the transaction.
    * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
    */
-  createOrder = async (cart) => {
+  createOrder = async (body: createOrderRequest) => {
     // use the cart information passed from the front-end to calculate the purchase unit details
     console.log(
       'shopping cart information passed from the frontend createOrder() callback:',
-      cart,
+      body.cart,
     );
+
+    let calcPrice: string;
+    switch (body.cart[0].productId) {
+      case '1':
+        calcPrice = '0.50';
+        break;
+      case '2':
+        calcPrice = '1.00';
+        break;
+      case '3':
+        calcPrice = '3.00';
+        break;
+      case '4':
+        calcPrice = '5.00';
+        break;
+      default:
+        calcPrice = '0.00';
+        break;
+    }
 
     const accessToken = await this.generateAccessToken();
     const url = `${sandboxUrl}/v2/checkout/orders`;
@@ -65,7 +85,7 @@ export class PaypalService {
         {
           amount: {
             currency_code: 'USD',
-            value: '10.00',
+            value: calcPrice,
           },
         },
       ],
@@ -85,16 +105,18 @@ export class PaypalService {
       body: JSON.stringify(payload),
     });
 
-    return this.handleResponse(response);
+    const res = await this.handleResponse(response);
+    console.log(res);
+    return res;
   };
 
   /**
    * Capture payment for the created order to complete the transaction.
    * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
    */
-  captureOrder = async (orderID) => {
+  captureOrder = async (orderId) => {
     const accessToken = await this.generateAccessToken();
-    const url = `${sandboxUrl}/v2/checkout/orders/${orderID}/capture`;
+    const url = `${sandboxUrl}/v2/checkout/orders/${orderId}/capture`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -108,7 +130,9 @@ export class PaypalService {
         // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
       },
     });
+    const res = await this.handleResponse(response);
+    console.log(res);
 
-    return this.handleResponse(response);
+    return res;
   };
 }

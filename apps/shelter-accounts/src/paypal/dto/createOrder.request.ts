@@ -1,3 +1,3 @@
 export class createOrderRequest {
-  cart?: any;
+  cart: { productId: string }[];
 }

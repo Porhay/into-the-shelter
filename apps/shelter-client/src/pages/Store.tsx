@@ -16,6 +16,7 @@ import coinsIcon from '../assets/icons/store/coins.png';
 interface IState {
   isPayModalOpened: boolean;
   tab: string;
+  productId: string | null;
 }
 
 // Renders errors or successfull transactions on the screen.
@@ -30,6 +31,7 @@ const StorePage = () => {
   const [state, setState] = useState<IState>({
     isPayModalOpened: false,
     tab: 'coins', // all, coins
+    productId: null,
   });
 
   const initialOptions: any = {
@@ -42,9 +44,11 @@ const StorePage = () => {
   const [message, setMessage] = useState('');
 
   // FUNCTIONS
-  const onPayBlockClick = (amount: number) => {
-    console.log(amount);
-    handleOpenPayModal(true);
+  const onPayBlockClick = (productId: string) => {
+    updateState({
+      productId: productId,
+      isPayModalOpened: true,
+    });
   };
 
   const handleOpenPayModal = (isOpened: boolean) => {
@@ -59,17 +63,17 @@ const StorePage = () => {
   // COMPONENTS
   const Card = (props: any) => {
     let img;
-    switch (props.coins) {
-      case '20':
+    switch (props.productId) {
+      case '1':
         img = icon20;
         break;
-      case '50':
+      case '2':
         img = icon50;
         break;
-      case '150':
+      case '3':
         img = icon150;
         break;
-      case '275':
+      case '4':
         img = icon275;
         break;
       default:
@@ -77,7 +81,10 @@ const StorePage = () => {
         break;
     }
     return (
-      <div className="pay-block" onClick={() => onPayBlockClick(props.price)}>
+      <div
+        className="pay-block"
+        onClick={() => onPayBlockClick(props.productId)}
+      >
         <div className="coins-bag">
           <img className="bag-img" src={img} alt={''} />
         </div>
@@ -129,10 +136,10 @@ const StorePage = () => {
         </div>
         {state.tab === 'coins' && (
           <div className="pay-blocks">
-            <Card coins={'20'} price={'0.5'} />
-            <Card coins={'50'} price={'1'} />
-            <Card coins={'150'} price={'3'} />
-            <Card coins={'275'} price={'5'} />
+            <Card productId={'1'} coins={'20'} price={'0.5'} />
+            <Card productId={'2'} coins={'50'} price={'1'} />
+            <Card productId={'3'} coins={'150'} price={'3'} />
+            <Card productId={'4'} coins={'275'} price={'5'} />
           </div>
         )}
       </div>
@@ -150,7 +157,10 @@ const StorePage = () => {
                       }}
                       createOrder={async () => {
                         try {
-                          const orderData = await requests.createOrder();
+                          const orderData = await requests.createOrder(
+                            state.productId,
+                          );
+                          console.log('orderData', orderData);
                           if (orderData.id) {
                             return orderData.id;
                           } else {
@@ -171,7 +181,7 @@ const StorePage = () => {
                       onApprove={async (data, actions) => {
                         try {
                           const orderData = await requests.captureOrder({
-                            orderId: '1',
+                            orderId: data.orderID,
                           });
                           // Three cases to handle:
                           //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
