@@ -8,6 +8,7 @@ import { CreateLobbyContestantDto } from './dto/create-lobby-contestant.dto';
 import { CreateChatMessageDto } from './dto/create-chat-message.dto';
 import { CreateActivityLogDto } from './dto/create-activity-log.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
+import { CreateUserProductDto } from './dto/create-user-product.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -93,6 +94,23 @@ export class DatabaseService {
       throw new Error(`Payment with externalId ${externalId} not found`);
     }
     return payment;
+  }
+
+  //  -----------
+  //  USER_PRODUCTS TABLE
+  //  -----------
+
+  async createUserProduct(userProduct: CreateUserProductDto) {
+    return await this.prisma.userProducts.create({
+      data: userProduct,
+    });
+  }
+
+  async getUserProductsByUserId(userId: string) {
+    const userProducts = await this.prisma.userProducts.findMany({
+      where: { userId: userId },
+    });
+    return userProducts;
   }
 
   //  -----------

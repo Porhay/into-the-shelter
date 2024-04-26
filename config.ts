@@ -99,3 +99,17 @@ export const PAYPAL_CLIENT_SECRET: string = isProduction
   : process.env.SANDBOX_PAYPAL_CLIENT_SECRET;
 
 export const sandboxUrl = 'https://api-m.sandbox.paypal.com';
+
+// payments
+interface Product {
+  coins: number;
+  price: string;
+}
+export const products: {
+  [key: string]: Product;
+} = {
+  '1': { coins: 20, price: '1.00' },
+  '2': { coins: 100, price: '3.00' },
+  '3': { coins: 200, price: '5.00' },
+  '4': { coins: 440, price: '10.00' },
+};

@@ -32,6 +32,17 @@ model payments {
   @@map(name: "payments")
 }
 
+model userProducts {
+  id                String   @id @default(uuid())
+  userId            String
+  productId         String
+  status            String
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @map(name: "updated_at")
+
+  @@map(name: "user_products")
+}
+
 model session {
   id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sid       String

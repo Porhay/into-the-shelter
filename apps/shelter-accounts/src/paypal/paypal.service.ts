@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, sandboxUrl } from 'config';
+import {
+  PAYPAL_CLIENT_ID,
+  PAYPAL_CLIENT_SECRET,
+  sandboxUrl,
+  products,
+} from 'config';
 import fetch from 'node-fetch';
 import { createOrderRequest } from './dto/createOrder.request';
 import { DatabaseService } from '@app/common';
-
-interface Product {
-  coins: number;
-  price: string;
-}
 
 // -> captureOrder responce
 // {
@@ -55,15 +55,6 @@ interface Product {
 @Injectable()
 export class PaypalService {
   constructor(private readonly databaseService: DatabaseService) {}
-
-  public products: {
-    [key: string]: Product;
-  } = {
-    '1': { coins: 20, price: '1.00' },
-    '2': { coins: 100, price: '3.00' },
-    '3': { coins: 200, price: '5.00' },
-    '4': { coins: 440, price: '10.00' },
-  };
 
   /**
    * Generate an OAuth 2.0 access token for authenticating with PayPal REST APIs.
@@ -116,15 +107,8 @@ export class PaypalService {
       body.cart,
     );
 
-    const productPrices: { [key: string]: string } = {
-      '1': '1.00', // Coins: 20 + 0
-      '2': '3.00', // Coins: 100 + 0
-      '3': '5.00', // Coins: 180 + 20
-      '4': '10.00', // Coins: 380 + 60
-    };
-
     const curProductId = body.cart[0].productId;
-    const calcPrice = productPrices[curProductId] || '0.00';
+    const calcPrice = products[curProductId].price || '0.00';
 
     const accessToken = await this.generateAccessToken();
     const url = `${sandboxUrl}/v2/checkout/orders`;
@@ -198,7 +182,7 @@ export class PaypalService {
 
       // add coins for user balance
       await this.databaseService.updateUser(user.id, {
-        coins: user.coins + this.products[payment.productId].coins,
+        coins: user.coins + products[payment.productId].coins,
       });
 
       // update payment status

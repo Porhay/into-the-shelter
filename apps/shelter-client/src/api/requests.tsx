@@ -12,8 +12,8 @@ const accountsHost = axios.create({
 
 export const getUser = async (userId: string) => {
   try {
-    const user = await accountsHost.get(`/api/users/${userId}/`);
-    return user.data;
+    const response = await accountsHost.get(`/api/users/${userId}/`);
+    return response.data;
   } catch (error) {
     console.log('Error while getting user', error);
   }
@@ -157,6 +157,30 @@ export const createOrder = async (
     console.log(res);
     return res.data;
   } catch (error) {
-    console.log('Error while createing activity log', error);
+    console.log('Error while activity log creation.', error);
+  }
+};
+
+export const createUserProduct = async (
+  userId: string | undefined,
+  productId: string,
+) => {
+  try {
+    const res = await accountsHost.post(`/api/users/${userId}/user-products/`, {
+      productId: productId,
+    });
+    return res.data;
+  } catch (error) {
+    console.log('Error while user product creation.', error);
+  }
+};
+
+// do not use if can get from getUser request
+export const getUserProducts = async (userId: string | undefined) => {
+  try {
+    const res = await accountsHost.get(`/api/users/${userId}/user-products/`);
+    return res.data;
+  } catch (error) {
+    console.log(`Error while getting user products, userId:${userId}`, error);
   }
 };

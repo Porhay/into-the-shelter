@@ -100,8 +100,10 @@ const Navigation = () => {
               avatar: data ? data.avatar : null,
               gameAvatars: fillGameAvatars(data.gameAvatars || []),
               coins: data.coins,
+              userProducts: data.userProducts,
             }),
           );
+          console.log('user: ', data);
         })
         .finally(() => dispatch(updateApp({ loading: false })));
     }

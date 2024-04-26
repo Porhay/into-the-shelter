@@ -14,6 +14,7 @@ export class PrismaService {
   chatMessages = prisma.chatMessages;
   activityLogs = prisma.activityLogs;
   payments = prisma.payments;
+  userProducts = prisma.userProducts;
 
   async disconnect() {
     await prisma.$disconnect();
