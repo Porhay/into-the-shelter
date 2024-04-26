@@ -10,15 +10,22 @@ import {
 import { createOrderRequest } from './dto/createOrder.request';
 import { PaypalService } from './paypal.service';
 
-@Controller('paypal')
+@Controller('users/:userId/paypal')
 export class PaypalController {
   constructor(private readonly paypalService: PaypalService) {}
 
   @Post('orders')
-  async createOrder(@Body() body: createOrderRequest, @Res() res: any) {
+  async createOrder(
+    @Body() body: createOrderRequest,
+    @Res() res: any,
+    @Param('userId') userId: string,
+  ) {
     try {
       // use the cart information passed from the front-end to calculate the order amount detals
-      const { jsonResponse } = await this.paypalService.createOrder(body);
+      const { jsonResponse } = await this.paypalService.createOrder(
+        userId,
+        body,
+      );
       return res.status(HttpStatus.OK).json(jsonResponse);
     } catch (error) {
       res
@@ -28,10 +35,14 @@ export class PaypalController {
   }
 
   @Post('orders/:orderId/capture')
-  async captureOrder(@Param('orderId') orderId: string, @Res() res: any) {
+  async captureOrder(
+    @Param('userId') userId: string,
+    @Param('orderId') orderId: string,
+    @Res() res: any,
+  ) {
     try {
       const { jsonResponse, httpStatusCode } =
-        await this.paypalService.captureOrder(orderId);
+        await this.paypalService.captureOrder(userId, orderId);
       return res.status(httpStatusCode).json(jsonResponse);
     } catch (e) {
       res

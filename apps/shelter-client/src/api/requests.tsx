@@ -126,10 +126,13 @@ export const createActivityLog = async (data: any) => {
   }
 };
 
-export const captureOrder = async (data: { orderId: string | null }) => {
+export const captureOrder = async (
+  userId: string | undefined,
+  data: { orderId: string | null },
+) => {
   try {
     const res = await accountsHost.post(
-      `/api/paypal/orders/${data.orderId}/capture/`,
+      `/api/users/${userId}/paypal/orders/${data.orderId}/capture/`,
       data,
     );
     return res.data;
@@ -138,14 +141,19 @@ export const captureOrder = async (data: { orderId: string | null }) => {
   }
 };
 
-export const createOrder = async (productId: string | null) => {
+export const createOrder = async (
+  userId: string | undefined,
+  productId: string | null,
+) => {
   try {
     const cart = [
       {
         productId: productId,
       },
     ];
-    const res = await accountsHost.post(`/api/paypal/orders/`, { cart });
+    const res = await accountsHost.post(`/api/users/${userId}/paypal/orders/`, {
+      cart,
+    });
     console.log(res);
     return res.data;
   } catch (error) {

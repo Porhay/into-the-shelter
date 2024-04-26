@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsInt } from 'class-validator';
 
 export class updateUserRequest {
   @IsString()
@@ -6,4 +6,7 @@ export class updateUserRequest {
 
   @IsString()
   avatar?: string;
+
+  @IsInt()
+  coins?: number;
 }

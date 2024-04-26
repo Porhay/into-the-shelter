@@ -2,10 +2,68 @@ import { Injectable } from '@nestjs/common';
 import { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, sandboxUrl } from 'config';
 import fetch from 'node-fetch';
 import { createOrderRequest } from './dto/createOrder.request';
+import { DatabaseService } from '@app/common';
+
+interface Product {
+  coins: number;
+  price: string;
+}
+
+// -> captureOrder responce
+// {
+//   id: '83676217WL0516327',
+//   status: 'COMPLETED',
+//   payment_source: { paypal: [Object] },
+//   purchase_units: [[Object]],
+//   payer: {
+//     name: [Object],
+//     email_address: 'sb-iy7ue4025252@personal.example.com',
+//     payer_id: 'BWWJPKKQZVUGU',
+//     address: [Object]
+//   },
+//   links: [[Object]]
+// }
+
+// -> createOrder responce
+// {
+//   id: '9HW79657281628214',
+//   status: 'CREATED',
+//   links: [
+//     {
+//       href: 'https://api.sandbox.paypal.com/v2/checkout/orders/9HW79657281628214',
+//       rel: 'self',
+//       method: 'GET'
+//     },
+//     {
+//       href: 'https://www.sandbox.paypal.com/checkoutnow?token=9HW79657281628214',
+//       rel: 'approve',
+//       method: 'GET'
+//     },
+//     {
+//       href: 'https://api.sandbox.paypal.com/v2/checkout/orders/9HW79657281628214',
+//       rel: 'update',
+//       method: 'PATCH'
+//     },
+//     {
+//       href: 'https://api.sandbox.paypal.com/v2/checkout/orders/9HW79657281628214/capture',
+//       rel: 'capture',
+//       method: 'POST'
+//     }
+//   ]
+// }
 
 @Injectable()
 export class PaypalService {
-  constructor() {}
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  public products: {
+    [key: string]: Product;
+  } = {
+    '1': { coins: 20, price: '1.00' },
+    '2': { coins: 100, price: '3.00' },
+    '3': { coins: 200, price: '5.00' },
+    '4': { coins: 440, price: '10.00' },
+  };
 
   /**
    * Generate an OAuth 2.0 access token for authenticating with PayPal REST APIs.
@@ -51,7 +109,7 @@ export class PaypalService {
    * Create an order to start the transaction.
    * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
    */
-  createOrder = async (body: createOrderRequest) => {
+  createOrder = async (userId: string, body: createOrderRequest) => {
     // use the cart information passed from the front-end to calculate the purchase unit details
     console.log(
       'shopping cart information passed from the frontend createOrder() callback:',
@@ -64,7 +122,9 @@ export class PaypalService {
       '3': '5.00', // Coins: 180 + 20
       '4': '10.00', // Coins: 380 + 60
     };
-    const calcPrice = productPrices[body.cart[0].productId] || '0.00';
+
+    const curProductId = body.cart[0].productId;
+    const calcPrice = productPrices[curProductId] || '0.00';
 
     const accessToken = await this.generateAccessToken();
     const url = `${sandboxUrl}/v2/checkout/orders`;
@@ -94,16 +154,26 @@ export class PaypalService {
       body: JSON.stringify(payload),
     });
 
-    const res = await this.handleResponse(response);
-    console.log(res);
-    return res;
+    const handledResponse = await this.handleResponse(response);
+
+    const res = handledResponse.jsonResponse;
+    await this.databaseService.createPayment({
+      userId: userId,
+      externalId: res.id,
+      productId: curProductId,
+      payment_system: 'paypal',
+      data: JSON.stringify(res),
+      status: res.status,
+    });
+
+    return handledResponse;
   };
 
   /**
    * Capture payment for the created order to complete the transaction.
    * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
    */
-  captureOrder = async (orderId) => {
+  captureOrder = async (userId: string, orderId: string) => {
     const accessToken = await this.generateAccessToken();
     const url = `${sandboxUrl}/v2/checkout/orders/${orderId}/capture`;
 
@@ -119,9 +189,24 @@ export class PaypalService {
         // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
       },
     });
-    const res = await this.handleResponse(response);
-    console.log(res);
+    const handledResponse = await this.handleResponse(response);
 
-    return res;
+    const res = handledResponse.jsonResponse;
+    if (res.status === 'COMPLETED') {
+      const payment = await this.databaseService.getPaymentByExternalId(res.id);
+      const user = await this.databaseService.getUserByIdOrNull(payment.userId);
+
+      // add coins for user balance
+      await this.databaseService.updateUser(user.id, {
+        coins: user.coins + this.products[payment.productId].coins,
+      });
+
+      // update payment status
+      await this.databaseService.updatePayment(payment.id, {
+        status: res.status,
+      });
+    }
+
+    return handledResponse;
   };
 }

@@ -8,6 +8,8 @@ import { Button } from '../components/Buttons';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import * as requests from '../api/requests';
 import { storeDetails, buyList } from '../config';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 interface IState {
   isPayModalOpened: boolean;
@@ -21,6 +23,8 @@ function Message({ content }: any) {
 }
 
 const StorePage = () => {
+  const user = useSelector((state: RootState) => state.user);
+
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
     setState((prevState) => ({ ...prevState, ...newState }));
@@ -169,6 +173,7 @@ const StorePage = () => {
                         createOrder={async () => {
                           try {
                             const orderData = await requests.createOrder(
+                              user.userId,
                               state.productId,
                             );
                             console.log('orderData', orderData);
@@ -191,9 +196,12 @@ const StorePage = () => {
                         }}
                         onApprove={async (data, actions) => {
                           try {
-                            const orderData = await requests.captureOrder({
-                              orderId: data.orderID,
-                            });
+                            const orderData = await requests.captureOrder(
+                              user.userId,
+                              {
+                                orderId: data.orderID,
+                              },
+                            );
                             // Three cases to handle:
                             //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
                             //   (2) Other non-recoverable errors -> Show a failure message
