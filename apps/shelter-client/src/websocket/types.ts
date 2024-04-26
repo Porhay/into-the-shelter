@@ -34,6 +34,7 @@ export type ServerPayloads = {
     voteKickList: any;
     kickedPlayers: string[];
     timer: number;
+    isAllowBots: boolean;
     timerEndTime: number | null;
     finalPrediction: string;
   };

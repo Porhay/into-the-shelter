@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import * as config from '../config';
 
 const gatewayHost = axios.create({
@@ -12,8 +12,8 @@ const accountsHost = axios.create({
 
 export const getUser = async (userId: string) => {
   try {
-    const user = await accountsHost.get(`/api/users/${userId}/`);
-    return user.data;
+    const response = await accountsHost.get(`/api/users/${userId}/`);
+    return response.data;
   } catch (error) {
     console.log('Error while getting user', error);
   }
@@ -123,5 +123,69 @@ export const createActivityLog = async (data: any) => {
     return res.data;
   } catch (error) {
     console.log('Error while createing activity log', error);
+  }
+};
+
+export const captureOrder = async (
+  userId: string | undefined,
+  data: { orderId: string | null },
+) => {
+  try {
+    const res = await accountsHost.post(
+      `/api/users/${userId}/paypal/orders/${data.orderId}/capture/`,
+      data,
+    );
+    return res.data;
+  } catch (error) {
+    console.log('Error while createing activity log', error);
+  }
+};
+
+export const createOrder = async (
+  userId: string | undefined,
+  productId: string | null,
+) => {
+  try {
+    const cart = [
+      {
+        productId: productId,
+      },
+    ];
+    const res = await accountsHost.post(`/api/users/${userId}/paypal/orders/`, {
+      cart,
+    });
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log('Error while activity log creation.', error);
+  }
+};
+
+export const createUserProduct = async (
+  userId: string | undefined,
+  productId: string,
+) => {
+  try {
+    const res = await accountsHost.post(`/api/users/${userId}/user-products/`, {
+      productId: productId,
+    });
+    return res.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.error ||
+        'An unknown error occurred while creating user product.';
+      throw new Error(errorMessage);
+    }
+  }
+};
+
+// do not use if can get from getUser request
+export const getUserProducts = async (userId: string | undefined) => {
+  try {
+    const res = await accountsHost.get(`/api/users/${userId}/user-products/`);
+    return res.data;
+  } catch (error) {
+    console.log(`Error while getting user products, userId:${userId}`, error);
   }
 };

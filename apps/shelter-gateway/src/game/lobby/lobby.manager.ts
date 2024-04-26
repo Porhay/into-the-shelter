@@ -50,7 +50,7 @@ export class LobbyManager {
       throw new ServerException(SocketExceptions.LobbyError, 'Lobby not found');
     }
 
-    if (lobby.clients.size >= lobby.maxClients) {
+    if (lobby.clients.size > lobby.maxClients) {
       throw new ServerException(
         SocketExceptions.LobbyError,
         'Lobby already full',

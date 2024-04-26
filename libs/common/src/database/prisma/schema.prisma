@@ -15,6 +15,32 @@ model users {
   password    String?
   displayName String?
   avatar      String?
+  coins       Int       @default(0)
+}
+
+model payments {
+  id              String    @id @default(uuid())
+  userId          String
+  externalId      String
+  productId       String
+  payment_system  String
+  data            String
+  status          String
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+
+  @@map(name: "payments")
+}
+
+model userProducts {
+  id                String   @id @default(uuid())
+  userId            String
+  productId         String
+  status            String
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @map(name: "updated_at")
+
+  @@map(name: "user_products")
 }
 
 model session {

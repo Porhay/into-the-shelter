@@ -10,12 +10,16 @@ export class ActivityLogsService {
   }
 
   async createActivityLog(data: CreateActivityLogDto) {
-    const user = await this.databaseService.getUserById(data.userId);
+    let user: { displayName: string } =
+      await this.databaseService.getUserByIdOrNull(data.userId);
+    if (!user) {
+      user = { displayName: 'bot' };
+    }
 
     // use special card
     if (data.action === constants.useSpecialCard) {
       if (data.payload.contestantId) {
-        const contestant = await this.databaseService.getUserById(
+        const contestant = await this.databaseService.getUserByIdOrNull(
           data.payload.contestantId,
         );
         data.payload['text'] =
@@ -39,9 +43,11 @@ export class ActivityLogsService {
 
     // player kicked
     if (data.action === constants.playerKicked) {
-      const kickedUser = await this.databaseService.getUserById(
-        data.payload.userId,
-      );
+      let kickedUser: { displayName: string } =
+        await this.databaseService.getUserByIdOrNull(data.payload.userId);
+      if (!kickedUser) {
+        kickedUser = { displayName: 'bot' };
+      }
       data.payload['text'] = `Player ${kickedUser.displayName} is kicked.`;
     }
 

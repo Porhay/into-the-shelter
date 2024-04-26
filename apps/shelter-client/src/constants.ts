@@ -7,6 +7,7 @@ export const ROUTES = {
   ROOMS: '/rooms',
   SETTINGS: '/settings',
   PROFILE: '/profile',
+  STORE: '/store',
 
   /* All other */
   GOOGLE_LOGIN: config.accountsUrl + '/api/auth/google/login',

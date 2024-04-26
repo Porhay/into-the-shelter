@@ -14,6 +14,7 @@ export type ServerPayloads = {
     maxClients: number;
     isPrivate: boolean;
     timer: number;
+    isAllowBots: boolean;
     currentStage: number;
     stages: any[];
     revealPlayerId: string;

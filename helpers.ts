@@ -160,3 +160,39 @@ export const getKeysWithHighestValue = (obj: object) => {
 
   return keysWithMaxCount;
 };
+
+export const getTime = () => {
+  const date = new Date();
+  const hour = date.getHours().toString().padStart(2, '0');
+  const minute = date.getMinutes().toString().padStart(2, '0');
+  const timeStr = `${hour}:${minute}`;
+  return timeStr;
+};
+
+export const getRandomGreeting = (list: string[]) => {
+  const greeting = list[getRandomIndex(list.length)];
+  return greeting;
+};
+
+export function extractJustificationInfo(text: string): {
+  characteristics: string[];
+  argument: string;
+} {
+  console.log('extractJustificationInfo', text);
+
+  // Regular expression patterns to match characteristics and argument
+  const characteristicsPattern = /Характеристики:\s*(.+?)\./;
+  const argumentPattern = /Аргумент:\s*(.+)/;
+
+  // Match characteristics and argument
+  const characteristicsMatch = text.match(characteristicsPattern);
+  const argumentMatch = text.match(argumentPattern);
+
+  // Extract characteristics and argument
+  const characteristics = characteristicsMatch
+    ? characteristicsMatch[1].split(', ').map((item) => item.trim())
+    : [];
+  const argument = argumentMatch ? argumentMatch[1].trim() : '';
+
+  return { characteristics, argument };
+}

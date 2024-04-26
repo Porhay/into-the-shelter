@@ -187,3 +187,16 @@ export const formatCreatedAt = (
   const formattedDate = `${_padZero(date.getDate())}.${_padZero(date.getMonth() + 1)} at ${_padZero(date.getHours())}:${_padZero(date.getMinutes())}`;
   return formattedDate;
 };
+
+/**
+ * Check if product exist in userProducts
+ * @param userProducts: { productId: string }[]
+ * @param productId: string
+ * @returns
+ */
+export const checkProduct = (
+  userProducts: { productId: string }[],
+  productId: string,
+) => {
+  return userProducts.map((_) => _.productId).includes(productId);
+};

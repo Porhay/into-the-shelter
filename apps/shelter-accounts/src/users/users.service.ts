@@ -9,7 +9,7 @@ export class UsersService {
   ) {}
 
   async getUserById(userId: string): Promise<any> {
-    const dbUser = await this.databaseService.getUserById(userId);
+    const dbUser = await this.databaseService.getUserByIdOrNull(userId);
 
     const updatedGameAvatars = [];
 
@@ -29,8 +29,15 @@ export class UsersService {
       });
     }
 
-    const res = { ...dbUser, gameAvatars: updatedGameAvatars };
-    console.log(res);
+    // Get user products
+    const userProducts =
+      await this.databaseService.getUserProductsByUserId(userId);
+
+    const res = {
+      ...dbUser,
+      gameAvatars: updatedGameAvatars,
+      userProducts: userProducts,
+    };
     return res;
   }
 }

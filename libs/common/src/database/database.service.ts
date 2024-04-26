@@ -7,6 +7,8 @@ import { CreateLobbyDto } from './dto/create-lobby.dto';
 import { CreateLobbyContestantDto } from './dto/create-lobby-contestant.dto';
 import { CreateChatMessageDto } from './dto/create-chat-message.dto';
 import { CreateActivityLogDto } from './dto/create-activity-log.dto';
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { CreateUserProductDto } from './dto/create-user-product.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -17,7 +19,7 @@ export class DatabaseService {
   //  -----------
 
   async createUser(user: CreateUserDto) {
-    return this.prisma.users.create({
+    return await this.prisma.users.create({
       data: user,
     });
   }
@@ -40,20 +42,18 @@ export class DatabaseService {
     }
 
     // Delete the user
-    return this.prisma.users.delete({
+    return await this.prisma.users.delete({
       where: { id: userId },
     });
   }
 
-  async getUserById(userId: string) {
+  async getUserByIdOrNull(userId: string) {
     const user = await this.prisma.users.findUnique({
       where: { id: userId },
     });
-
     if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
+      return null;
     }
-
     return user;
   }
 
@@ -70,11 +70,55 @@ export class DatabaseService {
   }
 
   //  -----------
+  //  PAYMENTS TABLE
+  //  -----------
+
+  async createPayment(payment: CreatePaymentDto) {
+    return await this.prisma.payments.create({
+      data: payment,
+    });
+  }
+
+  async updatePayment(id: string, data: { status?: string }) {
+    return await this.prisma.payments.update({
+      where: { id: id },
+      data: data,
+    });
+  }
+
+  async getPaymentByExternalId(externalId: string) {
+    const payment = await this.prisma.payments.findFirst({
+      where: { externalId: externalId },
+    });
+    if (!payment) {
+      throw new Error(`Payment with externalId ${externalId} not found`);
+    }
+    return payment;
+  }
+
+  //  -----------
+  //  USER_PRODUCTS TABLE
+  //  -----------
+
+  async createUserProduct(userProduct: CreateUserProductDto) {
+    return await this.prisma.userProducts.create({
+      data: userProduct,
+    });
+  }
+
+  async getUserProductsByUserId(userId: string) {
+    const userProducts = await this.prisma.userProducts.findMany({
+      where: { userId: userId },
+    });
+    return userProducts;
+  }
+
+  //  -----------
   //  FILES TABLE
   //  -----------
 
   async createFile(file: CreateFileDto) {
-    return this.prisma.files.create({
+    return await this.prisma.files.create({
       data: file,
     });
   }
@@ -85,7 +129,7 @@ export class DatabaseService {
       throw new Error(`File with ID ${fileId} not found`);
     }
 
-    return this.prisma.files.delete({
+    return await this.prisma.files.delete({
       where: { id: fileId },
     });
   }
@@ -118,7 +162,7 @@ export class DatabaseService {
       organizatorId: lobby.organizatorId,
       settings: JSON.stringify(lobby.settings),
     };
-    return this.prisma.lobbies.create({
+    return await this.prisma.lobbies.create({
       data: data,
     });
   }
@@ -145,6 +189,10 @@ export class DatabaseService {
         data.settings.timer !== undefined
           ? data.settings.timer
           : lobby.settings.timer,
+      isAllowBots:
+        data.settings.isAllowBots !== undefined
+          ? data.settings.isAllowBots
+          : lobby.settings.isAllowBots,
     };
 
     // Update lobby settings with the merged object
@@ -164,7 +212,7 @@ export class DatabaseService {
       throw new Error(`Lobby with ID ${lobbyId} not found`);
     }
 
-    return this.prisma.lobbies.delete({
+    return await this.prisma.lobbies.delete({
       where: { id: lobbyId },
     });
   }
@@ -204,7 +252,7 @@ export class DatabaseService {
   //  -----------
 
   async createLobbyConstantent(lobbyContestant: CreateLobbyContestantDto) {
-    return this.prisma.lobbyContestants.create({
+    return await this.prisma.lobbyContestants.create({
       data: lobbyContestant,
     });
   }
@@ -217,7 +265,7 @@ export class DatabaseService {
       throw new Error(`Contestant with ID ${contestantId} not found`);
     }
 
-    return this.prisma.lobbyContestants.delete({
+    return await this.prisma.lobbyContestants.delete({
       where: { id: contestantId },
     });
   }
@@ -237,7 +285,7 @@ export class DatabaseService {
   //  -----------
 
   async createChatMessage(message: CreateChatMessageDto) {
-    return this.prisma.chatMessages.create({
+    return await this.prisma.chatMessages.create({
       data: message,
     });
   }
@@ -250,7 +298,7 @@ export class DatabaseService {
       throw new Error(`Message with ID ${messageId} not found`);
     }
 
-    return this.prisma.chatMessages.delete({
+    return await this.prisma.chatMessages.delete({
       where: { id: messageId },
     });
   }
@@ -281,7 +329,7 @@ export class DatabaseService {
 
   async createActivityLog(activityLog: CreateActivityLogDto) {
     activityLog.payload = JSON.stringify(activityLog.payload);
-    return this.prisma.activityLogs.create({
+    return await this.prisma.activityLogs.create({
       data: activityLog,
     });
   }

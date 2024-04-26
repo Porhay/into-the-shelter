@@ -15,6 +15,7 @@ import {
   getLobbyLink,
   defineCharsList,
   charListType,
+  checkProduct,
 } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
@@ -22,6 +23,7 @@ import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
 import { useParams } from 'react-router-dom';
 import { showNotification } from '../libs/notifications';
 import { NOTIF_TYPE } from '../constants';
+import { productsSet } from '../config';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import shelterIcon from '../assets/images/shelter-icon.png';
 import catastropheIcon from '../assets/images/catastrophe-icon.png';
@@ -38,6 +40,7 @@ interface IState {
   userCharList: charListType;
   userSpecialCards: specialCardsType;
   isPrivateLobby: boolean;
+  isAllowBots: boolean;
   timer: number;
   voteKickList: any;
   maxClients: number;
@@ -112,6 +115,7 @@ const RoomPage = () => {
       },
     ],
     isPrivateLobby: true,
+    isAllowBots: false,
     timer: 0,
     voteKickList: [],
     kickedPlayers: [],
@@ -152,12 +156,11 @@ const RoomPage = () => {
           conditions: data.conditions,
           revealPlayerId: data.revealPlayerId,
           timer: data.timer,
+          isAllowBots: data.isAllowBots,
           timerEndTime: data.timerEndTime,
           finalPrediction: data.finalPrediction,
         }),
       );
-
-      console.log('DATA: ', data);
 
       if (!lobby.hasStarted) {
         // update action tip and isOrganizator
@@ -181,7 +184,6 @@ const RoomPage = () => {
         if (data.revealPlayerId === user.userId) {
           const remained = getRemainedChars(data, currentPlayer.userId);
           updateState({ uRemainedChars: parseInt(remained) });
-          console.log('uRemainedChars: ', remained);
           tipStr = `Open your characteristics, remained: ${remained}`;
         } else {
           const revealPlayer = data.players.find(
@@ -286,6 +288,7 @@ const RoomPage = () => {
   interface settingsUpdate {
     key?: string | null;
     isPrivate?: boolean;
+    isAllowBots?: boolean;
     maxClients?: number;
     timer?: number;
   }
@@ -633,7 +636,7 @@ const RoomPage = () => {
               </div>
             </div>
           ) : null}
-          {state.isOrganizator && !lobby.hasStarted ? (
+          {state.isOrganizator && !lobby.hasStarted && (
             <div className="lobby-settings-container">
               <div className="settings-is-private">
                 <div className="is-private-text">
@@ -717,8 +720,27 @@ const RoomPage = () => {
                   </select>
                 </div>
               </div>
+              <div className="settings-allow-bots">
+                <div className="allow-bots-text">
+                  <h3>{`Allow bots [${checkProduct(user.userProducts!, productsSet.improvedBots) ? 'paid' : 'free'}]`}</h3>
+                  <p>Bots will join the lobby based on availability</p>
+                </div>
+                <div className="allow-bots-btn">
+                  <Toggle
+                    defaultChecked={state.isAllowBots}
+                    icons={false}
+                    onChange={() => {
+                      updateState({ isAllowBots: !state.isAllowBots });
+                      handleSettingsUpdate({
+                        key: roomId,
+                        isAllowBots: !state.isAllowBots,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-          ) : null}
+          )}
           <div className="invite-webcam-char-wrapper">
             <div className="invite-webcam-wrapper">
               <div

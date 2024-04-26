@@ -81,6 +81,7 @@ export default () => ({
   CALLBACK_URL: process.env.CALLBACK_URL,
 });
 
+// https://api.together.xyz/
 export const AIKey = process.env.AIKey;
 export const AIModels = [
   'QWEN/QWEN1.5-72B-CHAT',
@@ -88,3 +89,34 @@ export const AIModels = [
   'NOUSRESEARCH/NOUS-HERMES-2-MIXTRAL-8X7B-SFT',
   'mistralai/Mixtral-8x7B-Instruct-v0.1',
 ];
+
+export const PAYPAL_CLIENT_ID: string = isProduction
+  ? process.env.PAYPAL_CLIENT_ID
+  : process.env.SANDBOX_PAYPAL_CLIENT_ID;
+
+export const PAYPAL_CLIENT_SECRET: string = isProduction
+  ? process.env.PAYPAL_CLIENT_SECRET
+  : process.env.SANDBOX_PAYPAL_CLIENT_SECRET;
+
+export const sandboxUrl = 'https://api-m.sandbox.paypal.com';
+
+// payments
+interface Product {
+  coins: number;
+  price: string;
+}
+export const payProducts: {
+  [key: string]: Product;
+} = {
+  '1': { coins: 20, price: '1.00' },
+  '2': { coins: 100, price: '3.00' },
+  '3': { coins: 200, price: '5.00' },
+  '4': { coins: 440, price: '10.00' },
+};
+
+export const buyProducts: {
+  [key: string]: { price: number };
+} = {
+  '101': { price: 80 },
+  '102': { price: 60 },
+};

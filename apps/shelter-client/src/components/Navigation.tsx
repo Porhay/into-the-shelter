@@ -1,6 +1,7 @@
 import '../styles/Navigation.scss';
 import avatarDefault from '../assets/images/profile-image-default.jpg';
 import notificationsIcon from '../assets/icons/notifications-icon.png';
+import storeIcon from '../assets/icons/store-icon.png';
 import intoTheShelter from '../assets/images/Into the shelter.png';
 import useNavigate from '../hooks/useNavigate';
 import { useEffect, useState } from 'react';
@@ -98,8 +99,11 @@ const Navigation = () => {
               displayName: data ? data.displayName : 'stranger',
               avatar: data ? data.avatar : null,
               gameAvatars: fillGameAvatars(data.gameAvatars || []),
+              coins: data.coins,
+              userProducts: data.userProducts,
             }),
           );
+          console.log('user: ', data);
         })
         .finally(() => dispatch(updateApp({ loading: false })));
     }
@@ -235,6 +239,14 @@ const Navigation = () => {
                     alt={''}
                   />
                 </CustomDropdown>
+              </div>
+              <div className="nav-noty-store">
+                <img
+                  src={storeIcon}
+                  className="store-img"
+                  onClick={() => navigate(ROUTES.STORE)}
+                  alt={''}
+                />
               </div>
               <div className="nav-user-dropdown">
                 <CustomDropdown
