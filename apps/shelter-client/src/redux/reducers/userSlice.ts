@@ -8,7 +8,7 @@ export interface UserState {
   avatar?: string | null;
   gameAvatars?: any[];
   coins?: number | 0;
-  userProducts?: any[];
+  userProducts?: any;
 }
 
 const initialState: UserState = {

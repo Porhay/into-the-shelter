@@ -8,11 +8,12 @@ import { Button } from '../components/Buttons';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import * as requests from '../api/requests';
 import { storeDetails, buyList } from '../config';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { showNotification } from '../libs/notifications';
 import { NOTIF_TYPE } from '../constants';
 import { checkProduct } from '../helpers';
+import { updateUser } from '../redux/reducers/userSlice';
 
 interface IState {
   isPayModalOpened: boolean;
@@ -26,6 +27,7 @@ function Message({ content }: any) {
 }
 
 const StorePage = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
 
   // LOCAL STATE
@@ -76,6 +78,7 @@ const StorePage = () => {
         showNotification(NOTIF_TYPE.ERROR, error.message);
       });
     updateState({ isPayModalOpened: false });
+    window.location.reload(); // reload page
   };
 
   // COMPONENTS
