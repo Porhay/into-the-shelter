@@ -138,7 +138,7 @@ const StorePage = () => {
               <div className="coin-img-container">
                 <img src={coinIcon} className="coin-img" alt={''} />
               </div>
-              <p className="navigation-tab-text">{`${17} Coins`}</p>
+              <p className="navigation-tab-text">{`${user.coins} Coins`}</p>
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ export interface UserState {
   userSessionId?: string | null;
   avatar?: string | null;
   gameAvatars?: any[];
+  coins?: number | 0;
 }
 
 const initialState: UserState = {
@@ -16,6 +17,7 @@ const initialState: UserState = {
   userSessionId: '',
   avatar: null,
   gameAvatars: [],
+  coins: 0,
 };
 
 const userSlice = createSlice({

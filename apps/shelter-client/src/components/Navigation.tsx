@@ -99,6 +99,7 @@ const Navigation = () => {
               displayName: data ? data.displayName : 'stranger',
               avatar: data ? data.avatar : null,
               gameAvatars: fillGameAvatars(data.gameAvatars || []),
+              coins: data.coins,
             }),
           );
         })
