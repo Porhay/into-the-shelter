@@ -21,7 +21,6 @@
         .pay-blocks {
             margin: 20px 0 0 0;
             display: flex;
-            justify-content: flex-end;
 
             .pay-block {
                 display: flex;
@@ -60,19 +59,19 @@
                     background-repeat: repeat-y;
                 }
 
-                .coins-bag {
+                .img-container {
                     align-items: center;
                     display: flex;
                     justify-content: center;
                     padding-top: 10px;
 
-                    .bag-img {
+                    .pay-block-img {
                         filter: invert(10%);
                         width: 70px;
                     }
                 }
 
-                .coins-count {
+                .info {
                     flex: 90%;
                     font-size: 16px;
                     font-weight: 700;
@@ -184,5 +183,19 @@
         margin-left: 5px;
         font-size: 26px;
         font-weight: 600;
+    }
+}
+
+.modal-product-description {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    font-family: 'Roboto Condensed';
+    margin-bottom: 10px;
+    
+    img {
+        margin-bottom: 10px;
+        width: 100px;
     }
 }

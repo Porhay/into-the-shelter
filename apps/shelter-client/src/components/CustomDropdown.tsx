@@ -3,7 +3,7 @@ import { Button } from './Buttons';
 import '../styles/CustomDropdown.scss';
 
 interface Item {
-  icon?: React.ReactNode;
+  icon?: string;
   type?: string;
   action?: () => void;
 }

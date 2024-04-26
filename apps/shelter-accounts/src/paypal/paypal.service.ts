@@ -58,24 +58,13 @@ export class PaypalService {
       body.cart,
     );
 
-    let calcPrice: string;
-    switch (body.cart[0].productId) {
-      case '1':
-        calcPrice = '0.50';
-        break;
-      case '2':
-        calcPrice = '1.00';
-        break;
-      case '3':
-        calcPrice = '3.00';
-        break;
-      case '4':
-        calcPrice = '5.00';
-        break;
-      default:
-        calcPrice = '0.00';
-        break;
-    }
+    const productPrices: { [key: string]: string } = {
+      '1': '1.00', // Coins: 20 + 0
+      '2': '3.00', // Coins: 100 + 0
+      '3': '5.00', // Coins: 180 + 20
+      '4': '10.00', // Coins: 380 + 60
+    };
+    const calcPrice = productPrices[body.cart[0].productId] || '0.00';
 
     const accessToken = await this.generateAccessToken();
     const url = `${sandboxUrl}/v2/checkout/orders`;

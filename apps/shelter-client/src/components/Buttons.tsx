@@ -59,31 +59,41 @@ const Icon = (props: any) => {
   }
 };
 
-export const Button = (props: any) => {
-  let stylesheet = 'text-button';
-  switch (true) {
-    case props.custom:
-      stylesheet = props.stylesheet;
-      break;
-    case !props.icon && props.text:
-      stylesheet = 'text-button';
-      break;
-    case props.icon && !props.text:
-      stylesheet = 'icon-button';
-      break;
-    case !!props.icon && !!props.text:
-      stylesheet = 'icon-text-button';
-      break;
+type ButtonProps = {
+  custom?: boolean;
+  stylesheet?: string;
+  icon?: string; // icon name if there's an icon
+  text?: string; // text to display on button
+  size?: 's' | 'm' | 'l'; // size variants, assuming 'm' and 'l' are also possible sizes
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>; // type for click handler
+};
+export const Button: React.FC<ButtonProps> = ({
+  custom,
+  stylesheet,
+  icon,
+  text,
+  size,
+  onClick,
+}) => {
+  let cssClass = 'text-button'; // Default class
+  if (custom && stylesheet) {
+    cssClass = stylesheet;
+  } else if (!icon && text) {
+    cssClass = 'text-button';
+  } else if (icon && !text) {
+    cssClass = 'icon-button';
+  } else if (icon && text) {
+    cssClass = 'icon-text-button';
   }
 
-  if (props.size === 's') {
-    stylesheet = stylesheet += ' small';
+  if (size === 's') {
+    cssClass += ' small';
   }
 
   return (
-    <a className={stylesheet} onClick={props.onClick}>
-      {props.icon ? <Icon icon={props.icon} /> : null}
-      {props.text ? <span>{props.text}</span> : null}
+    <a className={cssClass} onClick={onClick}>
+      {icon && <Icon icon={icon} />}
+      {text && <span>{text}</span>}
     </a>
   );
 };

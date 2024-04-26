@@ -90,8 +90,12 @@ export const AIModels = [
   'mistralai/Mixtral-8x7B-Instruct-v0.1',
 ];
 
-export const PAYPAL_CLIENT_ID =
-  'Abn1SWO_XOmJvcxwFp17dcfG2QSuzeKrdjk3vRCSROa9pM7oLoNoJdS2E7iYZEz6plEFXn8FWj4gkQ0P';
-export const PAYPAL_CLIENT_SECRET =
-  'EF1Iz57BWWH2SWCrnB_9MWYwvE4hh1nWP92Ax3h4hp4Ve0fQcNfHkGU6LXcIFoK7MNs2iIWkL5MUOoVt';
+export const PAYPAL_CLIENT_ID: string = isProduction
+  ? process.env.PAYPAL_CLIENT_ID
+  : process.env.SANDBOX_PAYPAL_CLIENT_ID;
+
+export const PAYPAL_CLIENT_SECRET: string = isProduction
+  ? process.env.PAYPAL_CLIENT_SECRET
+  : process.env.SANDBOX_PAYPAL_CLIENT_SECRET;
+
 export const sandboxUrl = 'https://api-m.sandbox.paypal.com';
