@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { showNotification } from '../libs/notifications';
 import { NOTIF_TYPE } from '../constants';
+import { checkProduct } from '../helpers';
 
 interface IState {
   isPayModalOpened: boolean;
@@ -46,7 +47,11 @@ const StorePage = () => {
   const [message, setMessage] = useState('');
 
   // FUNCTIONS
-  const onPayBlockClick = (productId: string) => {
+  const onPayBlockClick = (productId: string, isOwned: boolean) => {
+    if (isOwned) {
+      showNotification(NOTIF_TYPE.INFO, 'You already own this product!');
+      return;
+    }
     updateState({
       productId: productId,
       isPayModalOpened: true,
@@ -81,10 +86,13 @@ const StorePage = () => {
   const Card = ({ type = state.tab, ...props }: CardProps) => {
     const current = storeDetails[props.productId];
 
+    const isOwned = checkProduct(user.userProducts!, props.productId);
+    const priceIfAvaliable = isOwned ? `Owned` : `${current.price} Coins`;
+
     return (
       <div
         className="pay-block"
-        onClick={() => onPayBlockClick(props.productId)}
+        onClick={() => onPayBlockClick(props.productId, isOwned)}
       >
         <div className="img-container">
           <img
@@ -98,7 +106,7 @@ const StorePage = () => {
             <div className="info">
               <p>{`${current.info.title}`}</p>
             </div>
-            <div className="price-count">{`${current.price} Coins`}</div>
+            <div className="price-count">{priceIfAvaliable}</div>
           </>
         )}
         {type === 'coins' && (

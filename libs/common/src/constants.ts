@@ -5,6 +5,11 @@ export const revealChar = 'revealChar';
 export const playerKicked = 'playerKicked';
 export const nextStageStarted = 'nextStageStarted';
 
+export const productsSet = {
+  disableAds: '101',
+  improvedBots: '102',
+};
+
 const maslinaGreetings = [
   'Що тут роблять такі слабаки? Це ж гра на життя і смерть, покажіть свою вартість.',
   'Так, всі ви тут, хлопці. Це не час для слабаків, покажіть, що ви варті.',

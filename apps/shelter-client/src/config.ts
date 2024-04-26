@@ -53,3 +53,8 @@ export const buyList: { coins: string[]; products: string[] } = {
   coins: ['1', '2', '3', '4'],
   products: ['101', '102'],
 };
+
+export const productsSet = {
+  disableAds: '101',
+  improvedBots: '102',
+};

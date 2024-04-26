@@ -18,6 +18,7 @@ export class Lobby {
   public isPrivate: boolean = true;
   public timer: number = 0;
   public isAllowBots: boolean = false;
+  public organizatorId: string;
   public readonly databaseService = this._databaseService;
   public readonly AIService = this._AIService;
   public readonly activityLogsService = this._activityLogsService;

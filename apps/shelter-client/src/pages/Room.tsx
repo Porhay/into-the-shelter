@@ -15,6 +15,7 @@ import {
   getLobbyLink,
   defineCharsList,
   charListType,
+  checkProduct,
 } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { Listener } from '../websocket/SocketManager';
@@ -22,6 +23,7 @@ import { ClientEvents, ServerEvents, ServerPayloads } from '../websocket/types';
 import { useParams } from 'react-router-dom';
 import { showNotification } from '../libs/notifications';
 import { NOTIF_TYPE } from '../constants';
+import { productsSet } from '../config';
 import { updateLobby } from '../redux/reducers/lobbySlice';
 import shelterIcon from '../assets/images/shelter-icon.png';
 import catastropheIcon from '../assets/images/catastrophe-icon.png';
@@ -720,7 +722,7 @@ const RoomPage = () => {
               </div>
               <div className="settings-allow-bots">
                 <div className="allow-bots-text">
-                  <h3>Allow bots</h3>
+                  <h3>{`Allow bots [${checkProduct(user.userProducts!, productsSet.improvedBots) ? 'paid' : 'free'}]`}</h3>
                   <p>Bots will join the lobby based on availability</p>
                 </div>
                 <div className="allow-bots-btn">

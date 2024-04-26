@@ -58,6 +58,7 @@ export class Instance {
     this.lobby.isPrivate = lobbydb.settings.isPrivate;
     this.lobby.maxClients = lobbydb.settings.maxClients;
     this.lobby.timer = lobbydb.settings.timer;
+    this.lobby.organizatorId = lobbydb.organizatorId;
 
     // set random characteristics
     this.hasStarted = true;
@@ -260,7 +261,7 @@ export class Instance {
       },
     );
 
-    allEnded 
+    allEnded
       ? await this.botActionIfRequired(client, 'voteKick')
       : await this.botActionIfRequired(client, 'reveal')
   }
@@ -583,31 +584,51 @@ export class Instance {
         if (!curPlayer.isBot) {
           return;
         };
-        let availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
-        const justification = await this.lobby.AIService.generateJustification({
-          conditions: this.conditions,
-          characteristics: this.characteristics,
-          player: curPlayer,
-        })
-        for (let i = 0; i < this.charOpenLimit; i++) {
-          try {
-            await this.revealChar({
-              userId: curPlayer.userId,
-              char: availableChars.find(ch => ch.text === justification.characteristics[i] || ch.text.includes(justification.characteristics[i]))
-            }, client)
 
-            // bot argumentation in chat
-            this.lobby.instance.sendChatMessage(
-              {
-                sender: curPlayer.displayName,
-                message: justification.argument,
-                avatar: curPlayer.avatar,
-                timeSent: getTime(),
-              },
-              client,
-            );
-          } catch (error) {
-            console.log(error);
+        let availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
+
+        // check if user own justifications
+        const uProducts = await this.lobby.databaseService.getUserProductsByUserId(this.lobby.organizatorId)
+        const isPaidBots = uProducts.map(_ => _.productId).includes(constants.productsSet.improvedBots)
+        
+        // make justification if owned (paid)
+        let justification: { characteristics: any; argument: string; }
+        if (isPaidBots) {
+          justification = await this.lobby.AIService.generateJustification({
+            conditions: this.conditions,
+            characteristics: this.characteristics,
+            player: curPlayer,
+          })
+
+          // bot argumentation in chat
+          this.lobby.instance.sendChatMessage(
+            {
+              sender: curPlayer.displayName,
+              message: justification.argument,
+              avatar: curPlayer.avatar,
+              timeSent: getTime(),
+            },
+            client,
+          );
+        }
+
+        for (let i = 0; i < this.charOpenLimit; i++) {
+          if (isPaidBots) {
+            try {
+              await this.revealChar({
+                userId: curPlayer.userId,
+                char: availableChars.find(ch => ch.text === justification.characteristics[i] || ch.text.includes(justification.characteristics[i]))
+              }, client)
+            } catch (error) {
+              console.log(error);
+              const randomIndex = getRandomIndex(availableChars.length)
+              await this.revealChar({
+                userId: curPlayer.userId,
+                char: availableChars[randomIndex]
+              }, client)
+              availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
+            }
+          } else {
             const randomIndex = getRandomIndex(availableChars.length)
             await this.revealChar({
               userId: curPlayer.userId,
