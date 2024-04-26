@@ -105,11 +105,18 @@ interface Product {
   coins: number;
   price: string;
 }
-export const products: {
+export const payProducts: {
   [key: string]: Product;
 } = {
   '1': { coins: 20, price: '1.00' },
   '2': { coins: 100, price: '3.00' },
   '3': { coins: 200, price: '5.00' },
   '4': { coins: 440, price: '10.00' },
+};
+
+export const buyProducts: {
+  [key: string]: { price: number };
+} = {
+  '101': { price: 80 },
+  '102': { price: 60 },
 };

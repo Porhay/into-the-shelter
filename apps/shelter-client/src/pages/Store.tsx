@@ -10,6 +10,8 @@ import * as requests from '../api/requests';
 import { storeDetails, buyList } from '../config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { showNotification } from '../libs/notifications';
+import { NOTIF_TYPE } from '../constants';
 
 interface IState {
   isPayModalOpened: boolean;
@@ -60,7 +62,14 @@ const StorePage = () => {
     updateState({ tab: type });
   };
   const handleBuyProduct = (productId: string) => {
-    console.log(productId);
+    const userProduct = requests
+      .createUserProduct(user.userId, productId)
+      .then(() => {
+        showNotification(NOTIF_TYPE.SUCCESS, 'Product activated successfully!');
+      })
+      .catch((error) => {
+        showNotification(NOTIF_TYPE.ERROR, error.message);
+      });
     updateState({ isPayModalOpened: false });
   };
 

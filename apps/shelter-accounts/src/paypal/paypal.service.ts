@@ -3,7 +3,7 @@ import {
   PAYPAL_CLIENT_ID,
   PAYPAL_CLIENT_SECRET,
   sandboxUrl,
-  products,
+  payProducts,
 } from 'config';
 import fetch from 'node-fetch';
 import { createOrderRequest } from './dto/createOrder.request';
@@ -108,7 +108,7 @@ export class PaypalService {
     );
 
     const curProductId = body.cart[0].productId;
-    const calcPrice = products[curProductId].price || '0.00';
+    const calcPrice = payProducts[curProductId].price || '0.00';
 
     const accessToken = await this.generateAccessToken();
     const url = `${sandboxUrl}/v2/checkout/orders`;
@@ -182,7 +182,7 @@ export class PaypalService {
 
       // add coins for user balance
       await this.databaseService.updateUser(user.id, {
-        coins: user.coins + products[payment.productId].coins,
+        coins: user.coins + payProducts[payment.productId].coins,
       });
 
       // update payment status

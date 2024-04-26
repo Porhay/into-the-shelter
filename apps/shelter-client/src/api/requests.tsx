@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import * as config from '../config';
 
 const gatewayHost = axios.create({
@@ -171,7 +171,12 @@ export const createUserProduct = async (
     });
     return res.data;
   } catch (error) {
-    console.log('Error while user product creation.', error);
+    if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.error ||
+        'An unknown error occurred while creating user product.';
+      throw new Error(errorMessage);
+    }
   }
 };
 
