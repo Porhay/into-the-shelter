@@ -73,12 +73,12 @@ const StorePage = () => {
       .createUserProduct(user.userId, productId)
       .then(() => {
         showNotification(NOTIF_TYPE.SUCCESS, 'Product activated successfully!');
+        updateState({ isPayModalOpened: false });
+        window.location.reload(); // reload page
       })
       .catch((error) => {
         showNotification(NOTIF_TYPE.ERROR, error.message);
       });
-    updateState({ isPayModalOpened: false });
-    window.location.reload(); // reload page
   };
 
   // COMPONENTS
@@ -252,6 +252,8 @@ const StorePage = () => {
                                 orderData,
                                 JSON.stringify(orderData, null, 2),
                               );
+                              updateState({ isPayModalOpened: false });
+                              window.location.reload(); // reload page
                             }
                           } catch (error) {
                             console.error(error);
