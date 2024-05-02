@@ -104,7 +104,7 @@ export class GameGateway
   @SubscribeMessage(ClientEvents.LobbyUpdate)
   async onLobbyUpdate(client: AuthenticatedSocket, data: any): Promise<any> {
     let isPrivate, maxClients, timer, isAllowBots;
-    if (isset(data.isPrivate)) {
+    if (data.isPrivate) {
       client.data.lobby.isPrivate = data.isPrivate;
       isPrivate = data.isPrivate;
     }
@@ -112,11 +112,11 @@ export class GameGateway
       client.data.lobby.maxClients = data.maxClients;
       maxClients = data.maxClients;
     }
-    if (isset(data.maxClients)) {
+    if (isset(data.timer)) {
       client.data.lobby.timer = data.timer;
       timer = data.timer;
     }
-    if (isset(data.isAllowBots)) {
+    if (data.isAllowBots) {
       client.data.lobby.isAllowBots = data.isAllowBots;
       isAllowBots = data.isAllowBots;
 

@@ -641,12 +641,14 @@ export class Instance {
         await this.endTurn({ userId: curPlayer.userId }, client)
         break;
       case 'voteKick':
-        const botPlayers = this.players.filter(p => p.isBot === true)
-        const contestants = this.players.filter(p => Object.keys(p) !== botPlayers[0].userId)
-        await this.voteKick({
-          userId: botPlayers[0].userId,
-          contestantId: contestants[getRandomIndex(this.players.length)].userId
-        }, client)
+        const botPlayers = this.players.filter(p => p.isBot === true && !p.isKicked)
+        for (const bot of botPlayers) {
+          const contestants = this.players.filter(p => Object.keys(p) !== bot.userId && !p.isKicked)
+          await this.voteKick({
+            userId: bot.userId,
+            contestantId: contestants[getRandomIndex(contestants.length)].userId
+          }, client)
+        }
         break;
       default:
         break;

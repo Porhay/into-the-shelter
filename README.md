@@ -3,7 +3,7 @@
 </p>
 
 
-<p align="center">Shelter card game. Prove that you are better!</p>
+<p align="center">Competitive 'Vault Entry' game with multiplayer. Prove that you are better!</p>
 <p align="center">
   <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
   <a href="https://github.com/Porhay/into-the-shelter/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="Package License" /></a>
