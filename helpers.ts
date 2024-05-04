@@ -28,6 +28,23 @@ export const isset = (val: any) => {
   return val !== null && val !== undefined;
 };
 
+export const countCharacteristics = () => {
+  let jsonData: { [x: string]: any };
+  try {
+    const data = fs.readFileSync('./characteristics.json', 'utf8');
+    jsonData = JSON.parse(data);
+  } catch (error) {
+    console.log(`ERROR: ${error}`);
+  }
+
+  const res = {};
+  for (const char in jsonData) {
+    const count = jsonData[char].length;
+    res[char] = count;
+  }
+  return res;
+};
+
 export const generateFromCharacteristics = (
   type: 'charList' | 'conditions' | 'specialCard',
 ): any => {

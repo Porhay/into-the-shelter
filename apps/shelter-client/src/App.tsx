@@ -9,17 +9,19 @@ import Loader from './libs/loader';
 function App() {
   const app = useSelector((state: RootState) => state.app);
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Navigation />
-        {app.loading ? (
-          <div className="app-loader">
-            <Loader />
-          </div>
-        ) : (
-          <Router />
-        )}
-      </BrowserRouter>
+    <div className="app">
+      <div className="app-content">
+        <BrowserRouter>
+          <Navigation />
+          {app.loading ? (
+            <div className="app-loader">
+              <Loader />
+            </div>
+          ) : (
+            <Router />
+          )}
+        </BrowserRouter>
+      </div>
     </div>
   );
 }
