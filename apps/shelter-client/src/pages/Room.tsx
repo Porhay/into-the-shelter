@@ -589,7 +589,7 @@ const RoomPage = () => {
           {lobby.hasStarted ? (
             <div className="lobby-conditions-container">
               <div
-                className="shelter-conditions-wrapper"
+                className="conditions-wrapper"
                 onClick={() => {
                   handleModal(
                     'shelter',
@@ -598,9 +598,9 @@ const RoomPage = () => {
                   );
                 }}
               >
-                <div className="shelter-conditions">
+                <div className="conditions">
                   <img
-                    className="shelter-icon"
+                    className="conditions-icon"
                     src={shelterIcon}
                     alt={'shelter-icon'}
                   />
@@ -612,7 +612,7 @@ const RoomPage = () => {
               </div>
 
               <div
-                className="catastrophe-conditions-wrapper"
+                className="conditions-wrapper"
                 onClick={() => {
                   handleModal(
                     'catastrophe',
@@ -621,9 +621,9 @@ const RoomPage = () => {
                   );
                 }}
               >
-                <div className="catastrophe-conditions">
+                <div className="conditions">
                   <img
-                    className="catastrophe-icon"
+                    className="conditions-icon"
                     src={catastropheIcon}
                     alt={'catastrophe-icon'}
                   />
