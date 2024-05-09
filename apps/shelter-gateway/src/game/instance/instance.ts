@@ -15,13 +15,30 @@ import { ServerEvents } from '../utils/ServerEvents';
 import { constants } from '@app/common';
 
 
+type CharacteristicType = 'gender' | 'health' | 'hobby' | 'job' | 'phobia' | 'backpack' | 'fact';
+interface CharacteristicsType {
+  [x: string]: {
+    type: CharacteristicType;
+    icon: string;
+    text: string;
+    isRevealed: boolean;
+  }[];
+}
+
+interface ConditionsType {
+  [key: string]: {
+    id: number;
+    name: string;
+    description: string;
+  };
+}
 export class Instance {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
   public isSuspended: boolean = false;
   public players: any = [];
-  public characteristics: any = {};
-  public conditions: any = {};
+  public characteristics: CharacteristicsType = {};
+  public conditions: ConditionsType = {};
   public specialCards: any = {};
   public currentStage: number;
   public stages: any[];
@@ -590,7 +607,7 @@ export class Instance {
         // check if user own justifications
         const uProducts = await this.lobby.databaseService.getUserProductsByUserId(this.lobby.organizatorId)
         const isPaidBots = uProducts.map(_ => _.productId).includes(constants.productsSet.improvedBots)
-        
+
         // make justification if owned (paid)
         let justification: { characteristics: any; argument: string; }
         if (isPaidBots) {
@@ -641,12 +658,14 @@ export class Instance {
         await this.endTurn({ userId: curPlayer.userId }, client)
         break;
       case 'voteKick':
-        const botPlayers = this.players.filter(p => p.isBot === true)
-        const contestants = this.players.filter(p => Object.keys(p) !== botPlayers[0].userId)
-        await this.voteKick({
-          userId: botPlayers[0].userId,
-          contestantId: contestants[getRandomIndex(this.players.length)].userId
-        }, client)
+        const botPlayers = this.players.filter(p => p.isBot === true && !p.isKicked)
+        for (const bot of botPlayers) {
+          const contestants = this.players.filter(p => Object.keys(p) !== bot.userId && !p.isKicked)
+          await this.voteKick({
+            userId: bot.userId,
+            contestantId: contestants[getRandomIndex(contestants.length)].userId
+          }, client)
+        }
         break;
       default:
         break;

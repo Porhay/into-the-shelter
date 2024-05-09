@@ -112,11 +112,11 @@ export class GameGateway
       client.data.lobby.maxClients = data.maxClients;
       maxClients = data.maxClients;
     }
-    if (isset(data.maxClients)) {
+    if (isset(data.timer)) {
       client.data.lobby.timer = data.timer;
       timer = data.timer;
     }
-    if (isset(data.isAllowBots)) {
+    if (data.isAllowBots === true) {
       client.data.lobby.isAllowBots = data.isAllowBots;
       isAllowBots = data.isAllowBots;
 

@@ -5,11 +5,7 @@ body {
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    background-image: url('../assets//images/2150985667.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    min-height: 100vh;
+    background-color: rgb(0, 0, 0);
 }
 
 pre {
@@ -22,11 +18,19 @@ code {
         monospace;
 }
 
-.App {
-    overflow: 'hidden';
+.app {
+    background-image: url('../assets//images/2150985667.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+
+    .app-content {
+        overflow: 'hidden';
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 }
 
 h1 {

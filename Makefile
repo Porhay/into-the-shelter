@@ -67,3 +67,6 @@ kill:
 	npx kill-port 8001
 	npx kill-port 8008
 	npx kill-port 3000
+
+test:
+	npx ts-node test.ts

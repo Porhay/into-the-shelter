@@ -16,8 +16,10 @@ import phobiaIcon from '../assets/icons/ingame/phobia-icon.png';
 import backpackIcon from '../assets/icons/ingame/backpack-icon.png';
 import additionalInfoIcon from '../assets/icons/ingame/additional-info-icon.png';
 import specialCardIcon from '../assets/icons/ingame/special-card-icon.png';
+import shelterIcon from '../assets/images/shelter-icon.png';
+import catastropheIcon from '../assets/images/catastrophe-icon.png';
 
-const Icon = (props: any) => {
+export const Icon = (props: any) => {
   const alt = 'icon';
   switch (props.icon) {
     case 'videocamIcon':
@@ -54,6 +56,10 @@ const Icon = (props: any) => {
       return <img src={plusIcon} alt={alt} />;
     case 'specialCardIcon':
       return <img src={specialCardIcon} alt={alt} />;
+    case 'shelterIcon':
+      return <img src={shelterIcon} alt={alt} />;
+    case 'catastropheIcon':
+      return <img src={catastropheIcon} alt={alt} />;
     default:
       return <img src={healthIcon} alt={alt} />;
   }
