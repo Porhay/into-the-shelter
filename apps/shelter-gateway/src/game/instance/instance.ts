@@ -33,6 +33,23 @@ interface ConditionsType {
     description: string;
   };
 }
+type CharacteristicType = 'gender' | 'health' | 'hobby' | 'job' | 'phobia' | 'backpack' | 'fact';
+interface CharacteristicsType {
+  [x: string]: {
+    type: CharacteristicType;
+    icon: string;
+    text: string;
+    isRevealed: boolean;
+  }[];
+}
+
+interface ConditionsType {
+  [key: string]: {
+    id: number;
+    name: string;
+    description: string;
+  };
+}
 export class Instance {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
