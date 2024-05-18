@@ -81,15 +81,44 @@ export default () => ({
   CALLBACK_URL: process.env.CALLBACK_URL,
 });
 
+// AI CONFIGURATIONS
 // https://api.together.xyz/
-export const AIKey = process.env.AIKey;
-export const AIModels = [
+const AI_URL_1 = 'https://api.together.xyz/v1';
+const AI_KEY_1 = process.env.AI_KEY_1;
+const AI_MODELS_1 = [
   'QWEN/QWEN1.5-72B-CHAT',
   'GARAGE-BAIND/PLATYPUS2-70B-INSTRUCT',
   'NOUSRESEARCH/NOUS-HERMES-2-MIXTRAL-8X7B-SFT',
   'mistralai/Mixtral-8x7B-Instruct-v0.1',
 ];
 
+// https://api.groq.com/
+const AI_URL_2 = 'https://api.groq.com/openai/v1';
+const AI_KEY_2 = process.env.AI_KEY_2;
+const AI_MODELS_2 = [
+  'gemma-7b-it', // Google
+  'mixtral-8x7b-32768', // Mistral AI
+  'llama3-70b-8192', // Meta
+  'llama3-8b-8192', // Meta
+];
+
+export const AI_CONFIGS = {
+  TOGETHER: {
+    URL: AI_URL_1,
+    KEY: AI_KEY_1,
+    MODELS: AI_MODELS_1,
+  },
+  GROQ: {
+    URL: AI_URL_2,
+    KEY: AI_KEY_2,
+    MODELS: AI_MODELS_2,
+  },
+};
+
+export const AI = AI_CONFIGS.TOGETHER; // current, actual ai api, used all over the app
+// ---
+
+// PAYPAL
 export const PAYPAL_CLIENT_ID: string = isProduction
   ? process.env.PAYPAL_CLIENT_ID
   : process.env.SANDBOX_PAYPAL_CLIENT_ID;
@@ -100,7 +129,7 @@ export const PAYPAL_CLIENT_SECRET: string = isProduction
 
 export const sandboxUrl = 'https://api-m.sandbox.paypal.com';
 
-// payments
+// PAYMENTS
 interface Product {
   coins: number;
   price: string;

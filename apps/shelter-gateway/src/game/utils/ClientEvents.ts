@@ -9,4 +9,5 @@ export enum ClientEvents {
   GameEndTurn = 'client.game.end_turn',
   GameVoteKick = 'client.game.vote_kick',
   GameUseSpecialCard = 'client.game.use_special_card',
+  ChatMessage = 'client.chat.message',
 }

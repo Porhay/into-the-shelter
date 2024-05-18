@@ -56,7 +56,7 @@ export class GameGateway
     });
   }
 
-  @SubscribeMessage('client.chat.message')
+  @SubscribeMessage(ClientEvents.ChatMessage)
   onChatMessage(client: AuthenticatedSocket, data: ChatMessage) {
     if (!client.data.lobby) {
       throw new ServerException(

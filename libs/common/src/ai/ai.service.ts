@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { AIKey, AIModels } from 'config';
+import { AI } from 'config';
 import { constants } from '@app/common';
 import { getRandomIndex, extractJustificationInfo } from 'helpers';
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  apiKey: AIKey,
-  baseURL: 'https://api.together.xyz/v1',
+  apiKey: AI.KEY,
+  baseURL: AI.URL,
 });
+
+const aiOptions = {
+  top_p: 0.25,
+  temperature: 1.5,
+  max_tokens: 2048,
+};
 
 // generate string for each player in list
 const _genPlayerInfo = (
@@ -124,7 +130,7 @@ export class AIService {
     players: any;
   }) {
     try {
-      const randomModel = AIModels[getRandomIndex(AIModels.length)];
+      const randomModel = AI.MODELS[getRandomIndex(AI.MODELS.length)];
       const response = await client.chat.completions.create({
         messages: [
           {
@@ -137,13 +143,12 @@ export class AIService {
           },
         ],
         model: randomModel,
-        top_p: 0.25,
-        temperature: 1.5,
-        max_tokens: 2048,
+        top_p: aiOptions.top_p,
+        temperature: aiOptions.temperature,
+        max_tokens: aiOptions.max_tokens,
       });
       const output = response.choices[0].message.content;
-      // model subscription
-      const modelSub = `\nModel: ${randomModel}`;
+      const modelSub = `\nModel: ${randomModel}`; // model subscription
       const result = output + modelSub;
       return result;
     } catch (e) {
@@ -169,10 +174,10 @@ export class AIService {
             content: genJustificationUserContext(data),
           },
         ],
-        model: 'NOUSRESEARCH/NOUS-HERMES-2-MIXTRAL-8X7B-SFT',
-        top_p: 0.25,
-        temperature: 1.5,
-        max_tokens: 2048,
+        model: AI.MODELS[getRandomIndex(AI.MODELS.length)],
+        top_p: aiOptions.top_p,
+        temperature: aiOptions.temperature,
+        max_tokens: aiOptions.max_tokens,
       });
       const output = response.choices[0].message.content;
       const result = extractJustificationInfo(output);

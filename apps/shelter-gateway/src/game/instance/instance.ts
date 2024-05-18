@@ -6,7 +6,8 @@ import {
   countOccurrences,
   getKeysWithHighestValue,
   isset,
-  getTime
+  getTime,
+  getRandomGreeting
 } from 'helpers';
 import { Lobby } from '../lobby/lobby';
 import { AuthenticatedSocket } from '../types';
@@ -422,6 +423,18 @@ export class Instance {
 
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
+
+    // Example: '@Leonardo da Vinci, hello!'
+    function extractDisplayName(message: string): string | null {
+      const regex = /^@([^,]+),/;
+      const match = regex.exec(message);
+      return match ? match[1] : null;
+    }
+    // bot reply if mentioned
+    const currentBot = constants.allBots.find(bot => bot.displayName === extractDisplayName(data.message));
+    if (currentBot) {
+      this.botActionIfRequired(client, 'replyInChat', currentBot.userId)
+    }
   }
 
   /* check if user revealed all possible characteristics and 
@@ -591,7 +604,11 @@ export class Instance {
     }
   }
 
-  private async botActionIfRequired(client: AuthenticatedSocket, action: 'reveal' | 'voteKick') {
+  private async botActionIfRequired(
+    client: AuthenticatedSocket,
+    action: 'reveal' | 'voteKick' | 'replyInChat',
+    botId?: string
+  ) {
     switch (action) {
       case 'reveal':
         const curPlayer = this.players.find(p => p.userId === this.revealPlayerId)
@@ -666,6 +683,23 @@ export class Instance {
             contestantId: contestants[getRandomIndex(contestants.length)].userId
           }, client)
         }
+        break;
+      case 'replyInChat':
+        if (!botId) {
+          return;
+        }
+
+        // bot reply in chat
+        const currentBot = constants.allBots.find(bot => bot.userId === botId);
+        setTimeout(() => {
+          this.lobby.dispatchToLobby(ServerEvents.ChatMessage, {
+            sender: currentBot.displayName,
+            message: getRandomGreeting(currentBot.greetings),
+            avatar: currentBot.avatar,
+            timeSent: getTime(),
+          });
+        }, 1000);
+        
         break;
       default:
         break;
