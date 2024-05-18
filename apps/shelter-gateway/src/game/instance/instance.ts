@@ -25,24 +25,6 @@ interface CharacteristicsType {
     isRevealed: boolean;
   }[];
 }
-
-interface ConditionsType {
-  [key: string]: {
-    id: number;
-    name: string;
-    description: string;
-  };
-}
-type CharacteristicType = 'gender' | 'health' | 'hobby' | 'job' | 'phobia' | 'backpack' | 'fact';
-interface CharacteristicsType {
-  [x: string]: {
-    type: CharacteristicType;
-    icon: string;
-    text: string;
-    isRevealed: boolean;
-  }[];
-}
-
 interface ConditionsType {
   [key: string]: {
     id: number;
@@ -704,8 +686,7 @@ export class Instance {
       case 'replyInChat':
         if (!botId) {
           return;
-        }
-
+        };
         // bot reply in chat
         const currentBot = constants.allBots.find(bot => bot.userId === botId);
         setTimeout(() => {
@@ -716,7 +697,6 @@ export class Instance {
             timeSent: getTime(),
           });
         }, 1000);
-        
         break;
       default:
         break;
