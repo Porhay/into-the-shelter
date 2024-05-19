@@ -115,7 +115,7 @@ export const AI_CONFIGS = {
   },
 };
 
-export const AI = AI_CONFIGS.TOGETHER; // current, actual ai api, used all over the app
+export const AI = AI_CONFIGS.GROQ; // current, actual ai api, used all over the app
 // ---
 
 // PAYPAL

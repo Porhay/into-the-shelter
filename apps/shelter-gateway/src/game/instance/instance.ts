@@ -7,7 +7,8 @@ import {
   getKeysWithHighestValue,
   isset,
   getTime,
-  getRandomGreeting
+  getRandomGreeting,
+  parseMessage
 } from 'helpers';
 import { Lobby } from '../lobby/lobby';
 import { AuthenticatedSocket } from '../types';
@@ -423,16 +424,17 @@ export class Instance {
   public sendChatMessage(data: any, client: AuthenticatedSocket): void {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
 
-    // Example: '@Leonardo da Vinci, hello!'
-    function extractDisplayName(message: string): string | null {
-      const regex = /^@([^,]+),/;
-      const match = regex.exec(message);
-      return match ? match[1] : null;
+    const regex = /^@/;
+    const isMentioned = regex.test(data.message);
+    if (!isMentioned) {
+      return
     }
+
     // bot reply if mentioned
-    const currentBot = constants.allBots.find(bot => bot.displayName === extractDisplayName(data.message));
+    const messageObject = parseMessage(data.message)
+    const currentBot = constants.allBots.find(bot => bot.displayName === messageObject.displayName);
     if (currentBot) {
-      this.botActionIfRequired(client, 'replyInChat', currentBot.userId)
+      this.botActionIfRequired(client, 'replyInChat', currentBot.userId, messageObject.userMessage)
     }
   }
 
@@ -606,8 +608,13 @@ export class Instance {
   private async botActionIfRequired(
     client: AuthenticatedSocket,
     action: 'reveal' | 'voteKick' | 'replyInChat',
-    botId?: string
+    botId?: string,
+    message?: string
   ) {
+    // check if user own improved bots
+    const uProducts = await this.lobby.databaseService.getUserProductsByUserId(this.lobby.organizatorId)
+    const isPaidBots = uProducts.map(_ => _.productId).includes(constants.productsSet.improvedBots)
+
     switch (action) {
       case 'reveal':
         const curPlayer = this.players.find(p => p.userId === this.revealPlayerId)
@@ -619,10 +626,6 @@ export class Instance {
         };
 
         let availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
-
-        // check if user own justifications
-        const uProducts = await this.lobby.databaseService.getUserProductsByUserId(this.lobby.organizatorId)
-        const isPaidBots = uProducts.map(_ => _.productId).includes(constants.productsSet.improvedBots)
 
         // make justification if owned (paid)
         let justification: { characteristics: any; argument: string; }
@@ -687,12 +690,17 @@ export class Instance {
         if (!botId) {
           return;
         };
+
         // bot reply in chat
         const currentBot = constants.allBots.find(bot => bot.userId === botId);
+        const reply = isPaidBots
+          ? await this.lobby.AIService.generateReplyInChat({ message: message })
+          : getRandomGreeting(currentBot.greetings)
+
         setTimeout(() => {
           this.lobby.dispatchToLobby(ServerEvents.ChatMessage, {
             sender: currentBot.displayName,
-            message: getRandomGreeting(currentBot.greetings),
+            message: reply,
             avatar: currentBot.avatar,
             timeSent: getTime(),
           });

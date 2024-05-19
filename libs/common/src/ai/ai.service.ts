@@ -187,4 +187,30 @@ export class AIService {
       return null;
     }
   }
+
+  async generateReplyInChat(data: { message: string }) {
+    try {
+      const response = await client.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content: constants.replyInChatSysContext,
+          },
+          {
+            role: 'user',
+            content: data.message,
+          },
+        ],
+        model: AI.MODELS[getRandomIndex(AI.MODELS.length)],
+        top_p: aiOptions.top_p,
+        temperature: aiOptions.temperature,
+        max_tokens: aiOptions.max_tokens,
+      });
+      const result = response.choices[0].message.content;
+      return result;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
 }
