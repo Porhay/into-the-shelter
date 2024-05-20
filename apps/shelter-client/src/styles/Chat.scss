@@ -1,3 +1,5 @@
+@import './utils/constants.scss';
+
 .chat-container {
   display: flex;
   justify-content: center;
@@ -109,33 +111,41 @@
     }
   }
 
-  .input-container {
+  .input-wrapper {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
     width: 95%;
     margin-bottom: 10px;
 
     input {
       display: flex;
       width: 100%;
+      width: -moz-available;
+      width: -webkit-fill-available;
+      width: fill-available;
       justify-content: center;
       align-items: center;
       padding: 8px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      margin-right: 8px;
+      outline: none;
     }
 
     button {
       padding: 8px 16px;
-      background-color: #4caf50;
-      color: #fff;
+      background-color: $dark_sunset_color;
+      color: #000;
       border: none;
       border-radius: 4px;
       cursor: pointer;
     }
   }
+}
+
+.input-container {
+  position: relative;
+  margin-right: 8px;
+  width: 100%;
 }
 
 .messages-container::-webkit-scrollbar {
@@ -152,4 +162,24 @@
 
 .messages-container::-webkit-scrollbar-button {
   display: none;
+}
+
+.suggested-player-wrapper {
+  position: absolute;
+  bottom:   35px;
+  width: 100%;
+  color: #fff;
+  background-color: #000000d5;
+  border-radius: 3px;
+  margin-bottom: 5px;
+
+  .suggested-player {
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #7c7b7bd4;
+    }
+  }
 }

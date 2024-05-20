@@ -12,6 +12,7 @@ interface IState {
   messages: Message[];
   newMessage: string;
   isResizing: boolean;
+  isPlayersSuggested: boolean;
   chatHeight: number;
   chatWidth: number;
   startX?: number;
@@ -28,9 +29,11 @@ interface Message {
 const Chat: FC = () => {
   const { sm } = useSocketManager();
   const user = useSelector((state: RootState) => state.user);
+  const lobby = useSelector((state: RootState) => state.lobby);
   const chatRef = useRef<HTMLDivElement>(null);
   const messageTextRef = useRef<HTMLDivElement>(null);
   const resizeRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<HTMLInputElement>(null);
 
   // LOCAL STATE
   const updateState = (newState: Partial<IState>): void =>
@@ -39,6 +42,7 @@ const Chat: FC = () => {
     messages: [],
     newMessage: '',
     isResizing: false,
+    isPlayersSuggested: false,
     chatHeight: 54,
     chatWidth: 20,
   });
@@ -112,6 +116,21 @@ const Chat: FC = () => {
     updateState({ isResizing: false });
   };
 
+  const handleInputChange = (e: any) => {
+    if (e.target.value === '@') {
+      updateState({ isPlayersSuggested: true });
+    } else {
+      updateState({ isPlayersSuggested: false });
+    }
+    updateState({ newMessage: e.target.value });
+  };
+
+  const handleSuggestedPlayerClick = (e: any) => {
+    updateState({ isPlayersSuggested: false });
+    updateState({ newMessage: `@${e.target.innerText}, ` });
+    chatInputRef.current?.focus();
+  };
+
   useEffect(() => {
     window.addEventListener('mousemove', resize);
     window.addEventListener('mouseup', stopResizing);
@@ -156,16 +175,33 @@ const Chat: FC = () => {
           </div>
         ))}
       </div>
-      <div className="input-container">
-        <input
-          autoComplete="off"
-          spellCheck="false"
-          type="text"
-          placeholder="Type your message..."
-          value={state.newMessage}
-          onChange={(e) => updateState({ newMessage: e.target.value })}
-          onKeyDown={(e) => handleKeyDown(e, handleSendMessage)}
-        />
+      <div className="input-wrapper">
+        <div className="input-container">
+          {state.isPlayersSuggested && (
+            <div className="suggested-player-wrapper">
+              {lobby.players.map((player: any, index: number) => {
+                return (
+                  <div
+                    className="suggested-player"
+                    onClick={handleSuggestedPlayerClick}
+                  >
+                    <p>{player.displayName}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <input
+            autoComplete="off"
+            spellCheck="false"
+            type="text"
+            placeholder="Type your message..."
+            value={state.newMessage}
+            onChange={handleInputChange}
+            onKeyDown={(e) => handleKeyDown(e, handleSendMessage)}
+            ref={chatInputRef}
+          />
+        </div>
         <button onClick={handleSendMessage}>Send</button>
       </div>
     </div>

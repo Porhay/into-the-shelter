@@ -1,3 +1,5 @@
+@import './utils/constants.scss';
+
 .modal-window-container {
     position: absolute;
     width: 100%;
@@ -36,7 +38,7 @@
     .close::after,
     .close::before {
         content: '';
-        background-color: #ffc28cca;
+        background-color: $sunset_color;
         height: 20px;
         width: 2px;
         position: absolute;

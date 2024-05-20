@@ -213,3 +213,18 @@ export function extractJustificationInfo(text: string): {
 
   return { characteristics, argument };
 }
+
+// Example: '@Leonardo da Vinci, hello!'
+export function parseMessage(message: string): {
+  displayName: string | null;
+  userMessage: string;
+} {
+  const regex = /^@([^,]+),\s*(.*)/;
+  const match = regex.exec(message);
+  if (match) {
+    const displayName = match[1].trim();
+    const userMessage = match[2].trim();
+    return { displayName, userMessage };
+  }
+  return { displayName: null, userMessage: '' };
+}
