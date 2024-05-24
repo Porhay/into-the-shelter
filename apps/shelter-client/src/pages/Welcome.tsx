@@ -31,12 +31,14 @@ const WelcomePage = () => {
         userSessionId,
         30 * 24 * 60 * 60,
       );
-    }
 
-    // remove parameters from URL
-    const newUrl = window.location.href.split('?')[0];
-    window.history.replaceState({}, document.title, newUrl);
-    navigate(ROUTES.MAIN);
+      // remove parameters from URL
+      const newUrl = window.location.href.split('?')[0];
+      window.history.replaceState({}, document.title, newUrl);
+
+      // Reload the page after setting cookies and updating URL
+      window.location.reload();
+    }
   }, []);
 
   return (
