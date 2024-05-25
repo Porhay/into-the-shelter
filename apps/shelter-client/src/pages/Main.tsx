@@ -154,16 +154,47 @@ const MainPage = () => {
           <div className="game-details">
             <div className="game-rules">
               <h3>How to play?</h3>
-              {gameDescription.split('\n').map((res) => (
-                <p className="rules-text">{res}</p>
-              ))}
+              <div className="game-rules-text">
+                {gameDescription
+                  .split('\n')
+                  .map((res) =>
+                    res === 'Stage 1: Open Stage' ||
+                    res === 'Stage 2: Kick Stage' ||
+                    res === 'Special Cards' ||
+                    res === 'Your Goal' ? (
+                      <p className="rules-title">{res}</p>
+                    ) : res.includes('You are participating') ? (
+                      <p className="rules-text default">{res}</p>
+                    ) : (
+                      <p className="rules-text">{res}</p>
+                    ),
+                  )}
+              </div>
             </div>
             <div className="game-chars">
               <h3>How many characteristics?</h3>
               <div className="chars-wrapper">
-                {Object.keys(statsList).map((keyName: string, i) => (
-                  <Chars type={keyName} count={statsList[keyName]} />
-                ))}
+                <div className="chars-container">
+                  {Object.keys(statsList)
+                    .slice(0, 3)
+                    .map((keyName: string, i) => (
+                      <Chars type={keyName} count={statsList[keyName]} />
+                    ))}
+                </div>
+                <div className="chars-container">
+                  {Object.keys(statsList)
+                    .slice(3, 6)
+                    .map((keyName: string, i) => (
+                      <Chars type={keyName} count={statsList[keyName]} />
+                    ))}
+                </div>
+                <div className="chars-container">
+                  {Object.keys(statsList)
+                    .slice(6, 9)
+                    .map((keyName: string, i) => (
+                      <Chars type={keyName} count={statsList[keyName]} />
+                    ))}
+                </div>
               </div>
             </div>
           </div>
