@@ -1,11 +1,8 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { cookieHelper } from '../helpers';
-import { ROUTES } from '../constants';
 import '../styles/Welcome.scss';
 
 const WelcomePage = () => {
-  const navigate = useNavigate();
   const description: string =
     `Into the shelter - it's discussion based game where\n` +
     `you should prove other players that you should go to the shelter.\n` +
