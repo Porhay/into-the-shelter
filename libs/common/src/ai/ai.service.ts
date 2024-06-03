@@ -225,14 +225,16 @@ export class AIService {
       ...(prevBotRelatedMessages as any),
       {
         role: 'user',
-        content: data.messageObj.text,
+        content: parseMessage(data.messageObj.text).userMessage,
       },
     ];
+
+    console.log(1, messages);
 
     try {
       const response = await client.chat.completions.create({
         messages: messages,
-        model: AI.MODELS[0],
+        model: AI.MODELS[1],
         top_p: aiOptions.top_p,
         temperature: aiOptions.temperature,
         max_tokens: aiOptions.max_tokens,
