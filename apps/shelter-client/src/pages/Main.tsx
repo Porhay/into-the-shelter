@@ -144,13 +144,16 @@ const MainPage = () => {
               )}
             </div>
           </div>
-          <div className="scroll-down">
-            <p>Game details</p>
-            <hr></hr>
-            <p>▼</p>
-          </div>
+
+          <a href="#rules" className="scroll-down-link">
+            <div className="scroll-down">
+              <p>Game details</p>
+              <hr></hr>
+              <p>▼</p>
+            </div>
+          </a>
         </div>
-        <div className="details-content">
+        <div className="details-content" id="rules">
           <div className="game-details">
             <div className="game-rules">
               <h3>How to play?</h3>
