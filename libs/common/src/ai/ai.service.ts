@@ -220,7 +220,7 @@ export class AIService {
     const messages = [
       {
         role: 'system',
-        content: constants.replyInChatSysContext,
+        content: `Твоя особистість: ${data.currentBot.personality}. Обов'язково притримуйся цього у своїх відповідях! ${constants.replyInChatSysContext}`,
       },
       ...(prevBotRelatedMessages as any),
       {
