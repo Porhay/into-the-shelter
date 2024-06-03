@@ -237,7 +237,7 @@ export class AIService {
         model: AI.MODELS[1],
         top_p: aiOptions.top_p,
         temperature: aiOptions.temperature,
-        max_tokens: aiOptions.max_tokens,
+        max_tokens: 512,
       });
       const result = response.choices[0].message.content;
       return result;

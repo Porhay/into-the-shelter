@@ -721,7 +721,7 @@ export class Instance {
         await this.lobby.databaseService.createChatMessage({
           userId: currentBot.userId,
           lobbyId: this.lobbyId,
-          text: reply,
+          text: reply || getRandomGreeting(currentBot.greetings),
           replyTo: dbUserMessage.id
         })
 
