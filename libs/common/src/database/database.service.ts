@@ -316,7 +316,7 @@ export class DatabaseService {
       where: { lobbyId: lobbyId },
     });
     if (!messages || messages.length === 0) {
-      return null;
+      return [];
     }
     return messages;
   }

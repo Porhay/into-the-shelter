@@ -5,7 +5,7 @@ import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { generateSixSymbolHash } from 'helpers';
 import { AIService, DatabaseService } from '@app/common';
-import { ActivityLogsService } from '../../activityLogs/activity-logs.service';
+import { ActivityLogsService } from '../../activity-logs/activity-logs.service';
 
 export class Lobby {
   public readonly id: string = generateSixSymbolHash();

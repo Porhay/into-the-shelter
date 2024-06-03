@@ -7,6 +7,8 @@ import { handleKeyDown } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize } from '@fortawesome/free-solid-svg-icons';
+import { getChatMessages } from '../api/requests';
+import { useParams } from 'react-router-dom';
 
 interface IState {
   messages: Message[];
@@ -30,6 +32,7 @@ const Chat: FC = () => {
   const { sm } = useSocketManager();
   const user = useSelector((state: RootState) => state.user);
   const lobby = useSelector((state: RootState) => state.lobby);
+  const { roomId } = useParams();
   const chatRef = useRef<HTMLDivElement>(null);
   const messageTextRef = useRef<HTMLDivElement>(null);
   const resizeRef = useRef<HTMLDivElement>(null);
@@ -58,6 +61,15 @@ const Chat: FC = () => {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [state.messages]);
+
+  // set chat messages on mount/reload
+  useEffect(() => {
+    const setData = async () => {
+      const chatMessages = await getChatMessages(roomId);
+      updateState({ messages: chatMessages });
+    };
+    setData();
+  }, []);
 
   // FUNCTIONS
   const handleSendMessage = () => {

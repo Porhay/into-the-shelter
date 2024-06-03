@@ -197,8 +197,9 @@ export class AIService {
     currentBot: any;
     messageObj: any;
   }) {
-    const lobbyMessages =
-      (await this.databaseService.getChatMessagesByLobbyId(data.lobbyId)) || [];
+    const lobbyMessages = await this.databaseService.getChatMessagesByLobbyId(
+      data.lobbyId,
+    );
 
     // parse messages for OpenAI lib
     const prevBotRelatedMessages: { role: string; content: string }[] = [];

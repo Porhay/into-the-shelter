@@ -441,9 +441,14 @@ export class Instance {
           currentBot,
         });
       }
+    } else {
+      const messageContext: CreateChatMessageDto = {
+        userId: data.senderId,
+        lobbyId: this.lobbyId,
+        text: data.message,
+      }
+      await this.lobby.databaseService.createChatMessage(messageContext)
     }
-
-    // await this.lobby.databaseService.createChatMessage(messageContext)
   }
 
   /* check if user revealed all possible characteristics and 

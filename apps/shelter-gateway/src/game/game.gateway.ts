@@ -21,7 +21,7 @@ import { SocketExceptions } from './utils/SocketExceptions';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
-import { ActivityLogsService } from '../activityLogs/activity-logs.service';
+import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 import { isset, getTime, getRandomGreeting, getRandomIndex } from 'helpers';
 import { constants } from '@app/common';
 
