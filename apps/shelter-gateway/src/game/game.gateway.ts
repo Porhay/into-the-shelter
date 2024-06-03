@@ -38,6 +38,12 @@ export class GameGateway
     private readonly activityLogsService: ActivityLogsService,
   ) {}
 
+  @SubscribeMessage('signal')
+  handleSignal(client: Socket, payload: { signal: any; type: string }) {
+    console.log(`signal`);
+    client.broadcast.emit('signal', payload);
+  }
+
   afterInit(server: Server): any {
     this.lobbyManager.server = server; // Pass server instance to managers
     this.logger.log('Game server initialized !');
@@ -131,6 +137,7 @@ export class GameGateway
       client.data.lobby.instance.sendChatMessage(
         {
           sender: playerBot.displayName,
+          senderId: playerBot.userId,
           message: getRandomGreeting(playerBot.greetings),
           avatar: playerBot.avatar,
           timeSent: getTime(),

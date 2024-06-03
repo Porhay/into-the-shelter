@@ -68,6 +68,7 @@ const Chat: FC = () => {
       const timeStr = `${hour}:${minute}`;
       sm.socket.emit('client.chat.message', {
         sender: user.displayName,
+        senderId: user.userId,
         message: state.newMessage,
         avatar: user.avatar,
         timeSent: timeStr,
@@ -179,16 +180,20 @@ const Chat: FC = () => {
         <div className="input-container">
           {state.isPlayersSuggested && (
             <div className="suggested-player-wrapper">
-              {lobby.players.map((player: any, index: number) => {
-                return (
-                  <div
-                    className="suggested-player"
-                    onClick={handleSuggestedPlayerClick}
-                  >
-                    <p>{player.displayName}</p>
-                  </div>
-                );
-              })}
+              {lobby.players
+                .filter(
+                  (player: { userId: string }) => player.userId !== user.userId,
+                )
+                .map((player: any, index: number) => {
+                  return (
+                    <div
+                      className="suggested-player"
+                      onClick={handleSuggestedPlayerClick}
+                    >
+                      <p>{player.displayName}</p>
+                    </div>
+                  );
+                })}
             </div>
           )}
           <input

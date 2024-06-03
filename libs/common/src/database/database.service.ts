@@ -303,14 +303,39 @@ export class DatabaseService {
     });
   }
 
-  async deleteChatMessagesByLobbyId(lobbyId: string) {
+  async clearLobbyChat(lobbyId: string) {
+    const result = await this.prisma.chatMessages.deleteMany({
+      where: { lobbyId: lobbyId },
+    });
+
+    return result; // will return an object that includes a count of the deleted records
+  }
+
+  async getChatMessagesByLobbyId(lobbyId: string) {
     const messages = await this.prisma.chatMessages.findMany({
-      where: { userId: lobbyId },
+      where: { lobbyId: lobbyId },
     });
     if (!messages || messages.length === 0) {
       return null;
     }
     return messages;
+  }
+
+  async getChatMessagesByMentionId(mentionId: string) {
+    const messages = await this.prisma.chatMessages.findMany({
+      where: { mentionId: mentionId },
+    });
+    if (!messages || messages.length === 0) {
+      return null;
+    }
+    return messages;
+  }
+
+  async getChatMessageByReplyTo(replyTo: string) {
+    const messages = await this.prisma.chatMessages.findMany({
+      where: { replyTo: replyTo },
+    });
+    return messages[0] || null;
   }
 
   async getChatMessageById(messageId: string) {

@@ -87,9 +87,9 @@ const AI_URL_1 = 'https://api.together.xyz/v1';
 const AI_KEY_1 = process.env.AI_KEY_1;
 const AI_MODELS_1 = [
   'QWEN/QWEN1.5-72B-CHAT',
+  'mistralai/Mixtral-8x7B-Instruct-v0.1', // Mistral AI
   'GARAGE-BAIND/PLATYPUS2-70B-INSTRUCT',
   'NOUSRESEARCH/NOUS-HERMES-2-MIXTRAL-8X7B-SFT',
-  'mistralai/Mixtral-8x7B-Instruct-v0.1',
 ];
 
 // https://api.groq.com/

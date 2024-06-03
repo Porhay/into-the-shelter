@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AI } from 'config';
-import { constants } from '@app/common';
-import { getRandomIndex, extractJustificationInfo } from 'helpers';
+import { DatabaseService, constants } from '@app/common';
+import {
+  getRandomIndex,
+  extractJustificationInfo,
+  parseMessage,
+} from 'helpers';
 import OpenAI from 'openai';
 
 const client = new OpenAI({
@@ -123,7 +127,7 @@ const genJustificationUserContext = (data: any) => {
 
 @Injectable()
 export class AIService {
-  constructor() {}
+  constructor(private readonly databaseService: DatabaseService) {}
   async generatePrediction(data: {
     conditions: any;
     characteristics: any;
@@ -188,20 +192,46 @@ export class AIService {
     }
   }
 
-  async generateReplyInChat(data: { message: string }) {
+  async generateReplyInChat(data: {
+    lobbyId: string;
+    currentBot: any;
+    messageObj: any;
+  }) {
+    const lobbyMessages =
+      (await this.databaseService.getChatMessagesByLobbyId(data.lobbyId)) || [];
+
+    // parse messages for OpenAI lib
+    const prevBotRelatedMessages: { role: string; content: string }[] = [];
+    lobbyMessages.forEach(async (_) => {
+      if (_.mentionId === data.currentBot.userId) {
+        prevBotRelatedMessages.push({
+          role: 'user',
+          content: parseMessage(_.text).userMessage,
+        });
+        const botReply = lobbyMessages.find((msg) => msg.replyTo === _.id);
+        prevBotRelatedMessages.push({
+          role: 'assistant',
+          content: botReply.text,
+        });
+      }
+    });
+
+    const messages = [
+      {
+        role: 'system',
+        content: constants.replyInChatSysContext,
+      },
+      ...(prevBotRelatedMessages as any),
+      {
+        role: 'user',
+        content: data.messageObj.text,
+      },
+    ];
+
     try {
       const response = await client.chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content: constants.replyInChatSysContext,
-          },
-          {
-            role: 'user',
-            content: data.message,
-          },
-        ],
-        model: AI.MODELS[getRandomIndex(AI.MODELS.length)],
+        messages: messages,
+        model: AI.MODELS[0],
         top_p: aiOptions.top_p,
         temperature: aiOptions.temperature,
         max_tokens: aiOptions.max_tokens,

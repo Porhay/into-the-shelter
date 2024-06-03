@@ -15,6 +15,7 @@ import { AuthenticatedSocket } from '../types';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
 import { constants } from '@app/common';
+import { CreateChatMessageDto } from '@app/common/database/dto/create-chat-message.dto';
 
 
 type CharacteristicType = 'gender' | 'health' | 'hobby' | 'job' | 'phobia' | 'backpack' | 'fact';
@@ -36,6 +37,7 @@ interface ConditionsType {
 export class Instance {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
+  public lobbyId: string = this.lobby.id;
   public isSuspended: boolean = false;
   public players: any = [];
   public characteristics: CharacteristicsType = {};
@@ -72,7 +74,7 @@ export class Instance {
     }
 
     // update lobby's settings
-    const lobbydb = await this.lobby.databaseService.getLobbyByKeyOrNull(client.data.lobby.id);
+    const lobbydb = await this.lobby.databaseService.getLobbyByKeyOrNull(this.lobbyId);
     this.lobby.isPrivate = lobbydb.settings.isPrivate;
     this.lobby.maxClients = lobbydb.settings.maxClients;
     this.lobby.timer = lobbydb.settings.timer;
@@ -155,6 +157,9 @@ export class Instance {
 
     this.hasFinished = true;
 
+    // [TEMPORARY] TODO: Delete with finished lobby games in garbage collector
+    this.lobby.databaseService.clearLobbyChat(this.lobbyId)
+
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
@@ -207,7 +212,7 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.revealChar,
       payload: data,
     });
@@ -312,7 +317,7 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.voteKick,
       payload: data,
     });
@@ -339,7 +344,7 @@ export class Instance {
       // create activity log
       await this.lobby.activityLogsService.createActivityLog({
         userId: data.userId,
-        lobbyId: client.data.lobby.id,
+        lobbyId: this.lobbyId,
         action: constants.playerKicked,
         payload: { userId: kickedPlayer.userId }, // kicked player id
       });
@@ -405,7 +410,7 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.useSpecialCard,
       payload: data,
     });
@@ -421,21 +426,24 @@ export class Instance {
     );
   }
 
-  public sendChatMessage(data: any, client: AuthenticatedSocket): void {
+  public async sendChatMessage(data: any, client: AuthenticatedSocket): Promise<void> {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
 
     const regex = /^@/;
     const isMentioned = regex.test(data.message);
-    if (!isMentioned) {
-      return
+    if (isMentioned) {
+      // bot reply if mentioned
+      const msgObj = parseMessage(data.message)
+      const currentBot = constants.allBots.find(bot => bot.displayName === msgObj.displayName);
+      if (currentBot) {
+        await this.botActionIfRequired(client, 'replyInChat', {
+          messageData: data,
+          currentBot,
+        });
+      }
     }
 
-    // bot reply if mentioned
-    const messageObject = parseMessage(data.message)
-    const currentBot = constants.allBots.find(bot => bot.displayName === messageObject.displayName);
-    if (currentBot) {
-      this.botActionIfRequired(client, 'replyInChat', currentBot.userId, messageObject.userMessage)
-    }
+    // await this.lobby.databaseService.createChatMessage(messageContext)
   }
 
   /* check if user revealed all possible characteristics and 
@@ -494,7 +502,7 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.nextStageStarted,
       payload: { currentStage: this.currentStage }, // only currentStage needed
     });
@@ -608,8 +616,7 @@ export class Instance {
   private async botActionIfRequired(
     client: AuthenticatedSocket,
     action: 'reveal' | 'voteKick' | 'replyInChat',
-    botId?: string,
-    message?: string
+    data?: any,
   ) {
     // check if user own improved bots
     const uProducts = await this.lobby.databaseService.getUserProductsByUserId(this.lobby.organizatorId)
@@ -640,6 +647,7 @@ export class Instance {
           this.lobby.instance.sendChatMessage(
             {
               sender: curPlayer.displayName,
+              senderId: curPlayer.userId,
               message: justification.argument,
               avatar: curPlayer.avatar,
               timeSent: getTime(),
@@ -687,16 +695,32 @@ export class Instance {
         }
         break;
       case 'replyInChat':
-        if (!botId) {
-          return;
-        };
+        const { currentBot, messageData } = data
+
+        const messageContext: CreateChatMessageDto = {
+          userId: messageData.senderId,
+          lobbyId: this.lobbyId,
+          text: messageData.message,
+          mentionId: currentBot.userId
+        }
 
         // bot reply in chat
-        const currentBot = constants.allBots.find(bot => bot.userId === botId);
         const reply = isPaidBots
-          ? await this.lobby.AIService.generateReplyInChat({ message: message })
+          ? await this.lobby.AIService.generateReplyInChat({ lobbyId: this.lobbyId, currentBot, messageObj: messageContext })
           : getRandomGreeting(currentBot.greetings)
 
+        // user's msg
+        const dbUserMessage = await this.lobby.databaseService.createChatMessage(messageContext)
+
+        // bot's msg
+        await this.lobby.databaseService.createChatMessage({
+          userId: currentBot.userId,
+          lobbyId: this.lobbyId,
+          text: reply,
+          replyTo: dbUserMessage.id
+        })
+
+        // just to immitate bots thinking
         setTimeout(() => {
           this.lobby.dispatchToLobby(ServerEvents.ChatMessage, {
             sender: currentBot.displayName,
