@@ -482,14 +482,16 @@ const RoomPage = () => {
 
     return (
       <div className="action-tip-container">
-        {lobby.currentStage! % 2 === 1 &&
-          lobby.timer !== 0 &&
-          lobby.revealPlayerId === user.userId && (
-            <Timer
-              timerEndTime={lobby.timerEndTime!}
-              onTimerEnd={handleEndTurn}
-            />
-          )}
+        {lobby.currentStage! % 2 === 1 && lobby.timer !== 0 && (
+          <Timer
+            timerEndTime={lobby.timerEndTime!}
+            onTimerEnd={() => {
+              if (lobby.revealPlayerId === user.userId) {
+                handleEndTurn();
+              }
+            }}
+          />
+        )}
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
