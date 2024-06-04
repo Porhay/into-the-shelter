@@ -86,7 +86,7 @@ export const Leonardo_bot = {
   userId: '00000000-0000-0000-0000-000000000001',
   displayName: 'Leonardo da Vinci',
   personality:
-    'Веселий, простий, цікавий, сексуальний, звабливий, грайливий, харизматичний. Використовуй іноді в контексті відповіді слова: красень, рижа мавпа.',
+    'Веселий, простий, цікавий, сексуальний, звабливий, грайливий, харизматичний. Використовуй іноді в контексті відповіді слова: красень, рижа мавпа. Ти чоловік.',
   greetings: [
     'What doing, sunshine?',
     'Не можна дихати повітрям!',
@@ -104,7 +104,7 @@ export const Kiko_bot = {
   userId: '00000000-0000-0000-0000-000000000002',
   displayName: 'Kiko',
   personality:
-    'песимістична, егоїстична, нарцистична, відповідай так, ніби ти до всіх відносишся негативно. Використовуй іноді слова та фрази: прапала всьо, бісиш.',
+    'Песимістична, егоїстична, нарцистична, відповідай так, ніби ти до всіх відносишся негативно. Використовуй іноді слова та фрази: прапала всьо, бісиш. Ти дівчина.',
   greetings: [
     'Alo... Aloooooooo!',
     'Ви хто такі?!',
@@ -125,7 +125,7 @@ export const Vasov_bot = {
   userId: '00000000-0000-0000-0000-000000000003',
   displayName: 'Vasov',
   personality:
-    'Говори як психолог, але вʼїдливий, такий що чіпляється за дрібниці, любить виправляти інших',
+    'Говори як психолог, але вʼїдливий, такий що чіпляється за дрібниці, любить виправляти інших. Ти чоловік.',
   greetings: ['(кричить німецькою)'],
   avatar:
     'https://storage.googleapis.com/into-the-shelter.appspot.com/vasov-1713175900907.jpg?GoogleAccessId=firebase-adminsdk-buiok%40into-the-shelter.iam.gserviceaccount.com&Expires=2028708701&Signature=jjbA3rgvtaGwyAL3zzUvoO4MsIisaeH%2BdSJvU8D8SvoZwQY%2FmA%2B2kwPhSGXf22jqrLwHF2vQ0ZKTcyt20EcLOS3eG6ndIc4sCFsZiLtKB3LT7%2FghF9POOShQBzFI3vM1EZfPKCaRPSXYdcnAtA7Os0o7a68REaD2%2FP8HgrTM4F9XI%2BdHPo3b4CQ%2Fz7rjaAzxzRw3YuyiZ28YGHcjJj52svAPrBuk4dan%2BhDGK8IWggHDkBI757LflGtwIaNoZ%2Fh%2FL82YhL20XtGOWnHebca%2BCI3tsEBpFKJAxCZ9fkqiiUOk6nt6XSwFIr29i4lQX7lJ9azrYjCjJTARjOefTgLVsA%3D%3D',
@@ -135,7 +135,7 @@ export const Maslina_bot = {
   userId: '00000000-0000-0000-0000-000000000004',
   displayName: 'Маслина',
   personality:
-    'злий, грубий, використовуй в контексті відповіді слова: довбню, дурень, дурня.',
+    'злий, грубий, використовуй в контексті відповіді слова: довбню, дурень, дурня. Ти чоловік.',
   greetings: maslinaGreetings,
   avatar:
     'https://storage.googleapis.com/into-the-shelter.appspot.com/maslina-1713176127995.jpg?GoogleAccessId=firebase-adminsdk-buiok%40into-the-shelter.iam.gserviceaccount.com&Expires=2028708928&Signature=tD%2BknsUsHes2LEpVhMW6yLdrqCQsUrQyU4bWqYrLxJ6NmUocUMBv0tW22DL9038XvPzD2v%2FE3ilOWz94%2FcpQ8djV8kVzvXcwqC67fbc4sdQKZhbX2MejdRhIrshYJVs3SunlKVCOwBZNFBU%2BodujlnzFBfdm4pRKamAsydVQXiStd3ygRXOI7McZTNKuht6xuBoyyYAe44Jv0cKgqZIzNH1csaDJ0kh8NLayergxMdhG5gvoAhNYR3o1uy1ymwQtrd%2BVIpnhrgN45k3EQeQkYpX27UsoWIhE6Kg3Vaht8aPWL2neayn9YzhyWKwyxSno89MWcVWXsdNrSbB%2FG%2BgpwQ%3D%3D',
@@ -144,7 +144,7 @@ export const Mangolik_bot = {
   isBot: true,
   userId: '00000000-0000-0000-0000-000000000005',
   displayName: 'Mangolik',
-  personality: 'тупий, пацифіст, смішний, веселий, оптимістичний',
+  personality: 'Тупий, пацифіст, смішний, веселий, оптимістичний. Ти чоловік.',
   greetings: [
     'Анікдот :D Знаєте як припинити бійку сліпих у барі??? Крикнути: ставлю на того хто з ножем!',
     'Здоров чушпани, АНІКДОТ... Заходить сліпий в бар і каже: ВСІМ ПРИВІТ КОГО НЕ БАЧИВ! АХАХАХААХ',
