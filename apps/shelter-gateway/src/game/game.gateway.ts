@@ -36,7 +36,9 @@ export class GameGateway
     private readonly databaseService: DatabaseService,
     private readonly AIService: AIService,
     private readonly activityLogsService: ActivityLogsService,
-  ) {}
+  ) {
+    this.lobbyManager.setDatabaseService(databaseService);
+  }
 
   @SubscribeMessage('signal')
   handleSignal(client: Socket, payload: { signal: any; type: string }) {

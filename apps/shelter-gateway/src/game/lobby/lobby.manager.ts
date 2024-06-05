@@ -10,7 +10,7 @@ import { ServerPayloads } from '../utils/ServerPayloads';
 import { DatabaseService } from '@app/common';
 
 export class LobbyManager {
-  constructor(private readonly databaseService: DatabaseService) {}
+  private databaseService: DatabaseService;
   public server: Server;
   private readonly lobbies: Map<Lobby['id'], Lobby> = new Map<
     Lobby['id'],
@@ -21,6 +21,9 @@ export class LobbyManager {
   }
   public terminateSocket(client: AuthenticatedSocket): void {
     client.data.lobby?.removeClient(client);
+  }
+  public setDatabaseService(databaseService: DatabaseService): void {
+    this.databaseService = databaseService;
   }
 
   public createLobby(
@@ -72,26 +75,16 @@ export class LobbyManager {
 
   /**
    * Periodically clean up lobbies
-   * 1. 1h late and no users connected. If has users -> +1h
-   * 2. no users and 10 min late
    */
-  @Cron('*/10 * * * * *') // Runs every 1 minutes
+  @Cron('0 * * * * *') // Runs every hour
   private async lobbiesCleaner(): Promise<void> {
     console.log('[GC] Lobbies cleaner has started!');
-    console.log(this.lobbies);
-    // console.log(await this.databaseService.getAllPublicLobbis());
-
     for (const [lobbyId, lobby] of this.lobbies) {
-      if (lobby.clients.size > 0) {
-        return;
-      }
-
       const now = new Date().getTime();
       const lobbyCreatedAt = lobby.createdAt.getTime();
       const lobbyLifetime = now - lobbyCreatedAt;
-
-      if (lobbyLifetime > LOBBY_MAX_LIFETIME) {
-        //
+      if (lobbyLifetime > LOBBY_MAX_LIFETIME && lobby.clients.size === 0) {
+        await this.deleteLobby(lobby);
       }
     }
     console.log('[GC] Lobbies cleaner has finished!');
@@ -106,10 +99,8 @@ export class LobbyManager {
       },
     );
     lobby.instance.triggerFinish();
-
-    // delete lobby
-
     this.lobbies.delete(lobby.id);
-    console.log(`Lobby, id:${lobby.id} has deleted!`);
+    await this.databaseService.deleteLobby(lobby.id);
+    console.log(`Lobby, id:${lobby.id} has been deleted!`);
   }
 }

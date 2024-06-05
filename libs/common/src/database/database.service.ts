@@ -204,17 +204,27 @@ export class DatabaseService {
     });
   }
 
-  async deleteLobby(lobbyId: string) {
-    const lobby = await this.prisma.lobbies.findUnique({
-      where: { id: lobbyId },
-    });
-    if (!lobby) {
-      throw new Error(`Lobby with ID ${lobbyId} not found`);
-    }
+  async deleteLobby(lobbyKey: string): Promise<boolean> {
+    try {
+      const lobby = await this.getLobbyByKeyOrNull(lobbyKey);
+      if (!lobby) {
+        throw new Error(`Lobby with key:${lobby.key} not found`);
+      }
 
-    return await this.prisma.lobbies.delete({
-      where: { id: lobbyId },
-    });
+      await this.prisma.activityLogs.deleteMany({
+        where: { lobbyId: lobbyKey },
+      });
+      await this.prisma.chatMessages.deleteMany({
+        where: { lobbyId: lobbyKey },
+      });
+      await this.prisma.lobbies.delete({
+        where: { id: lobby.id },
+      });
+      return true;
+    } catch (error) {
+      console.error(`Error deleting lobby with key:${lobbyKey}:`, error);
+      throw new Error(`Failed to delete lobby with key:${lobbyKey}`);
+    }
   }
 
   async getLobbyByIdOrNull(lobbyId: string): Promise<any> {
