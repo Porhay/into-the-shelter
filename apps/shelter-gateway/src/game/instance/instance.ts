@@ -667,11 +667,25 @@ export class Instance {
         };
 
         let availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
+        for (let i = 0; i < this.charOpenLimit; i++) {
+          try {
+            if (availableChars.length === 0) {
+              break;
+            }
+            const randomIndex = getRandomIndex(availableChars.length)
+            await this.revealChar({
+              userId: curPlayer.userId,
+              char: availableChars[randomIndex]
+            }, client)
+            availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
+          } catch (error) {
+            console.log(error);
+          }
+        }
 
         // make justification if owned (paid)
-        let justification: { characteristics: any; argument: string; }
         if (isPaidBots) {
-          justification = await this.lobby.AIService.generateJustification({
+          const justification = await this.lobby.AIService.generateJustification({
             conditions: this.conditions,
             characteristics: this.characteristics,
             player: curPlayer,
@@ -682,38 +696,12 @@ export class Instance {
             {
               sender: curPlayer.displayName,
               senderId: curPlayer.userId,
-              message: justification.argument,
+              message: justification,
               avatar: curPlayer.avatar,
               timeSent: getTime(),
             },
             client,
           );
-        }
-
-        for (let i = 0; i < this.charOpenLimit; i++) {
-          if (isPaidBots) {
-            try {
-              await this.revealChar({
-                userId: curPlayer.userId,
-                char: availableChars.find(ch => ch.text === justification.characteristics[i] || ch.text.includes(justification.characteristics[i]))
-              }, client)
-            } catch (error) {
-              console.log(error);
-              const randomIndex = getRandomIndex(availableChars.length)
-              await this.revealChar({
-                userId: curPlayer.userId,
-                char: availableChars[randomIndex]
-              }, client)
-              availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
-            }
-          } else {
-            const randomIndex = getRandomIndex(availableChars.length)
-            await this.revealChar({
-              userId: curPlayer.userId,
-              char: availableChars[randomIndex]
-            }, client)
-            availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
-          }
         }
 
         await this.endTurn({ userId: curPlayer.userId }, client)

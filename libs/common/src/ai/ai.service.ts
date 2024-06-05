@@ -23,14 +23,14 @@ const aiOptions = {
 const _genPlayerInfo = (
   characteristics: any,
   players: any,
-  removeRevealed: boolean = false,
+  removeNotRevealed: boolean = false,
 ): string => {
   let result = '';
   players.forEach((player: { displayName: string; userId: string }) => {
     let playerInfo: string = '';
-    if (removeRevealed) {
+    if (removeNotRevealed) {
       const availableChars = characteristics[player.userId].filter(
-        (ch: { isRevealed: boolean }) => !ch.isRevealed,
+        (ch: { isRevealed: boolean }) => ch.isRevealed,
       );
       // Construct playerInfo based on availableChars
       availableChars.forEach((ch: { type: string; text: string }) => {
@@ -116,10 +116,7 @@ const genJustificationUserContext = (data: any) => {
   ${conditions.shelter.description}
 
   Той, хто не потрапить в бункер - неминуче помре страшною смертю. Але і ті хто потрапить можуть не вижити, тому потрібно обрати правильних людей для виживання і продовження людського роду. А решта - будуть залишені на призволяще. В повітрі напруга, страх і безнадійність. Кожен хоче переконати людей в своїй корисності в бункері, щоб вижити. Ти ризикуєш не потрапити в бункер і загинути в муках. Ти дуже персонаж з дуже особливим характером. Що ти скажеш людям? Ти маєш дійсно вразити їх.
-  Вибери дві характеристики гравця, напиши їх, та напиши свій аргумент в 1-2 реченнях. Пиши розмовною мовою і коротко, ніби це швидкий діалог.
-  Використай такий формат:
-  Характеристики: характеристика 1, характеристика 2.
-  Аргумент: тест аргументу.
+  Напиши свій аргумент в 1-2 реченнях. Пиши розмовною мовою і коротко, ніби це швидкий діалог.
   `;
 
   return context;
@@ -184,8 +181,8 @@ export class AIService {
         max_tokens: aiOptions.max_tokens,
       });
       const output = response.choices[0].message.content;
-      const result = extractJustificationInfo(output);
-      return result;
+      // const result = extractJustificationInfo(output);
+      return output;
     } catch (e) {
       console.log(e);
       return null;
