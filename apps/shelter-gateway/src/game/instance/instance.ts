@@ -53,6 +53,7 @@ export class Instance {
 
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
+  private timeoutId: any;
   public timerEndTime: number | null = null
 
   constructor(
@@ -270,7 +271,6 @@ export class Instance {
       this.players.forEach(player => {
         player.endTurn = false;
       });
-      this.timerEndTime = null // resore timer
     } else {
       this.chooseNextToReveal(data, client)
     }
@@ -479,7 +479,7 @@ export class Instance {
   }
 
   private setTimerIfRequired = () => {
-    if (this.lobby.timer === 0 && this.currentStage % 2 !== 0) {
+    if (this.lobby.timer === 0) {
       return;
     }
     const timerEndTime = new Date();
@@ -511,6 +511,36 @@ export class Instance {
       action: constants.nextStageStarted,
       payload: { currentStage: this.currentStage }, // only currentStage needed
     });
+
+    // set timer for kick stage
+    if (this.currentStage % 2 === 0) {
+      const timerEndTime = this.setTimerIfRequired()
+      const calcTimeRemaining = (timerEndTime) => {
+        const now = new Date().getTime();
+        const timeRemaining: number = Math.max(0, timerEndTime - now);
+        return timeRemaining; // Convert milliseconds to seconds
+      };
+      this.timeoutId = setTimeout(() => {
+        // vote if not voted till the timer end
+        const userIds = this.voteKickList.map((_: { userId: any; }) => _.userId);
+        const actualPlayers = this.players.filter(_ => _.isKicked !== true)
+        actualPlayers.forEach(async player => {
+          const voted = userIds.includes(player.userId)
+          if (!voted) {
+            const contestants = actualPlayers.filter(_ => _.userId !== player.userId)
+            await this.voteKick({
+              userId: player.userId,
+              contestantId: contestants[getRandomIndex(contestants.length)].userId
+            }, client)
+            console.log(`Auto vote from ${player.displayName} for ${contestants[getRandomIndex(contestants.length)].displayName}`);
+          }
+        });
+      }, calcTimeRemaining(timerEndTime));
+    } else {
+      if (this.lobby.timer !== 0) {
+        clearTimeout(this.timeoutId);
+      }
+    }
 
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,

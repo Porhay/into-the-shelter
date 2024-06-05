@@ -480,16 +480,21 @@ const RoomPage = () => {
       });
     };
 
+    const handleTimerEnd = () => {
+      if (
+        lobby.currentStage! % 2 === 1 &&
+        lobby.revealPlayerId === user.userId
+      ) {
+        handleEndTurn();
+      }
+    };
+
     return (
       <div className="action-tip-container">
-        {lobby.currentStage! % 2 === 1 && lobby.timer !== 0 && (
+        {lobby.currentStage && !lobby.hasFinished && lobby.timer !== 0 && (
           <Timer
             timerEndTime={lobby.timerEndTime!}
-            onTimerEnd={() => {
-              if (lobby.revealPlayerId === user.userId) {
-                handleEndTurn();
-              }
-            }}
+            onTimerEnd={handleTimerEnd}
           />
         )}
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
