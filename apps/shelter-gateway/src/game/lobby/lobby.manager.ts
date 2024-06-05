@@ -7,10 +7,10 @@ import { ServerException } from '../server.exception';
 import { SocketExceptions } from '../utils/SocketExceptions';
 import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
-import { LobbiesService } from '../../lobbies/lobbies.service';
+import { DatabaseService } from '@app/common';
 
 export class LobbyManager {
-  constructor(private readonly lobbiesService: LobbiesService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
   public server: Server;
   private readonly lobbies: Map<Lobby['id'], Lobby> = new Map<
     Lobby['id'],
@@ -70,30 +70,46 @@ export class LobbyManager {
     lobby.addClient(client, playerData);
   }
 
-  // Periodically clean up lobbies
-  @Cron('*/5 * * * *')
+  /**
+   * Periodically clean up lobbies
+   * 1. 1h late and no users connected. If has users -> +1h
+   * 2. no users and 10 min late
+   */
+  @Cron('*/10 * * * * *') // Runs every 1 minutes
   private async lobbiesCleaner(): Promise<void> {
+    console.log('[GC] Lobbies cleaner has started!');
+    console.log(this.lobbies);
+    // console.log(await this.databaseService.getAllPublicLobbis());
+
     for (const [lobbyId, lobby] of this.lobbies) {
+      if (lobby.clients.size > 0) {
+        return;
+      }
+
       const now = new Date().getTime();
       const lobbyCreatedAt = lobby.createdAt.getTime();
       const lobbyLifetime = now - lobbyCreatedAt;
 
       if (lobbyLifetime > LOBBY_MAX_LIFETIME) {
-        lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
-          ServerEvents.GameMessage,
-          {
-            color: 'blue',
-            message: 'Game timed out',
-          },
-        );
-
-        lobby.instance.triggerFinish();
-
-        this.lobbies.delete(lobby.id);
-        console.log(lobbyId);
-        const lobbies = await this.lobbiesService.getAllPublicLobbis();
-        console.log(lobbies);
+        //
       }
     }
+    console.log('[GC] Lobbies cleaner has finished!');
+  }
+
+  private async deleteLobby(lobby: Lobby) {
+    lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
+      ServerEvents.GameMessage,
+      {
+        color: 'blue',
+        message: 'Game timed out',
+      },
+    );
+    lobby.instance.triggerFinish();
+
+    // delete lobby
+
+    this.lobbies.delete(lobby.id);
+    console.log(`Lobby, id:${lobby.id} has deleted!`);
   }
 }

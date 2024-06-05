@@ -513,7 +513,7 @@ export class Instance {
     });
 
     // set timer for kick stage
-    if (this.currentStage % 2 === 0) {
+    if (this.currentStage % 2 === 0 && this.lobby.timer !== 0) {
       const timerEndTime = this.setTimerIfRequired()
       const calcTimeRemaining = (timerEndTime) => {
         const now = new Date().getTime();
