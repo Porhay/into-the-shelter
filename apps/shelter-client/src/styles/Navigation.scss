@@ -110,6 +110,10 @@ $border-radius: 8px;
 .game-history-container {
     cursor: pointer;
     color: #fff;
+    svg {
+        height: 24px;
+        width: 24px;
+    }
 }
 
 .invisible {
