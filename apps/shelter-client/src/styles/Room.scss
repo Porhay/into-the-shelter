@@ -499,12 +499,10 @@
 
 .isRevealed {
   &:hover {
-    filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg)
-      brightness(102%) contrast(101%);
+    filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg) brightness(102%) contrast(101%);
   }
 
-  filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg)
-    brightness(102%) contrast(101%);
+  filter: invert(94%) sepia(75%) saturate(581%) hue-rotate(46deg) brightness(102%) contrast(101%);
 }
 
 .isNotRevealed {
@@ -598,4 +596,103 @@
   align-items: center;
   text-align: center;
   font-family: 'Roboto Condensed';
+}
+
+.react-toggle-thumb {
+  top: 1!important;
+}
+
+@media screen and (max-width: 1024px) {
+  .webcam-list {
+    width: 100%;
+  }
+
+  .webcam-avatar {
+    width: 200px;
+    height: 100px;
+  }
+
+  .siwc-wrapper {
+    width: 200px;
+  }
+
+  .camera-block {
+    height: 95px !important;
+  }
+
+  .bottom-icon {
+    img {
+      height: 10px;
+    }
+  }
+
+  .char-list-container {
+    height: 130px;
+  }
+
+  .icon-text-button {
+    font-size: 12px;
+
+    img {
+      height: 12px;
+      width: 12px;
+    }
+  }
+
+  .action-tip-container {
+    top: 56%;
+    left: 56%;
+    font-size: 20px;
+
+    .start-game-btn {
+      padding: 4px 4px;
+    }
+  }
+
+  .chat-container {
+    display: flex;
+    align-items: start!important;
+  }
+
+  .input-wrapper {
+    width: 50%!important;
+    padding: 0 5px;
+
+    input {
+      padding: 6px!important;
+    }
+
+    button {
+      padding: 6px 13px!important;
+    }
+  }
+
+  .lobby-settings-container {
+    height: auto!important;
+    padding: 5px 0!important;
+  }
+
+  .settings-description {
+    display: none;
+  }
+
+  .settings-title {
+    font-weight: 600;
+    font-size: 16px!important;
+  }
+
+  .react-toggle-track {
+    height: 15px!important;
+    width: 30px!important;
+  }
+
+  .react-toggle-thumb {
+    height: 15px!important;
+    width: 15px!important;
+    top: 0!important;
+  }
+
+  .react-toggle--checked .react-toggle-thumb{
+    left: 15px!important;
+  }
 }

@@ -653,8 +653,10 @@ const RoomPage = () => {
             <div className="lobby-settings-container">
               <div className="settings-is-private">
                 <div className="is-private-text">
-                  <h3>Private room</h3>
-                  <p>Private rooms can be accessed using the room URL only</p>
+                  <h3 className="settings-title">Private room</h3>
+                  <p className="settings-description">
+                    Private rooms can be accessed using the room URL only
+                  </p>
                 </div>
                 <div className="is-private-btn">
                   <Toggle
@@ -672,8 +674,8 @@ const RoomPage = () => {
               </div>
               <div className="settings-timer">
                 <div className="timer-text">
-                  <h3>Turn on the timer</h3>
-                  <p>
+                  <h3 className="settings-title">Turn on the timer</h3>
+                  <p className="settings-description">
                     Players should end thair turns before the time limit to
                     avoid random :D
                   </p>
@@ -706,8 +708,10 @@ const RoomPage = () => {
               </div>
               <div className="settings-max-players">
                 <div className="max-players-text">
-                  <h3>Maximum players</h3>
-                  <p>How many players can join the game</p>
+                  <h3 className="settings-title">Maximum players</h3>
+                  <p className="settings-description">
+                    How many players can join the game
+                  </p>
                 </div>
                 <div className="max-players-selector">
                   <select
@@ -735,8 +739,10 @@ const RoomPage = () => {
               </div>
               <div className="settings-allow-bots">
                 <div className="allow-bots-text">
-                  <h3>{`Allow bots [${checkProduct(user.userProducts!, productsSet.improvedBots) ? 'paid' : 'free'}]`}</h3>
-                  <p>Bots will join the lobby based on availability</p>
+                  <h3 className="settings-title">{`Allow bots [${checkProduct(user.userProducts!, productsSet.improvedBots) ? 'paid' : 'free'}]`}</h3>
+                  <p className="settings-description">
+                    Bots will join the lobby based on availability
+                  </p>
                 </div>
                 <div className="allow-bots-btn">
                   <Toggle
