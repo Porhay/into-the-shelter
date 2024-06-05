@@ -158,9 +158,6 @@ export class Instance {
 
     this.hasFinished = true;
 
-    // [TEMPORARY] TODO: Delete with finished lobby games in garbage collector
-    this.lobby.databaseService.clearLobbyChat(this.lobbyId)
-
     this.lobby.dispatchLobbyState();
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
@@ -261,11 +258,10 @@ export class Instance {
     // update endTurn
     this.players.find(player => player.userId === userId).endTurn = true;
 
-    /* Check if all the players ended the turn and if all reveals on current stage.
+    /* Check if all the players ended the turn.
       Transit to the next stage, endTurn=false for all */
     const kicked = this.players.filter(player => player.isKicked);
     const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length - kicked.length;
-    // const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
     if (allEnded) {
       await this.transitNextStage(data, client)
       this.players.forEach(player => {
@@ -456,7 +452,10 @@ export class Instance {
   private async chooseNextToReveal(data: any, client: AuthenticatedSocket): Promise<void> {
     const uCharList = this.characteristics[data.userId];
     const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
-    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+    const notRevealedLength = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === false).length;
+
+    const maxReveals = uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit
+    if (maxReveals || notRevealedLength === 0) {
       const chooseNext = (revealPlayerId, attempt = 0) => {
         const totalPlayers = this.players.length;
         if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion

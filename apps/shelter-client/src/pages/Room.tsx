@@ -69,14 +69,20 @@ type charType = {
   isRevealed: boolean;
 };
 
-const getRemainedChars = (data: any, userId: string) => {
-  const alreadyRevealedCount = data.characteristics[userId].filter(
-    (_: { isRevealed: boolean }) => _.isRevealed === true,
+const getRemainedChars = (data: any, userId: string): number => {
+  const userCharacteristics = data.characteristics[userId];
+  const alreadyRevealedCount = userCharacteristics.filter(
+    (char: { isRevealed: boolean }) => char.isRevealed,
   ).length;
-  const remained = (
-    Math.ceil(data.currentStage / 2) * 2 -
-    alreadyRevealedCount
-  ).toString();
+
+  const notRevealedCount = userCharacteristics.length - alreadyRevealedCount;
+  if (notRevealedCount === 0) {
+    return 0;
+  }
+
+  const charsToReveal = Math.ceil(data.currentStage / 2) * 2; // at current stage
+  const remained = charsToReveal - alreadyRevealedCount;
+
   return remained;
 };
 
@@ -183,8 +189,8 @@ const RoomPage = () => {
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
           const remained = getRemainedChars(data, currentPlayer.userId);
-          updateState({ uRemainedChars: parseInt(remained) });
-          tipStr = `Open your characteristics, remained: ${remained}`;
+          updateState({ uRemainedChars: remained });
+          tipStr = `Open your characteristics, remained: ${remained.toString()}`;
         } else {
           const revealPlayer = data.players.find(
             (player: { userId: string }) =>
