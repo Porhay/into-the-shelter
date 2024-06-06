@@ -345,6 +345,12 @@ const RoomPage = () => {
       isPredictionOpened: isOpened,
     });
   };
+  const handleRemoveBot = (userId: string) => {
+    sm.emit({
+      event: ClientEvents.LobbyLeave,
+      data: { userId },
+    });
+  };
 
   // COMPONENTS
   const OponentsList = () => {
@@ -388,6 +394,17 @@ const RoomPage = () => {
                     <p className="vote-block">voted</p>
                   ) : null}
                 </p>
+                {typeof player !== 'number' &&
+                  state.isOrganizator &&
+                  !lobby.hasStarted &&
+                  player.isBot && (
+                    <div
+                      className="remove-player-btn"
+                      onClick={() => handleRemoveBot(player.userId)}
+                    >
+                      ⛌
+                    </div>
+                  )}
 
                 <img
                   src={

@@ -168,8 +168,8 @@ export class GameGateway
   }
 
   @SubscribeMessage(ClientEvents.LobbyLeave)
-  onLobbyLeave(client: AuthenticatedSocket): void {
-    client.data.lobby?.removeClient(client);
+  onLobbyLeave(client: AuthenticatedSocket, data: { userId?: string }): void {
+    client.data.lobby?.removeClient(client, data);
   }
 
   @SubscribeMessage(ClientEvents.GameStart)

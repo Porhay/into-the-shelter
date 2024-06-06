@@ -364,7 +364,7 @@
       .nickname-block {
         display: flex;
         margin: 0;
-        padding: 0 0 0 3%;
+        padding: 0 3%;
         font-family: 'Roboto Condensed';
         position: absolute;
         width: 100%;
@@ -381,6 +381,24 @@
           padding: 0 0 0 3%;
           color: #31ff50;
         }
+      }
+
+      .remove-player-btn {
+        cursor: pointer;
+        display: flex;
+        margin: 1px;
+        padding: 0 4px;
+        font-family: 'Roboto Condensed';
+        position: absolute;
+        top: 0;
+        right: 0;
+        text-align: start; // or center
+        font-weight: 500;
+        font-size: 12px;
+        background-color: #54000091;
+        z-index: 3;
+        height: auto;
+        color: #fff;
       }
 
       img {
@@ -599,7 +617,7 @@
 }
 
 .react-toggle-thumb {
-  top: 1!important;
+  top: 1 !important;
 }
 
 @media screen and (max-width: 1024px) {
@@ -651,25 +669,25 @@
 
   .chat-container {
     display: flex;
-    align-items: start!important;
+    align-items: start !important;
   }
 
   .input-wrapper {
-    width: 50%!important;
+    width: 50% !important;
     padding: 0 5px;
 
     input {
-      padding: 6px!important;
+      padding: 6px !important;
     }
 
     button {
-      padding: 6px 13px!important;
+      padding: 6px 13px !important;
     }
   }
 
   .lobby-settings-container {
-    height: auto!important;
-    padding: 5px 0!important;
+    height: auto !important;
+    padding: 5px 0 !important;
   }
 
   .settings-description {
@@ -678,21 +696,21 @@
 
   .settings-title {
     font-weight: 600;
-    font-size: 16px!important;
+    font-size: 16px !important;
   }
 
   .react-toggle-track {
-    height: 15px!important;
-    width: 30px!important;
+    height: 15px !important;
+    width: 30px !important;
   }
 
   .react-toggle-thumb {
-    height: 15px!important;
-    width: 15px!important;
-    top: 0!important;
+    height: 15px !important;
+    width: 15px !important;
+    top: 0 !important;
   }
 
-  .react-toggle--checked .react-toggle-thumb{
-    left: 15px!important;
+  .react-toggle--checked .react-toggle-thumb {
+    left: 15px !important;
   }
 }
