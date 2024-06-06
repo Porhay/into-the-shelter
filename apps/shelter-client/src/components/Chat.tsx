@@ -3,10 +3,11 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import userAvatar from '../assets/images/profile-image-default.jpg';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { handleKeyDown } from '../helpers';
 import useSocketManager from '../hooks/useSocketManager';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize } from '@fortawesome/free-solid-svg-icons';
+import { getChatMessages } from '../api/requests';
+import { useParams } from 'react-router-dom';
 
 interface IState {
   messages: Message[];
@@ -17,6 +18,8 @@ interface IState {
   chatWidth: number;
   startX?: number;
   startY?: number;
+  prevMessages: string[];
+  currentMessageIndex: number;
 }
 
 interface Message {
@@ -30,6 +33,7 @@ const Chat: FC = () => {
   const { sm } = useSocketManager();
   const user = useSelector((state: RootState) => state.user);
   const lobby = useSelector((state: RootState) => state.lobby);
+  const { roomId } = useParams();
   const chatRef = useRef<HTMLDivElement>(null);
   const messageTextRef = useRef<HTMLDivElement>(null);
   const resizeRef = useRef<HTMLDivElement>(null);
@@ -45,6 +49,8 @@ const Chat: FC = () => {
     isPlayersSuggested: false,
     chatHeight: 54,
     chatWidth: 20,
+    prevMessages: [],
+    currentMessageIndex: -1,
   });
 
   useEffect(() => {
@@ -59,6 +65,15 @@ const Chat: FC = () => {
     }
   }, [state.messages]);
 
+  // set chat messages on mount/reload
+  useEffect(() => {
+    const setData = async () => {
+      const chatMessages = await getChatMessages(roomId);
+      updateState({ messages: chatMessages });
+    };
+    setData();
+  }, []);
+
   // FUNCTIONS
   const handleSendMessage = () => {
     if (state.newMessage.trim() !== '') {
@@ -68,11 +83,16 @@ const Chat: FC = () => {
       const timeStr = `${hour}:${minute}`;
       sm.socket.emit('client.chat.message', {
         sender: user.displayName,
+        senderId: user.userId,
         message: state.newMessage,
         avatar: user.avatar,
         timeSent: timeStr,
       });
-      updateState({ newMessage: '' });
+      updateState({
+        newMessage: '',
+        prevMessages: updateQueue(state.prevMessages, state.newMessage),
+        currentMessageIndex: -1,
+      });
     }
   };
 
@@ -131,6 +151,14 @@ const Chat: FC = () => {
     chatInputRef.current?.focus();
   };
 
+  function updateQueue(array: string[], newMsg: string, limit = 5) {
+    if (array.length >= limit) {
+      array.shift(); // Remove the first element
+    }
+    array.push(newMsg);
+    return array;
+  }
+
   useEffect(() => {
     window.addEventListener('mousemove', resize);
     window.addEventListener('mouseup', stopResizing);
@@ -139,6 +167,44 @@ const Chat: FC = () => {
       window.removeEventListener('mouseup', stopResizing);
     };
   }, [state.isResizing]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    } else if (e.key === 'ArrowUp') {
+      if (state.currentMessageIndex === -1) {
+        // Start from the latest added string
+        updateState({
+          newMessage: state.prevMessages[state.prevMessages.length - 1],
+          currentMessageIndex: state.prevMessages.length - 1,
+        });
+      } else if (state.currentMessageIndex > 0) {
+        // Continue in reverse order
+        updateState({
+          newMessage: state.prevMessages[state.currentMessageIndex - 1],
+          currentMessageIndex: state.currentMessageIndex - 1,
+        });
+      }
+    } else if (e.key === 'ArrowDown') {
+      if (state.currentMessageIndex === -1) {
+        // If at the beginning (empty string), do nothing
+        return;
+      }
+      if (state.currentMessageIndex < state.prevMessages.length - 1) {
+        // Move to the next message
+        updateState({
+          newMessage: state.prevMessages[state.currentMessageIndex + 1],
+          currentMessageIndex: state.currentMessageIndex + 1,
+        });
+      } else {
+        // If at the end, cycle back to empty string
+        updateState({
+          newMessage: '',
+          currentMessageIndex: -1,
+        });
+      }
+    }
+  };
 
   return (
     <div
@@ -179,16 +245,20 @@ const Chat: FC = () => {
         <div className="input-container">
           {state.isPlayersSuggested && (
             <div className="suggested-player-wrapper">
-              {lobby.players.map((player: any, index: number) => {
-                return (
-                  <div
-                    className="suggested-player"
-                    onClick={handleSuggestedPlayerClick}
-                  >
-                    <p>{player.displayName}</p>
-                  </div>
-                );
-              })}
+              {lobby.players
+                .filter(
+                  (player: { userId: string }) => player.userId !== user.userId,
+                )
+                .map((player: any, index: number) => {
+                  return (
+                    <div
+                      className="suggested-player"
+                      onClick={handleSuggestedPlayerClick}
+                    >
+                      <p>{player.displayName}</p>
+                    </div>
+                  );
+                })}
             </div>
           )}
           <input
@@ -198,7 +268,7 @@ const Chat: FC = () => {
             placeholder="Type your message..."
             value={state.newMessage}
             onChange={handleInputChange}
-            onKeyDown={(e) => handleKeyDown(e, handleSendMessage)}
+            onKeyDown={(e) => handleKeyDown(e)}
             ref={chatInputRef}
           />
         </div>

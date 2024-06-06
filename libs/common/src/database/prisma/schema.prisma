@@ -107,7 +107,9 @@ model chatMessages {
   id          String   @id @default(uuid())
   userId      String
   lobbyId     String
-  data        String   
+  text        String
+  mentionId   String?
+  replyTo     String?
   createdAt   DateTime @default(now()) @map(name: "created_at")
   updatedAt   DateTime @default(now()) @map(name: "updated_at")
 

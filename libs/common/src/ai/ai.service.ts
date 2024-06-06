@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AI } from 'config';
-import { constants } from '@app/common';
-import { getRandomIndex, extractJustificationInfo } from 'helpers';
+import { DatabaseService, constants } from '@app/common';
+import {
+  getRandomIndex,
+  extractJustificationInfo,
+  parseMessage,
+} from 'helpers';
 import OpenAI from 'openai';
 
 const client = new OpenAI({
@@ -19,14 +23,14 @@ const aiOptions = {
 const _genPlayerInfo = (
   characteristics: any,
   players: any,
-  removeRevealed: boolean = false,
+  removeNotRevealed: boolean = false,
 ): string => {
   let result = '';
   players.forEach((player: { displayName: string; userId: string }) => {
     let playerInfo: string = '';
-    if (removeRevealed) {
+    if (removeNotRevealed) {
       const availableChars = characteristics[player.userId].filter(
-        (ch: { isRevealed: boolean }) => !ch.isRevealed,
+        (ch: { isRevealed: boolean }) => ch.isRevealed,
       );
       // Construct playerInfo based on availableChars
       availableChars.forEach((ch: { type: string; text: string }) => {
@@ -112,10 +116,7 @@ const genJustificationUserContext = (data: any) => {
   ${conditions.shelter.description}
 
   Той, хто не потрапить в бункер - неминуче помре страшною смертю. Але і ті хто потрапить можуть не вижити, тому потрібно обрати правильних людей для виживання і продовження людського роду. А решта - будуть залишені на призволяще. В повітрі напруга, страх і безнадійність. Кожен хоче переконати людей в своїй корисності в бункері, щоб вижити. Ти ризикуєш не потрапити в бункер і загинути в муках. Ти дуже персонаж з дуже особливим характером. Що ти скажеш людям? Ти маєш дійсно вразити їх.
-  Вибери дві характеристики гравця, напиши їх, та напиши свій аргумент в 1-2 реченнях. Пиши розмовною мовою і коротко, ніби це швидкий діалог.
-  Використай такий формат:
-  Характеристики: характеристика 1, характеристика 2.
-  Аргумент: тест аргументу.
+  Напиши свій аргумент в 1-2 реченнях. Пиши розмовною мовою і коротко, ніби це швидкий діалог.
   `;
 
   return context;
@@ -123,7 +124,7 @@ const genJustificationUserContext = (data: any) => {
 
 @Injectable()
 export class AIService {
-  constructor() {}
+  constructor(private readonly databaseService: DatabaseService) {}
   async generatePrediction(data: {
     conditions: any;
     characteristics: any;
@@ -180,31 +181,60 @@ export class AIService {
         max_tokens: aiOptions.max_tokens,
       });
       const output = response.choices[0].message.content;
-      const result = extractJustificationInfo(output);
-      return result;
+      // const result = extractJustificationInfo(output);
+      return output;
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-  async generateReplyInChat(data: { message: string }) {
+  async generateReplyInChat(data: {
+    lobbyId: string;
+    currentBot: any;
+    messageObj: any;
+  }) {
+    const lobbyMessages = await this.databaseService.getChatMessagesByLobbyId(
+      data.lobbyId,
+    );
+
+    // parse messages for OpenAI lib
+    const prevBotRelatedMessages: { role: string; content: string }[] = [];
+    lobbyMessages.forEach(async (_) => {
+      if (_.mentionId === data.currentBot.userId) {
+        prevBotRelatedMessages.push({
+          role: 'user',
+          content: parseMessage(_.text).userMessage,
+        });
+        const botReply = lobbyMessages.find((msg) => msg.replyTo === _.id);
+        prevBotRelatedMessages.push({
+          role: 'assistant',
+          content: botReply.text,
+        });
+      }
+    });
+
+    const messages = [
+      {
+        role: 'system',
+        content: `Твоя особистість: ${data.currentBot.personality}. Обов'язково притримуйся цього у своїх відповідях! ${constants.replyInChatSysContext}`,
+      },
+      ...(prevBotRelatedMessages as any),
+      {
+        role: 'user',
+        content: parseMessage(data.messageObj.text).userMessage,
+      },
+    ];
+
+    console.log(1, messages);
+
     try {
       const response = await client.chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content: constants.replyInChatSysContext,
-          },
-          {
-            role: 'user',
-            content: data.message,
-          },
-        ],
-        model: AI.MODELS[getRandomIndex(AI.MODELS.length)],
+        messages: messages,
+        model: AI.MODELS[1],
         top_p: aiOptions.top_p,
         temperature: aiOptions.temperature,
-        max_tokens: aiOptions.max_tokens,
+        max_tokens: 512,
       });
       const result = response.choices[0].message.content;
       return result;

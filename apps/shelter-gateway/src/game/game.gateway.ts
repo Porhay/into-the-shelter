@@ -21,7 +21,7 @@ import { SocketExceptions } from './utils/SocketExceptions';
 import { LobbyCreateDto } from './dto/LobbyCreate';
 import { LobbyJoinDto } from './dto/LobbyJoin';
 import { ChatMessage } from './dto/ChatMessage';
-import { ActivityLogsService } from '../activityLogs/activity-logs.service';
+import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 import { isset, getTime, getRandomGreeting, getRandomIndex } from 'helpers';
 import { constants } from '@app/common';
 
@@ -36,7 +36,15 @@ export class GameGateway
     private readonly databaseService: DatabaseService,
     private readonly AIService: AIService,
     private readonly activityLogsService: ActivityLogsService,
-  ) {}
+  ) {
+    this.lobbyManager.setDatabaseService(databaseService);
+  }
+
+  @SubscribeMessage('signal')
+  handleSignal(client: Socket, payload: { signal: any; type: string }) {
+    console.log(`signal`);
+    client.broadcast.emit('signal', payload);
+  }
 
   afterInit(server: Server): any {
     this.lobbyManager.server = server; // Pass server instance to managers
@@ -131,6 +139,7 @@ export class GameGateway
       client.data.lobby.instance.sendChatMessage(
         {
           sender: playerBot.displayName,
+          senderId: playerBot.userId,
           message: getRandomGreeting(playerBot.greetings),
           avatar: playerBot.avatar,
           timeSent: getTime(),
@@ -159,8 +168,8 @@ export class GameGateway
   }
 
   @SubscribeMessage(ClientEvents.LobbyLeave)
-  onLobbyLeave(client: AuthenticatedSocket): void {
-    client.data.lobby?.removeClient(client);
+  onLobbyLeave(client: AuthenticatedSocket, data: { userId?: string }): void {
+    client.data.lobby?.removeClient(client, data);
   }
 
   @SubscribeMessage(ClientEvents.GameStart)

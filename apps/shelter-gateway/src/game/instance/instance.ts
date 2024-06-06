@@ -15,6 +15,7 @@ import { AuthenticatedSocket } from '../types';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { ServerEvents } from '../utils/ServerEvents';
 import { constants } from '@app/common';
+import { CreateChatMessageDto } from '@app/common/database/dto/create-chat-message.dto';
 
 
 type CharacteristicType = 'gender' | 'health' | 'hobby' | 'job' | 'phobia' | 'backpack' | 'fact';
@@ -36,6 +37,7 @@ interface ConditionsType {
 export class Instance {
   public hasStarted: boolean = false;
   public hasFinished: boolean = false;
+  public lobbyId: string = this.lobby.id;
   public isSuspended: boolean = false;
   public players: any = [];
   public characteristics: CharacteristicsType = {};
@@ -51,6 +53,7 @@ export class Instance {
 
   private charsRevealedCount: number = 0;
   private readonly charOpenLimit: number = 2; // per 1 player on every stage
+  private timeoutId: any;
   public timerEndTime: number | null = null
 
   constructor(
@@ -72,7 +75,7 @@ export class Instance {
     }
 
     // update lobby's settings
-    const lobbydb = await this.lobby.databaseService.getLobbyByKeyOrNull(client.data.lobby.id);
+    const lobbydb = await this.lobby.databaseService.getLobbyByKeyOrNull(this.lobbyId);
     this.lobby.isPrivate = lobbydb.settings.isPrivate;
     this.lobby.maxClients = lobbydb.settings.maxClients;
     this.lobby.timer = lobbydb.settings.timer;
@@ -207,7 +210,7 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.revealChar,
       payload: data,
     });
@@ -255,17 +258,15 @@ export class Instance {
     // update endTurn
     this.players.find(player => player.userId === userId).endTurn = true;
 
-    /* Check if all the players ended the turn and if all reveals on current stage.
+    /* Check if all the players ended the turn.
       Transit to the next stage, endTurn=false for all */
     const kicked = this.players.filter(player => player.isKicked);
     const allEnded = this.players.filter(_ => _.endTurn).length === this.players.length - kicked.length;
-    // const allRevealsOnCurrentStage = this.charsRevealedCount >= this.charOpenLimit * (this.players.filter(_ => _.isKicked !== true).length);
     if (allEnded) {
       await this.transitNextStage(data, client)
       this.players.forEach(player => {
         player.endTurn = false;
       });
-      this.timerEndTime = null // resore timer
     } else {
       this.chooseNextToReveal(data, client)
     }
@@ -312,7 +313,7 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.voteKick,
       payload: data,
     });
@@ -339,7 +340,7 @@ export class Instance {
       // create activity log
       await this.lobby.activityLogsService.createActivityLog({
         userId: data.userId,
-        lobbyId: client.data.lobby.id,
+        lobbyId: this.lobbyId,
         action: constants.playerKicked,
         payload: { userId: kickedPlayer.userId }, // kicked player id
       });
@@ -405,7 +406,7 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.useSpecialCard,
       payload: data,
     });
@@ -421,20 +422,28 @@ export class Instance {
     );
   }
 
-  public sendChatMessage(data: any, client: AuthenticatedSocket): void {
+  public async sendChatMessage(data: any, client: AuthenticatedSocket): Promise<void> {
     this.lobby.dispatchToLobby(ServerEvents.ChatMessage, data);
 
     const regex = /^@/;
     const isMentioned = regex.test(data.message);
-    if (!isMentioned) {
-      return
-    }
-
-    // bot reply if mentioned
-    const messageObject = parseMessage(data.message)
-    const currentBot = constants.allBots.find(bot => bot.displayName === messageObject.displayName);
-    if (currentBot) {
-      this.botActionIfRequired(client, 'replyInChat', currentBot.userId, messageObject.userMessage)
+    if (isMentioned) {
+      // bot reply if mentioned
+      const msgObj = parseMessage(data.message)
+      const currentBot = constants.allBots.find(bot => bot.displayName === msgObj.displayName);
+      if (currentBot) {
+        await this.botActionIfRequired(client, 'replyInChat', {
+          messageData: data,
+          currentBot,
+        });
+      }
+    } else {
+      const messageContext: CreateChatMessageDto = {
+        userId: data.senderId,
+        lobbyId: this.lobbyId,
+        text: data.message,
+      }
+      await this.lobby.databaseService.createChatMessage(messageContext)
     }
   }
 
@@ -443,7 +452,10 @@ export class Instance {
   private async chooseNextToReveal(data: any, client: AuthenticatedSocket): Promise<void> {
     const uCharList = this.characteristics[data.userId];
     const uCharsRevealed = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === true);
-    if (uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit) {
+    const notRevealedLength = uCharList.filter((char: { isRevealed: boolean }) => char.isRevealed === false).length;
+
+    const maxReveals = uCharsRevealed.length >= Math.ceil(this.currentStage / 2) * this.charOpenLimit
+    if (maxReveals || notRevealedLength === 0) {
       const chooseNext = (revealPlayerId, attempt = 0) => {
         const totalPlayers = this.players.length;
         if (attempt >= totalPlayers) return null; // Base case to prevent infinite recursion
@@ -466,7 +478,7 @@ export class Instance {
   }
 
   private setTimerIfRequired = () => {
-    if (this.lobby.timer === 0 && this.currentStage % 2 !== 0) {
+    if (this.lobby.timer === 0) {
       return;
     }
     const timerEndTime = new Date();
@@ -494,10 +506,40 @@ export class Instance {
     // create activity log
     await this.lobby.activityLogsService.createActivityLog({
       userId: data.userId,
-      lobbyId: client.data.lobby.id,
+      lobbyId: this.lobbyId,
       action: constants.nextStageStarted,
       payload: { currentStage: this.currentStage }, // only currentStage needed
     });
+
+    // set timer for kick stage
+    if (this.currentStage % 2 === 0 && this.lobby.timer !== 0) {
+      const timerEndTime = this.setTimerIfRequired()
+      const calcTimeRemaining = (timerEndTime) => {
+        const now = new Date().getTime();
+        const timeRemaining: number = Math.max(0, timerEndTime - now);
+        return timeRemaining; // Convert milliseconds to seconds
+      };
+      this.timeoutId = setTimeout(() => {
+        // vote if not voted till the timer end
+        const userIds = this.voteKickList.map((_: { userId: any; }) => _.userId);
+        const actualPlayers = this.players.filter(_ => _.isKicked !== true)
+        actualPlayers.forEach(async player => {
+          const voted = userIds.includes(player.userId)
+          if (!voted) {
+            const contestants = actualPlayers.filter(_ => _.userId !== player.userId)
+            await this.voteKick({
+              userId: player.userId,
+              contestantId: contestants[getRandomIndex(contestants.length)].userId
+            }, client)
+            console.log(`Auto vote from ${player.displayName} for ${contestants[getRandomIndex(contestants.length)].displayName}`);
+          }
+        });
+      }, calcTimeRemaining(timerEndTime));
+    } else {
+      if (this.lobby.timer !== 0) {
+        clearTimeout(this.timeoutId);
+      }
+    }
 
     this.lobby.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
       ServerEvents.GameMessage,
@@ -608,8 +650,7 @@ export class Instance {
   private async botActionIfRequired(
     client: AuthenticatedSocket,
     action: 'reveal' | 'voteKick' | 'replyInChat',
-    botId?: string,
-    message?: string
+    data?: any,
   ) {
     // check if user own improved bots
     const uProducts = await this.lobby.databaseService.getUserProductsByUserId(this.lobby.organizatorId)
@@ -626,11 +667,25 @@ export class Instance {
         };
 
         let availableChars = this.characteristics[curPlayer.userId].filter(ch => !ch.isRevealed)
+        for (let i = 0; i < this.charOpenLimit; i++) {
+          try {
+            if (availableChars.length === 0) {
+              break;
+            }
+            const randomIndex = getRandomIndex(availableChars.length)
+            await this.revealChar({
+              userId: curPlayer.userId,
+              char: availableChars[randomIndex]
+            }, client)
+            availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
+          } catch (error) {
+            console.log(error);
+          }
+        }
 
         // make justification if owned (paid)
-        let justification: { characteristics: any; argument: string; }
         if (isPaidBots) {
-          justification = await this.lobby.AIService.generateJustification({
+          const justification = await this.lobby.AIService.generateJustification({
             conditions: this.conditions,
             characteristics: this.characteristics,
             player: curPlayer,
@@ -640,38 +695,13 @@ export class Instance {
           this.lobby.instance.sendChatMessage(
             {
               sender: curPlayer.displayName,
-              message: justification.argument,
+              senderId: curPlayer.userId,
+              message: justification,
               avatar: curPlayer.avatar,
               timeSent: getTime(),
             },
             client,
           );
-        }
-
-        for (let i = 0; i < this.charOpenLimit; i++) {
-          if (isPaidBots) {
-            try {
-              await this.revealChar({
-                userId: curPlayer.userId,
-                char: availableChars.find(ch => ch.text === justification.characteristics[i] || ch.text.includes(justification.characteristics[i]))
-              }, client)
-            } catch (error) {
-              console.log(error);
-              const randomIndex = getRandomIndex(availableChars.length)
-              await this.revealChar({
-                userId: curPlayer.userId,
-                char: availableChars[randomIndex]
-              }, client)
-              availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
-            }
-          } else {
-            const randomIndex = getRandomIndex(availableChars.length)
-            await this.revealChar({
-              userId: curPlayer.userId,
-              char: availableChars[randomIndex]
-            }, client)
-            availableChars = availableChars.filter(_ => _.type !== availableChars[randomIndex].type)
-          }
         }
 
         await this.endTurn({ userId: curPlayer.userId }, client)
@@ -687,16 +717,32 @@ export class Instance {
         }
         break;
       case 'replyInChat':
-        if (!botId) {
-          return;
-        };
+        const { currentBot, messageData } = data
+
+        const messageContext: CreateChatMessageDto = {
+          userId: messageData.senderId,
+          lobbyId: this.lobbyId,
+          text: messageData.message,
+          mentionId: currentBot.userId
+        }
 
         // bot reply in chat
-        const currentBot = constants.allBots.find(bot => bot.userId === botId);
         const reply = isPaidBots
-          ? await this.lobby.AIService.generateReplyInChat({ message: message })
+          ? await this.lobby.AIService.generateReplyInChat({ lobbyId: this.lobbyId, currentBot, messageObj: messageContext })
           : getRandomGreeting(currentBot.greetings)
 
+        // user's msg
+        const dbUserMessage = await this.lobby.databaseService.createChatMessage(messageContext)
+
+        // bot's msg
+        await this.lobby.databaseService.createChatMessage({
+          userId: currentBot.userId,
+          lobbyId: this.lobbyId,
+          text: reply || getRandomGreeting(currentBot.greetings),
+          replyTo: dbUserMessage.id
+        })
+
+        // just to immitate bots thinking
         setTimeout(() => {
           this.lobby.dispatchToLobby(ServerEvents.ChatMessage, {
             sender: currentBot.displayName,

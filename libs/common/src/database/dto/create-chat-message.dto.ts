@@ -1,5 +1,7 @@
 export class CreateChatMessageDto {
   userId: string;
   lobbyId: string;
-  data: string;
+  text: string;
+  mentionId?: string;
+  replyTo?: string;
 }

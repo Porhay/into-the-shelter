@@ -204,17 +204,27 @@ export class DatabaseService {
     });
   }
 
-  async deleteLobby(lobbyId: string) {
-    const lobby = await this.prisma.lobbies.findUnique({
-      where: { id: lobbyId },
-    });
-    if (!lobby) {
-      throw new Error(`Lobby with ID ${lobbyId} not found`);
-    }
+  async deleteLobby(lobbyKey: string): Promise<boolean> {
+    try {
+      const lobby = await this.getLobbyByKeyOrNull(lobbyKey);
+      if (!lobby) {
+        throw new Error(`Lobby with key:${lobby.key} not found`);
+      }
 
-    return await this.prisma.lobbies.delete({
-      where: { id: lobbyId },
-    });
+      await this.prisma.activityLogs.deleteMany({
+        where: { lobbyId: lobbyKey },
+      });
+      await this.prisma.chatMessages.deleteMany({
+        where: { lobbyId: lobbyKey },
+      });
+      await this.prisma.lobbies.delete({
+        where: { id: lobby.id },
+      });
+      return true;
+    } catch (error) {
+      console.error(`Error deleting lobby with key:${lobbyKey}:`, error);
+      throw new Error(`Failed to delete lobby with key:${lobbyKey}`);
+    }
   }
 
   async getLobbyByIdOrNull(lobbyId: string): Promise<any> {
@@ -303,14 +313,39 @@ export class DatabaseService {
     });
   }
 
-  async deleteChatMessagesByLobbyId(lobbyId: string) {
+  async clearLobbyChat(lobbyId: string) {
+    const result = await this.prisma.chatMessages.deleteMany({
+      where: { lobbyId: lobbyId },
+    });
+
+    return result; // will return an object that includes a count of the deleted records
+  }
+
+  async getChatMessagesByLobbyId(lobbyId: string) {
     const messages = await this.prisma.chatMessages.findMany({
-      where: { userId: lobbyId },
+      where: { lobbyId: lobbyId },
+    });
+    if (!messages || messages.length === 0) {
+      return [];
+    }
+    return messages;
+  }
+
+  async getChatMessagesByMentionId(mentionId: string) {
+    const messages = await this.prisma.chatMessages.findMany({
+      where: { mentionId: mentionId },
     });
     if (!messages || messages.length === 0) {
       return null;
     }
     return messages;
+  }
+
+  async getChatMessageByReplyTo(replyTo: string) {
+    const messages = await this.prisma.chatMessages.findMany({
+      where: { replyTo: replyTo },
+    });
+    return messages[0] || null;
   }
 
   async getChatMessageById(messageId: string) {

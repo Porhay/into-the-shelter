@@ -5,6 +5,9 @@ export class ChatMessage {
   sender: string;
 
   @IsString()
+  senderId: string;
+
+  @IsString()
   message: string;
 
   @IsString()

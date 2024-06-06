@@ -69,14 +69,20 @@ type charType = {
   isRevealed: boolean;
 };
 
-const getRemainedChars = (data: any, userId: string) => {
-  const alreadyRevealedCount = data.characteristics[userId].filter(
-    (_: { isRevealed: boolean }) => _.isRevealed === true,
+const getRemainedChars = (data: any, userId: string): number => {
+  const userCharacteristics = data.characteristics[userId];
+  const alreadyRevealedCount = userCharacteristics.filter(
+    (char: { isRevealed: boolean }) => char.isRevealed,
   ).length;
-  const remained = (
-    Math.ceil(data.currentStage / 2) * 2 -
-    alreadyRevealedCount
-  ).toString();
+
+  const notRevealedCount = userCharacteristics.length - alreadyRevealedCount;
+  if (notRevealedCount === 0) {
+    return 0;
+  }
+
+  const charsToReveal = Math.ceil(data.currentStage / 2) * 2; // at current stage
+  const remained = charsToReveal - alreadyRevealedCount;
+
   return remained;
 };
 
@@ -183,8 +189,8 @@ const RoomPage = () => {
         let tipStr: string = ' ';
         if (data.revealPlayerId === user.userId) {
           const remained = getRemainedChars(data, currentPlayer.userId);
-          updateState({ uRemainedChars: parseInt(remained) });
-          tipStr = `Open your characteristics, remained: ${remained}`;
+          updateState({ uRemainedChars: remained });
+          tipStr = `Open your characteristics, remained: ${remained.toString()}`;
         } else {
           const revealPlayer = data.players.find(
             (player: { userId: string }) =>
@@ -339,6 +345,12 @@ const RoomPage = () => {
       isPredictionOpened: isOpened,
     });
   };
+  const handleRemoveBot = (userId: string) => {
+    sm.emit({
+      event: ClientEvents.LobbyLeave,
+      data: { userId },
+    });
+  };
 
   // COMPONENTS
   const OponentsList = () => {
@@ -382,6 +394,17 @@ const RoomPage = () => {
                     <p className="vote-block">voted</p>
                   ) : null}
                 </p>
+                {typeof player !== 'number' &&
+                  state.isOrganizator &&
+                  !lobby.hasStarted &&
+                  player.isBot && (
+                    <div
+                      className="remove-player-btn"
+                      onClick={() => handleRemoveBot(player.userId)}
+                    >
+                      ⛌
+                    </div>
+                  )}
 
                 <img
                   src={
@@ -480,16 +503,23 @@ const RoomPage = () => {
       });
     };
 
+    const handleTimerEnd = () => {
+      if (
+        lobby.currentStage! % 2 === 1 &&
+        lobby.revealPlayerId === user.userId
+      ) {
+        handleEndTurn();
+      }
+    };
+
     return (
       <div className="action-tip-container">
-        {lobby.currentStage! % 2 === 1 &&
-          lobby.timer !== 0 &&
-          lobby.revealPlayerId === user.userId && (
-            <Timer
-              timerEndTime={lobby.timerEndTime!}
-              onTimerEnd={handleEndTurn}
-            />
-          )}
+        {lobby.currentStage && !lobby.hasFinished && lobby.timer !== 0 && (
+          <Timer
+            timerEndTime={lobby.timerEndTime!}
+            onTimerEnd={handleTimerEnd}
+          />
+        )}
         {!state.kickedPlayers.includes(user.userId) || !lobby.hasFinished
           ? state.actionTip
           : 'You are kicked!'}
@@ -640,8 +670,10 @@ const RoomPage = () => {
             <div className="lobby-settings-container">
               <div className="settings-is-private">
                 <div className="is-private-text">
-                  <h3>Private room</h3>
-                  <p>Private rooms can be accessed using the room URL only</p>
+                  <h3 className="settings-title">Private room</h3>
+                  <p className="settings-description">
+                    Private rooms can be accessed using the room URL only
+                  </p>
                 </div>
                 <div className="is-private-btn">
                   <Toggle
@@ -659,8 +691,8 @@ const RoomPage = () => {
               </div>
               <div className="settings-timer">
                 <div className="timer-text">
-                  <h3>Turn on the timer</h3>
-                  <p>
+                  <h3 className="settings-title">Turn on the timer</h3>
+                  <p className="settings-description">
                     Players should end thair turns before the time limit to
                     avoid random :D
                   </p>
@@ -693,8 +725,10 @@ const RoomPage = () => {
               </div>
               <div className="settings-max-players">
                 <div className="max-players-text">
-                  <h3>Maximum players</h3>
-                  <p>How many players can join the game</p>
+                  <h3 className="settings-title">Maximum players</h3>
+                  <p className="settings-description">
+                    How many players can join the game
+                  </p>
                 </div>
                 <div className="max-players-selector">
                   <select
@@ -722,8 +756,10 @@ const RoomPage = () => {
               </div>
               <div className="settings-allow-bots">
                 <div className="allow-bots-text">
-                  <h3>{`Allow bots [${checkProduct(user.userProducts!, productsSet.improvedBots) ? 'paid' : 'free'}]`}</h3>
-                  <p>Bots will join the lobby based on availability</p>
+                  <h3 className="settings-title">{`Allow bots [${checkProduct(user.userProducts!, productsSet.improvedBots) ? 'paid' : 'free'}]`}</h3>
+                  <p className="settings-description">
+                    Bots will join the lobby based on availability
+                  </p>
                 </div>
                 <div className="allow-bots-btn">
                   <Toggle

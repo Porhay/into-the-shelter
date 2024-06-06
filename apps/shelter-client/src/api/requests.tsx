@@ -189,3 +189,12 @@ export const getUserProducts = async (userId: string | undefined) => {
     console.log(`Error while getting user products, userId:${userId}`, error);
   }
 };
+
+export const getChatMessages = async (lobbyId: string | undefined | null) => {
+  try {
+    const res = await gatewayHost.get(`/api/lobbies/${lobbyId}/chat-messages/`);
+    return res.data;
+  } catch (error) {
+    console.log(`Error while getting chat messages, lobbyId:${lobbyId}`, error);
+  }
+};

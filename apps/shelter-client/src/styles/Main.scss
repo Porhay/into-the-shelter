@@ -152,13 +152,16 @@
   hr {
     width: 20%;
   }
+
+  &-link {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 .details-content {
   width: 100%;
   padding: 0 20px 40px 20px;
-
-  .game-details {}
 
   h3 {
     color: #ffffffc3;
@@ -166,23 +169,65 @@
   }
 
   .game-rules {
-    padding: 20px 0;
+    padding: 20px 0px;
+
+    &-text {
+      margin-left: 20px;
+    }
+
+    .rules-title {
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -20px;
+        top: 2px;
+        width: 8px;
+        height: 8px;
+        border: 2px solid rgb(73, 73, 73);
+        border-radius: 50px;
+      }
+    }
 
     .rules-text {
       padding: 4px 0;
+      position: relative;
+
+      &.default {
+        margin-left: -20px;
+      }
+
+      &:not(:last-of-type):not(:first-of-type):not(:nth-of-type(2)):not(:nth-of-type(3))::before {
+        content: '';
+        position: absolute;
+        left: -15px;
+        top: -2px;
+        width: 2px;
+        height: 100%;
+        background-color: rgb(73, 73, 73);
+      }
     }
   }
 
-  .chars-wrapper {
-    padding-top: 20px;
-    display: grid;
-    grid-template-columns: 32% 32% 32%;
-    row-gap: 20px;
+  .chars-container {
+    display: flex;
+    margin-top: 10px;
+    align-items: center;
+
+    &:first-of-type {
+      margin-top: 20px;
+    }
   }
 
   .chars {
     display: flex;
     align-items: center;
+    background-color: #18191acf;
+    width: 30%;
+    border-radius: 4px;
+    height: 35px;
+    margin-right: 20px;
 
     p {
       margin-left: 10px;
@@ -194,13 +239,15 @@
   }
 
   .char-text {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .char-icon {
+    margin-left: 20px;
+    height: 20px;
 
     img {
-      width: 28px;
+      width: 20px;
     }
   }
 }

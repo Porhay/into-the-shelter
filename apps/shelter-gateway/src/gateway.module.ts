@@ -8,9 +8,10 @@ import { GameModule } from './game/game.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LobbyManager } from './game/lobby/lobby.manager';
 import { LobbiesModule } from './lobbies/lobbies.module';
-import { ActivityLogsModule } from './activityLogs/activity-logs.module';
+import { ActivityLogsModule } from './activity-logs/activity-logs.module';
+import { ActivityLogsService } from './activity-logs/activity-logs.service';
+import { ChatMessagesModule } from './chat-messages/chat-messages.module';
 import config from 'config';
-import { ActivityLogsService } from './activityLogs/activity-logs.service';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ActivityLogsService } from './activityLogs/activity-logs.service';
     GameModule,
     LobbiesModule,
     ActivityLogsModule,
+    ChatMessagesModule,
 
     DatabaseModule,
     FirebaseModule,

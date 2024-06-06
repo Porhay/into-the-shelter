@@ -5,7 +5,7 @@ import { ServerEvents } from '../utils/ServerEvents';
 import { ServerPayloads } from '../utils/ServerPayloads';
 import { generateSixSymbolHash } from 'helpers';
 import { AIService, DatabaseService } from '@app/common';
-import { ActivityLogsService } from '../../activityLogs/activity-logs.service';
+import { ActivityLogsService } from '../../activity-logs/activity-logs.service';
 
 export class Lobby {
   public readonly id: string = generateSixSymbolHash();
@@ -56,12 +56,29 @@ export class Lobby {
     this.dispatchLobbyState();
   }
 
-  public removeClient(client: AuthenticatedSocket): void {
+  public removeClient(
+    client: AuthenticatedSocket,
+    data: { userId?: string } = {},
+  ): void {
+    // should work only for bot remove action
+    if (data.userId) {
+      this.instance.players = this.instance.players.filter(
+        (p) => p.userId !== data.userId,
+      );
+      return this.dispatchLobbyState();
+    }
+
     this.clients.delete(client.id);
     client.leave(this.id);
     client.data.lobby = null;
 
-    // TODO: suspend the game
+    if (!this.instance.hasStarted) {
+      this.instance.players = this.instance.players.filter(
+        (p) => p.socketId !== client.id,
+      );
+    }
+
+    // TODO: suspend the game if started or use bot instead of player
 
     // Alert the remaining player that client left lobby
     this.dispatchToLobby<ServerPayloads[ServerEvents.GameMessage]>(
